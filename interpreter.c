@@ -94,6 +94,24 @@ int set(char* var, char* value){
 
 }
 
+/*echo is a shell command that prints its arguments
+echo $var prints the value of the variable var*/
+int echo(char* var){
+	if (var[0] == '$'){
+		//search for the corresponding value in the memory
+		char* val = mem_get_value(var);
+		printf("%s\n", val);
+	}
+	else{
+		//print the string
+		printf("%s\n", var);
+	}
+
+	return 0;
+}
+
+
+
 int print(char* var){
 	printf("%s\n", mem_get_value(var)); 
 	return 0;
