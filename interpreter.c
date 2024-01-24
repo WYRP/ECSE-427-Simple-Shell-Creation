@@ -141,3 +141,13 @@ int run(char* script){
 
 	return errCode;
 }
+
+int my_mkdir(char* dir){
+	//int status = mkdir(dir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+	int status = mkdir(dir, 0777);
+	if (status == -1){
+		printf("%s\n", "Directory already exists");
+		return 1;
+	}
+	return 0;
+}
