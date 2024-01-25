@@ -100,6 +100,24 @@ int set(char* arguments[], int numberOfArguments){
 	return 0;
 }
 
+/*echo is a shell command that prints its arguments
+echo $var prints the value of the variable var*/
+int echo(char* var){
+	if (var[0] == '$'){
+		//search for the corresponding value in the memory
+		char* val = mem_get_value(var);
+		printf("%s\n", val);
+	}
+	else{
+		//print the string
+		printf("%s\n", var);
+	}
+
+	return 0;
+}
+
+
+
 int print(char* var){
 	printf("%s\n", mem_get_value(var)); 
 	return 0;
@@ -128,4 +146,14 @@ int run(char* script){
     fclose(p);
 
 	return errCode;
+}
+
+int my_mkdir(char* dir){
+	//int status = mkdir(dir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+	int status = mkdir(dir, 0777);
+	if (status == -1){
+		printf("%s\n", "Directory already exists");
+		return 1;
+	}
+	return 0;
 }
