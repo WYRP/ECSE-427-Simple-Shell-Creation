@@ -29,6 +29,9 @@ int set(char* arguments[], int numberOfArguments);
 int print(char* var);
 int run(char* script);
 int badcommandFileDoesNotExist();
+int my_ls();
+int my_touch(char* filename);
+int my_cat(char* filename);
 
 // Interpret commands and their arguments
 int interpreter(char* command_args[], int args_size){
@@ -67,7 +70,14 @@ int interpreter(char* command_args[], int args_size){
 		if (args_size != 2) return badcommand();
 		return run(command_args[1]);
 	
-	} else return badcommand();
+	} else if (strcmp(command_args[0], "my_ls")==0){
+		if (args_size != 1) return badcommand();
+		return my_ls();
+	} else if (strcmp(command_args[0], "my_touch") == 0){
+		if (args_size != 2) return badcommand();
+		return my_touch(command_args[1]);
+	}
+	else return badcommand();
 }
 
 int help(){
@@ -116,6 +126,12 @@ int echo(char* var){
 	return 0;
 }
 
+int my_ls(){
+	char *command = "ls";
+	system(command);
+	return 0;
+}
+
 
 
 int print(char* var){
@@ -155,5 +171,18 @@ int my_mkdir(char* dir){
 		printf("%s\n", "Directory already exists");
 		return 1;
 	}
+	return 0;
+}
+
+int my_touch(char *filename){
+	FILE *file;
+	file = fopen(filename, "w");
+	fclose(file);
+	return 0;
+
+}
+
+int my_cat(char *filename) {
+	FILE *file;
 	return 0;
 }
