@@ -32,6 +32,10 @@ int badcommandFileDoesNotExist();
 int my_ls();
 int my_touch(char* filename);
 int my_cat(char* filename);
+int echo(char* var);
+int my_mkdir(char* dir);
+int my_cd(char* dirname);
+
 
 // Interpret commands and their arguments
 int interpreter(char* command_args[], int args_size){
