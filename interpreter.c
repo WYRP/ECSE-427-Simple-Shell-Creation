@@ -3,6 +3,9 @@
 #include <string.h>
 //#include <unistd.h> 
 //#include <sys/stat.h> // these could be useful?
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include "shellmemory.h"
 #include "shell.h"
 
@@ -35,6 +38,9 @@ int my_cat(char* filename);
 int echo(char* var);
 int my_mkdir(char* dir);
 int my_cd(char* dirname);
+int mkdir(const char *pathname, mode_t mode);
+int chdir(const char *path);
+
 
 
 // Interpret commands and their arguments
