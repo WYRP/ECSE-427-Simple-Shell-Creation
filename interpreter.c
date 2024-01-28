@@ -77,6 +77,19 @@ int interpreter(char* command_args[], int args_size){
 		if (args_size != 2) return badcommand();
 		return my_touch(command_args[1]);
 	}
+	else if (strcmp(command_args[0], "echo") == 0) {
+    if (args_size != 2) return badcommand();
+    return echo(command_args[1]);
+	}
+	else if (strcmp(command_args[0], "my_mkdir") == 0) {
+    if (args_size != 2) return badcommand();
+    return my_mkdir(command_args[1]);
+	}
+	else if (strcmp(command_args[0], "my_cd") == 0) {
+    if (args_size != 2) return badcommand();
+    return my_cd(command_args[1]);
+	}
+
 	else return badcommand();
 }
 
@@ -132,6 +145,27 @@ int my_ls(){
 	return 0;
 }
 
+/*create a new directory called dirname in the
+current directory.*/
+int my_mkdir(char* dir){
+	//int status = mkdir(dir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+	int status = mkdir(dir, 0777);
+	if (status == -1){
+		printf("%s\n", "Directory already exists");
+		return 1;
+	}
+	return 0;
+}
+
+/* change the current 
+directory to the specified directory.*/
+int my_cd(char* dirname) {
+    if(chdir(dirname) != 0) {
+        printf("Bad command: my_cd\n");
+        return 1;
+    }
+    return 0;
+}
 
 
 int print(char* var){
@@ -164,15 +198,6 @@ int run(char* script){
 	return errCode;
 }
 
-int my_mkdir(char* dir){
-	//int status = mkdir(dir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-	int status = mkdir(dir, 0777);
-	if (status == -1){
-		printf("%s\n", "Directory already exists");
-		return 1;
-	}
-	return 0;
-}
 
 int my_touch(char *filename){
 	FILE *file;
