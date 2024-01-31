@@ -103,7 +103,10 @@ int interpreter(char* command_args[], int args_size){
     if (args_size != 2) return badcommand();
     return my_cd(command_args[1]);
 	}
-
+	else if (strcmp(command_args[0], "my_cat") == 0) {
+    if (args_size != 2) return badcommand();
+    return my_cd(command_args[1]);
+	}
 	else return badcommand();
 }
 
@@ -175,8 +178,7 @@ int my_mkdir(char* dir){
 directory to the specified directory.*/
 int my_cd(char* dirname) {
     if(chdir(dirname) != 0) {
-        printf("Bad command: my_cd\n");
-        return 1;
+        return badcommandSpecific("my_cd");
     }
     return 0;
 }
@@ -223,5 +225,15 @@ int my_touch(char *filename){
 
 int my_cat(char *filename) {
 	FILE *file;
+	file = fopen(filename, "r");
+	if (file == NULL) return badcommandSpecific("my_cat");
+	char c = fgetc(file); 
+    while (c != EOF) 
+    { 
+        printf ("%c", c); 
+        c = fgetc(file); 
+    } 
+  
+	fclose(file);
 	return 0;
 }
