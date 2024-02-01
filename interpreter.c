@@ -127,6 +127,7 @@ int quit(){
 	exit(0);
 }
 
+/*The set command helps linking a char and a value together in a java-hashmap-like way*/
 int set(char* arguments[], int numberOfArguments){
 	char* var = arguments[1];
 	char value[504];
@@ -145,8 +146,13 @@ echo $var prints the value of the variable var*/
 int echo(char* var){
 	if (var[0] == '$'){
 		//search for the corresponding value in the memory
-		char* val = mem_get_value(var);
-		printf("%s\n", val);
+		char* val = mem_get_value(var+1);
+		if (val == NULL){
+			printf("%s\n", "Variable Does Not Exist");
+		}
+		else {
+			printf("%s\n", val);
+		}
 	}
 	else{
 		//print the string
@@ -156,6 +162,7 @@ int echo(char* var){
 	return 0;
 }
 
+/*list all the files presented in the current directory*/
 int my_ls(){
 	char *command = "ls";
 	system(command);
@@ -165,13 +172,17 @@ int my_ls(){
 /*create a new directory called dirname in the
 current directory.*/
 int my_mkdir(char* dir){
+	if (strlen(dir) > 100){
+        printf("Directory name is too long.\n");
+        return 1; // Return 1 for error
+    }
 	//int status = mkdir(dir, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 	int status = mkdir(dir, 0777);
 	if (status == -1){
 		printf("%s\n", "Directory already exists");
 		return 1;
 	}
-	return 0;
+	return 0; //
 }
 
 /* change the current 
@@ -181,6 +192,14 @@ int my_cd(char* dirname) {
         return badcommandSpecific("my_cd");
     }
     return 0;
+}
+
+int my_touch(char *filename){
+	FILE *file;
+	file = fopen(filename, "w");
+	fclose(file);
+	return 0;
+
 }
 
 
@@ -215,13 +234,6 @@ int run(char* script){
 }
 
 
-int my_touch(char *filename){
-	FILE *file;
-	file = fopen(filename, "w");
-	fclose(file);
-	return 0;
-
-}
 
 int my_cat(char *filename) {
 	FILE *file;
