@@ -194,12 +194,19 @@ int my_cd(char* dirname) {
     return 0;
 }
 
+/*creats a new empty file inside the current directory*/
 int my_touch(char *filename){
+	printf("Filename: '%s'\n", filename);
+	printf("Length: %lu\n", strlen(filename));
+	//check the length of the filename
+	if (strlen(filename) > 100){
+		printf("File name is too long.\n");
+		return 1; // Return 1 for error
+	}
 	FILE *file;
 	file = fopen(filename, "w");
 	fclose(file);
 	return 0;
-
 }
 
 
