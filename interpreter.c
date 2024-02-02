@@ -107,7 +107,7 @@ int interpreter(char* command_args[], int args_size){
 	}
 	else if (strcmp(command_args[0], "my_cat") == 0) {
     if (args_size != 2) return badcommand();
-    return my_cd(command_args[1]);
+    return my_cat(command_args[1]);
 	}
 	else return badcommand();
 }
@@ -229,7 +229,7 @@ int my_touch(char *filename){
 	return 0;
 }
 
-/*
+
 int my_cat(char *filename) {
 
 	FILE *file;
@@ -245,31 +245,6 @@ int my_cat(char *filename) {
 	fclose(file);
 	return 0;
 }
-*/
-
-
-int my_cat(char *filename) {
-    if (strlen(filename) > 100) {
-        printf("File name is too long.\n");
-        return 1; // Return 1 for error
-    }
-    if (!is_alphanumeric(filename)) {
-        printf("File name is not alphanumeric.\n");
-        return 1; // Return 1 for error
-    }
-    FILE *file = fopen(filename, "r");
-    if (file == NULL) {
-        perror("Error opening file");
-        return 1; // Return 1 for error
-    }
-    char c;
-    while ((c = fgetc(file)) != EOF) {
-        putchar(c);
-    }
-    fclose(file);
-    return 0;
-}
-
 
 
 int print(char* var){
