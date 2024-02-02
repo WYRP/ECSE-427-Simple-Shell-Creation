@@ -7,6 +7,7 @@
 #include <string.h>
 //#include <unistd.h> 
 //#include <sys/stat.h> // these could be useful?
+#include <ctype.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -170,6 +171,20 @@ int my_ls(){
 	return 0;
 }
 
+/*Helper function to determine whether the filename is alphanumeric*/
+int is_alphanumeric(char *str) {
+    while (*str) {
+        // If the current character is not alphanumeric
+		// return 0
+        if (!isalnum((unsigned char)*str)) {
+            return 0;
+        }
+        str++;
+    }
+    // reached the end without finding 
+	// a non-alphanumeric character, return 1
+    return 1;
+}
 /*create a new directory called dirname in the
 current directory.*/
 int my_mkdir(char* dir){
@@ -197,15 +212,34 @@ int my_cd(char* dirname) {
 
 /*creats a new empty file inside the current directory*/
 int my_touch(char *filename){
-	printf("Filename: '%s'\n", filename);
-	printf("Length: %lu\n", strlen(filename));
 	//check the length of the filename
 	if (strlen(filename) > 100){
 		printf("File name is too long.\n");
 		return 1; // Return 1 for error
 	}
+	//check if the filename is alphanumeric
+	if (is_alphanumeric(filename)== 0){
+		printf("File name is not alphanumeric.\n");
+		return 1; // Return 1 for error
+	}
+	//create the file
 	FILE *file;
 	file = fopen(filename, "w");
+	fclose(file);
+	return 0;
+}
+
+int my_cat(char *filename) {
+	FILE *file;
+	file = fopen(filename, "r");
+	if (file == NULL) return badcommandSpecific("my_cat");
+	char c = fgetc(file); 
+    while (c != EOF) 
+    { 
+        printf ("%c", c); 
+        c = fgetc(file); 
+    } 
+  
 	fclose(file);
 	return 0;
 }
@@ -243,20 +277,7 @@ int run(char* script){
 
 
 
-int my_cat(char *filename) {
-	FILE *file;
-	file = fopen(filename, "r");
-	if (file == NULL) return badcommandSpecific("my_cat");
-	char c = fgetc(file); 
-    while (c != EOF) 
-    { 
-        printf ("%c", c); 
-        c = fgetc(file); 
-    } 
-  
-	fclose(file);
-	return 0;
-}
+
 
 /*
 	Question 9: implemet cp with following usage: 
