@@ -229,7 +229,9 @@ int my_touch(char *filename){
 	return 0;
 }
 
+/*
 int my_cat(char *filename) {
+
 	FILE *file;
 	file = fopen(filename, "r");
 	if (file == NULL) return badcommandSpecific("my_cat");
@@ -243,6 +245,31 @@ int my_cat(char *filename) {
 	fclose(file);
 	return 0;
 }
+*/
+
+
+int my_cat(char *filename) {
+    if (strlen(filename) > 100) {
+        printf("File name is too long.\n");
+        return 1; // Return 1 for error
+    }
+    if (!is_alphanumeric(filename)) {
+        printf("File name is not alphanumeric.\n");
+        return 1; // Return 1 for error
+    }
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        perror("Error opening file");
+        return 1; // Return 1 for error
+    }
+    char c;
+    while ((c = fgetc(file)) != EOF) {
+        putchar(c);
+    }
+    fclose(file);
+    return 0;
+}
+
 
 
 int print(char* var){
