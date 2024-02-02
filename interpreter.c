@@ -44,6 +44,7 @@ int my_mkdir(char* dir);
 int my_cd(char* dirname);
 int mkdir(const char *pathname, mode_t mode);
 int chdir(const char *path);
+int my_cp(char *srcFile, char *destFile);
 
 
 
@@ -255,4 +256,29 @@ int my_cat(char *filename) {
   
 	fclose(file);
 	return 0;
+}
+
+/*
+	Question 9: implemet cp with following usage: 
+	cp source_fileName destination_fileName
+	copies the concent from the source file to the destination file, if destination file
+	doesn't exist, create the file in the current directory.
+	return bad command if srcfile is null
+*/
+int my_cp(char *srcFile, char *destFile){
+	FILE *src;
+	FILE *dest;
+	src = fopen(srcFile, "r");
+	if (src == NULL) return badcommandSpecific("my_cp");
+	dest = fopen(destFile, "w");
+	char c = fgetc(src); 
+	while (c != EOF) 
+    { 
+        fprintf (dest, "%c", c); 
+        c = fgetc(src); 
+    } 
+	fclose(src);
+	fclose(dest);
+	return 0;
+
 }
