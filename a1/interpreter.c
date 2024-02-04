@@ -109,6 +109,10 @@ int interpreter(char* command_args[], int args_size){
     if (args_size != 2) return badcommand();
     return my_cat(command_args[1]);
 	}
+	else if (strcmp(command_args[0], "my_cp") == 0) {
+    if (args_size != 3) return badcommand();
+    return my_cp(command_args[1], command_args[2]);
+	}
 	else return badcommand();
 }
 
@@ -236,7 +240,7 @@ int my_cat(char *filename) {
 	FILE *file;
 	file = fopen(filename, "r");
 	if (file == NULL) return badcommandSpecific("my_cat");
-	char c = fgetc(file); 
+	int c = fgetc(file); 
     while (c != EOF) 
     { 
         printf ("%c", c); 
@@ -295,7 +299,7 @@ int my_cp(char *srcFile, char *destFile){
 	src = fopen(srcFile, "r");
 	if (src == NULL) return badcommandSpecific("my_cp");
 	dest = fopen(destFile, "w");
-	char c = fgetc(src); 
+	int c = fgetc(src); 
 	while (c != EOF) 
     { 
         fprintf (dest, "%c", c); 
