@@ -119,15 +119,7 @@ help			Displays all the commands\n \
 quit			Exits / terminates the shell with “Bye!”\n \
 set VAR STRING		Assigns a value to shell memory\n \
 print VAR		Displays the STRING assigned to VAR\n \
-run SCRIPT.TXT		Executes the file SCRIPT.TXT\n \
-echo STRING		Desplays the strings passed as arguments\n \
-echo $VAR		Desplays the string that is assigned to VAR \n \
-my_ls			Lists all the files present in the current directory\n \
-my_mkdir DIRNAME	Creates a new directory called dirname in the current directory\n \
-my_touch FILENAME	Creates a new empty file inside the current directory with the given filename\n \
-my_cd DIRNAME		Changes the current directory to the specific directory\n \
-my_cat FILENAME	Opens the file at the given filename and prints its content to the screen\n \
-my_copy SRC_FNAME DEST_FNAME	Copies the content in the source file to the destination file\n";
+run SCRIPT.TXT		Executes the file SCRIPT.TXT\n";
 
 	printf("%s\n", help_string);
 	return 0;
