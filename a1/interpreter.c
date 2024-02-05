@@ -325,11 +325,11 @@ int ifStatement(char* command_args[], int args_size){
 
 	int else_index = 0
 
-	if ! (op == "==" || op == "!="){
+	if (! (op == "==" || op == "!=")){
 		printf("%s\n", "Bad command: Invalid operator");
 		return 1
 	}
-	if ! (then == "then"){
+	if (! (then == "then")){
 		printf("%s\n", "Bad command: Invalid syntax");
 		return 1
 	}
@@ -346,10 +346,11 @@ int ifStatement(char* command_args[], int args_size){
 	}
 
 	bool use_command1 = false;
+
 	if (strcmp(op, "==") == 0){
-		use_command1 = strcmp(identifier1, identifier2) == 0;
+		use_command1 = (strcmp(identifier1, identifier2) == 0);
 	}else if (strcmp(op, "!=") == 0){
-		use_command1 = strcmp(identifier1, identifier2) != 0;
+		use_command1 = (strcmp(identifier1, identifier2) != 0);
 	} else {
 		printf("%s\n", "Bad command: Invalid operator");
 		return 1;
@@ -358,7 +359,7 @@ int ifStatement(char* command_args[], int args_size){
 	int command_size = 0;
 	char* command[MAX_ARGS_SIZE];
 	
-	if use_command1{
+	if (use_command1){
 		command_size = else_index - 5;
 		for (int i = 5; i < else_index; i++){
 			command[i-5] = command_args[i];
@@ -371,7 +372,7 @@ int ifStatement(char* command_args[], int args_size){
 		}
 		return interpreter(command, command_size);
 	}
-	
+
 
 }
 
