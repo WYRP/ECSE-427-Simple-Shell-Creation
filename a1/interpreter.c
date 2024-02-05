@@ -113,6 +113,10 @@ int interpreter(char* command_args[], int args_size){
     if (args_size != 3) return badcommand();
     return my_cp(command_args[1], command_args[2]);
 	}
+	else if (strcmp(command_args[0], "if") == 0) {
+	if (args_size != 9) return badcommand();
+	return ifStatement(command_args);
+	}
 	else return badcommand();
 }
 
@@ -282,21 +286,6 @@ int run(char* script){
 	return errCode;
 }
 
-/*
-	Question 8: add support to if statement*/
-
-int parseInput(char *input){
-	char *command_args[100];
-	int args_size = 0;
-	char *token = strtok(input, " ");
-	while (token != NULL){
-		command_args[args_size] = token;
-		args_size++;
-		token = strtok(NULL, " ");
-	}
-	return interpreter(command_args, args_size);
-}
-
 /*Optional: The following part is not worth any marks and will not be graded. However, if you pass
 the tests for this part, you will be awarded 1,000 COMP310COIN when you submit your code and pass
 the corresponding public test. Add support for if conditionals. An if conditional will have the
@@ -316,10 +305,7 @@ int ifStatement(char *input){
         command_args[args_size++] = token;
         token = strtok(NULL, " ");
     }
-    
-    // The correct number of arguments should now be 7 ("if" "identifier" "op" "identifier" "then" "command1" "else" "command2" "fi")
-    if (args_size != 9) return badcommandSpecific("ifStatement");
-    
+
     // Fetch the identifiers and operator
     char *identifier1 = command_args[1];
     char *op = command_args[2];
@@ -338,22 +324,24 @@ int ifStatement(char *input){
     // Variable substitution (if identifier starts with $, use the variable value instead)
     char value1[101] = {0}, value2[101] = {0};
     if (identifier1[0] == '$') {
-        strcpy(value1, get_variable_value(identifier1 + 1)); // Assuming this function exists
+        strcpy(value1, echo(identifier1 + 1)); // Assuming this function exists
         identifier1 = value1;
     }
     if (identifier2[0] == '$') {
-        strcpy(value2, get_variable_value(identifier2 + 1)); // Assuming this function exists
+        strcpy(value2, echo(identifier2 + 1)); // Assuming this function exists
         identifier2 = value2;
     }
 
     // Perform the comparison and execute the corresponding command
     if ((strcmp(op, "==") == 0 && strcmp(identifier1, identifier2) == 0) ||
         (strcmp(op, "!=") == 0 && strcmp(identifier1, identifier2) != 0)) {
-        return parseInput(command1); // Assuming command1 is just one token, otherwise need to parse fully
+        return interpreter(command1); // Assuming command1 is just one token, otherwise need to parse fully
     } else {
-        return parseInput(command2); // Assuming command2 is just one token, otherwise need to parse fully
+        return interpreter(command2); // Assuming command2 is just one token, otherwise need to parse fully
     }
 }
+
+
 
 
 
