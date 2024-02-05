@@ -335,9 +335,10 @@ int ifStatement(char* command_args[], int args_size){
 			elseIndex = i;
 			break;
 		}
-		else if (i == args_size - 2 && ! (strcmp(command_args[i], "else") == 0)){
-			return badcommandSpecific("Bad syntax");
-		}
+	}
+	if (elseIndex == 0){
+		printf("%s\n", "Empty if clause");
+		return 1;
 	}
 
 	//find the variable in memory if identifiers start with $
@@ -376,17 +377,18 @@ int ifStatement(char* command_args[], int args_size){
 		command_size = elseIndex - 5;
 		for (int i = 5; i < elseIndex; i++){
 			command[i-5] = command_args[i];
-		}
-		return interpreter(command, command_size);
+		}		
 	}else{
 		command_size = args_size - elseIndex - 2;
 		for (int i = elseIndex + 1; i < args_size; i++){
 			command[i-elseIndex-1] = command_args[i];
 		}
-		return interpreter(command, command_size);
 	}
-
-
+	if (command_size == 0){
+		printf("%s\n", "Empty if clause");
+		return 1;
+	}
+	return interpreter(command, command_size);
 }
 
 /*
