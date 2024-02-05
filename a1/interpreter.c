@@ -278,6 +278,78 @@ int run(char* script){
 	return errCode;
 }
 
+/*
+	Question 8: add support to if statement*/
+
+int parseInput(char *input){
+	char *command_args[100];
+	int args_size = 0;
+	char *token = strtok(input, " ");
+	while (token != NULL){
+		command_args[args_size] = token;
+		args_size++;
+		token = strtok(NULL, " ");
+	}
+	return interpreter(command_args, args_size);
+}
+
+/*Optional: The following part is not worth any marks and will not be graded. However, if you pass
+the tests for this part, you will be awarded 1,000 COMP310COIN when you submit your code and pass
+the corresponding public test. Add support for if conditionals. An if conditional will have the
+following syntax:
+if identifier op identifier then command1 else command2 fi
+The identifier's can be either single alphanumeric tokens (of no more than 100 characters) or
+a variable beginning with a $ (in which case you should use the value of the variable stored in
+memory, like you did with the echo command). The op can be either == (equals) or != (not equals).
+If the condition (identifier op identifier) is true, then command1 should be executed; otherwise,
+command2 should be executed.
+Commands can be any series of alphanumeric tokens until the else or newline.*/
+int ifStatement(char *input){
+    char *command_args[100];
+    int args_size = 0;
+    char *token = strtok(input, " ");
+    while (token != NULL){
+        command_args[args_size++] = token;
+        token = strtok(NULL, " ");
+    }
+    
+    // The correct number of arguments should now be 7 ("if" "identifier" "op" "identifier" "then" "command1" "else" "command2" "fi")
+    if (args_size != 9) return badcommandSpecific("ifStatement");
+    
+    // Fetch the identifiers and operator
+    char *identifier1 = command_args[1];
+    char *op = command_args[2];
+    char *identifier2 = command_args[3];
+    char *then = command_args[4];
+    char *command1 = command_args[5];
+    char *else_ = command_args[6];
+    char *command2 = command_args[7];
+    char *fi = command_args[8];
+
+    // Check for correct syntax with "then", "else", and "fi"
+    if (strcmp(then, "then") != 0 || strcmp(else_, "else") != 0 || strcmp(fi, "fi") != 0) {
+        return badcommandSpecific("ifStatement");
+    }
+
+    // Variable substitution (if identifier starts with $, use the variable value instead)
+    char value1[101] = {0}, value2[101] = {0};
+    if (identifier1[0] == '$') {
+        strcpy(value1, get_variable_value(identifier1 + 1)); // Assuming this function exists
+        identifier1 = value1;
+    }
+    if (identifier2[0] == '$') {
+        strcpy(value2, get_variable_value(identifier2 + 1)); // Assuming this function exists
+        identifier2 = value2;
+    }
+
+    // Perform the comparison and execute the corresponding command
+    if ((strcmp(op, "==") == 0 && strcmp(identifier1, identifier2) == 0) ||
+        (strcmp(op, "!=") == 0 && strcmp(identifier1, identifier2) != 0)) {
+        return parseInput(command1); // Assuming command1 is just one token, otherwise need to parse fully
+    } else {
+        return parseInput(command2); // Assuming command2 is just one token, otherwise need to parse fully
+    }
+}
 
 
 
