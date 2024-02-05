@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include "shellmemory.h"
 #include "shell.h"
+#include <stdbool.h>
 
 int MAX_ARGS_SIZE = 20;
 
@@ -323,15 +324,15 @@ int ifStatement(char* command_args[], int args_size){
     char *identifier2 = command_args[3];
     char *then = command_args[4];
 
-	int else_index = 0
+	int else_index = 0;
 
 	if (! (op == "==" || op == "!=")){
 		printf("%s\n", "Bad command: Invalid operator");
-		return 1
+		return 1;
 	}
 	if (! (then == "then")){
 		printf("%s\n", "Bad command: Invalid syntax");
-		return 1
+		return 1;
 	}
 
 	for (int i = 5; i < args_size; i++){
@@ -345,7 +346,7 @@ int ifStatement(char* command_args[], int args_size){
 		}
 	}
 
-	bool use_command1 = false;
+	Boolean use_command1 = false;
 
 	if (strcmp(op, "==") == 0){
 		use_command1 = (strcmp(identifier1, identifier2) == 0);
