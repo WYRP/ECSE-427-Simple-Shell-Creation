@@ -46,6 +46,7 @@ int my_cd(char* dirname);
 int mkdir(const char *pathname, mode_t mode);
 int chdir(const char *path);
 int my_cp(char *srcFile, char *destFile);
+int ifStatement(char *input);
 
 
 
@@ -115,7 +116,7 @@ int interpreter(char* command_args[], int args_size){
 	}
 	else if (strcmp(command_args[0], "if") == 0) {
 	if (args_size != 9) return badcommand();
-	return ifStatement(command_args);
+	return ifStatement(command_args[0]);
 	}
 	else return badcommand();
 }
@@ -286,6 +287,19 @@ int run(char* script){
 	return errCode;
 }
 
+/*
+Helper Function for ifStatement implementation*/
+// Helper function to tokenize a command string into an array of arguments
+int tokenize_command(char* command, char* args[], int max_args) {
+    int args_size = 0;
+    char* token = strtok(command, " ");
+    while (token != NULL && args_size < max_args) {
+        args[args_size++] = token;
+        token = strtok(NULL, " ");
+    }
+    return args_size; // Return the number of arguments
+}
+
 /*Optional: The following part is not worth any marks and will not be graded. However, if you pass
 the tests for this part, you will be awarded 1,000 COMP310COIN when you submit your code and pass
 the corresponding public test. Add support for if conditionals. An if conditional will have the
@@ -316,6 +330,13 @@ int ifStatement(char *input){
     char *command2 = command_args[7];
     char *fi = command_args[8];
 
+	//variables for tokenizing the commands
+	int result;
+	char* new_command_args[MAX_ARGS_SIZE];
+    int new_args_size1 = tokenize_command(command1, new_command_args, MAX_ARGS_SIZE);
+	int new_args_size2 = tokenize_command(command2, new_command_args, MAX_ARGS_SIZE);
+
+
     // Check for correct syntax with "then", "else", and "fi"
     if (strcmp(then, "then") != 0 || strcmp(else_, "else") != 0 || strcmp(fi, "fi") != 0) {
         return badcommandSpecific("ifStatement");
@@ -324,27 +345,23 @@ int ifStatement(char *input){
     // Variable substitution (if identifier starts with $, use the variable value instead)
     char value1[101] = {0}, value2[101] = {0};
     if (identifier1[0] == '$') {
-        strcpy(value1, echo(identifier1 + 1)); // Assuming this function exists
+        strcpy(value1, echo(identifier1 + 1)); 
         identifier1 = value1;
     }
     if (identifier2[0] == '$') {
-        strcpy(value2, echo(identifier2 + 1)); // Assuming this function exists
+        strcpy(value2, echo(identifier2 + 1)); 
         identifier2 = value2;
     }
 
     // Perform the comparison and execute the corresponding command
     if ((strcmp(op, "==") == 0 && strcmp(identifier1, identifier2) == 0) ||
         (strcmp(op, "!=") == 0 && strcmp(identifier1, identifier2) != 0)) {
-        return interpreter(command1); // Assuming command1 is just one token, otherwise need to parse fully
+        result = interpreter(new_command_args, new_args_size);
     } else {
-        return interpreter(command2); // Assuming command2 is just one token, otherwise need to parse fully
+        result = interpreter(new_command_args, new_args_size);
     }
+	return result;
 }
-
-
-
-
-
 
 /*
 	Question 9: implemet cp with following usage: 
