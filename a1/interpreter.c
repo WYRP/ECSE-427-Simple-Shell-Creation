@@ -354,47 +354,24 @@ int ifStatement(char* command_args[], int args_size){
 		printf("%s\n", "Bad command: Invalid operator");
 		return 1;
 	}
+
+	int command_size = 0;
+	char* command[MAX_ARGS_SIZE];
 	
 	if use_command1{
-		
+		command_size = else_index - 5;
+		for (int i = 5; i < else_index; i++){
+			command[i-5] = command_args[i];
+		}
+		return interpreter(command, command_size);
+	}else{
+		command_size = args_size - else_index - 2;
+		for (int i = else_index + 1; i < args_size; i++){
+			command[i-else_index-1] = command_args[i];
+		}
+		return interpreter(command, command_size);
 	}
-
-
-
-
-	// Perform the comparison and execute the corresponding command
-    if ((strcmp(op, "==") == 0 && strcmp(identifier1, identifier2) == 0) ||
-        (strcmp(op, "!=") == 0 && strcmp(identifier1, identifier2) != 0)) {
-        result = interpreter(new_command_args1, new_args_size1);
-    } else {
-        result = interpreter(new_command_args2, new_args_size2);
-    }
-	return result;
-
-
-
-
-
-
-	//variables for tokenizing the commands
-	int result;
-	char* new_command_args1[MAX_ARGS_SIZE];
-	char* new_command_args2[MAX_ARGS_SIZE];
-    int new_args_size1 = tokenize_command(command1, new_command_args1, MAX_ARGS_SIZE);
-	int new_args_size2 = tokenize_command(command2, new_command_args2, MAX_ARGS_SIZE);
-
-
-    // Variable substitution (if identifier starts with $, use the variable value instead)
-    char value1[101] = {0}, value2[101] = {0};
-    if (identifier1[0] == '$') {
-        strcpy(value1, mem_get_value(identifier1 + 1)); 
-        identifier1 = value1;
-    }
-    if (identifier2[0] == '$') {
-        strcpy(value2, mem_get_value(identifier2 + 1)); 
-        identifier2 = value2;
-    }
-
+	
 
 }
 
