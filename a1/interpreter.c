@@ -300,7 +300,8 @@ int tokenize_command(char* command, char* args[], int max_args) {
     return args_size; // Return the number of arguments
 }
 
-/*Optional: The following part is not worth any marks and will not be graded. However, if you pass
+/*Optional: 
+The following part is not worth any marks and will not be graded. However, if you pass
 the tests for this part, you will be awarded 1,000 COMP310COIN when you submit your code and pass
 the corresponding public test. Add support for if conditionals. An if conditional will have the
 following syntax:
@@ -316,16 +317,64 @@ int ifStatement(char* command_args[], int args_size){
         return badcommandSpecific("if");
     }
 
-
     // Fetch the identifiers and operator
     char *identifier1 = command_args[1];
     char *op = command_args[2];
     char *identifier2 = command_args[3];
     char *then = command_args[4];
-    char *command1 = command_args[5];
-    char *else_ = command_args[6];
-    char *command2 = command_args[7];
-    char *fi = command_args[8];
+
+	int else_index = 0
+
+	if ! (op == "==" || op == "!="){
+		printf("%s\n", "Bad command: Invalid operator");
+		return 1
+	}
+	if ! (then == "then"){
+		printf("%s\n", "Bad command: Invalid syntax");
+		return 1
+	}
+
+	for (int i = 5; i < args_size; i++){
+		if (command_args[i] == "else"){
+			else_index = i;
+			break;
+		}
+		else {
+			printf("%s\n", "Bad command: No else statement");
+			return 1;
+		}
+	}
+
+	bool use_command1 = false;
+	if (strcmp(op, "==") == 0){
+		use_command1 = strcmp(identifier1, identifier2) == 0;
+	}else if (strcmp(op, "!=") == 0){
+		use_command1 = strcmp(identifier1, identifier2) != 0;
+	} else {
+		printf("%s\n", "Bad command: Invalid operator");
+		return 1;
+	}
+	
+	if use_command1{
+		
+	}
+
+
+
+
+	// Perform the comparison and execute the corresponding command
+    if ((strcmp(op, "==") == 0 && strcmp(identifier1, identifier2) == 0) ||
+        (strcmp(op, "!=") == 0 && strcmp(identifier1, identifier2) != 0)) {
+        result = interpreter(new_command_args1, new_args_size1);
+    } else {
+        result = interpreter(new_command_args2, new_args_size2);
+    }
+	return result;
+
+
+
+
+
 
 	//variables for tokenizing the commands
 	int result;
@@ -334,11 +383,6 @@ int ifStatement(char* command_args[], int args_size){
     int new_args_size1 = tokenize_command(command1, new_command_args1, MAX_ARGS_SIZE);
 	int new_args_size2 = tokenize_command(command2, new_command_args2, MAX_ARGS_SIZE);
 
-
-    // Check for correct syntax with "then", "else", and "fi"
-    if (strcmp(then, "then") != 0 || strcmp(else_, "else") != 0 || strcmp(fi, "fi") != 0) {
-        return badcommandSpecific("ifStatement");
-    }
 
     // Variable substitution (if identifier starts with $, use the variable value instead)
     char value1[101] = {0}, value2[101] = {0};
@@ -351,14 +395,7 @@ int ifStatement(char* command_args[], int args_size){
         identifier2 = value2;
     }
 
-    // Perform the comparison and execute the corresponding command
-    if ((strcmp(op, "==") == 0 && strcmp(identifier1, identifier2) == 0) ||
-        (strcmp(op, "!=") == 0 && strcmp(identifier1, identifier2) != 0)) {
-        result = interpreter(new_command_args1, new_args_size1);
-    } else {
-        result = interpreter(new_command_args2, new_args_size2);
-    }
-	return result;
+
 }
 
 /*
