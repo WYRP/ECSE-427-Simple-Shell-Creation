@@ -46,7 +46,7 @@ int my_cd(char* dirname);
 int mkdir(const char *pathname, mode_t mode);
 int chdir(const char *path);
 int my_cp(char *srcFile, char *destFile);
-int ifStatement(char *input);
+int ifStatement(char* command_args[], int args_size);
 
 
 
@@ -114,9 +114,9 @@ int interpreter(char* command_args[], int args_size){
     if (args_size != 3) return badcommand();
     return my_cp(command_args[1], command_args[2]);
 	}
-	else if (strcmp(command_args[0], "ifStatement") == 0) {
+	else if (strcmp(command_args[0], "if") == 0) {
 	if (args_size != 9) return badcommand();
-	return ifStatement(command_args[0]);
+	return ifStatement(command_args, args_size);
 	}
 	else return badcommand();
 }
@@ -311,14 +311,11 @@ memory, like you did with the echo command). The op can be either == (equals) or
 If the condition (identifier op identifier) is true, then command1 should be executed; otherwise,
 command2 should be executed.
 Commands can be any series of alphanumeric tokens until the else or newline.*/
-int ifStatement(char *input){
-    char *command_args[100];
-    int args_size = 0;
-    char *token = strtok(input, " ");
-    while (token != NULL){
-        command_args[args_size++] = token;
-        token = strtok(NULL, " ");
+int ifStatement(char* command_args[], int args_size){
+    if (args_size != 9) {
+        return badcommandSpecific("if");
     }
+
 
     // Fetch the identifiers and operator
     char *identifier1 = command_args[1];
@@ -334,8 +331,8 @@ int ifStatement(char *input){
 	int result;
 	char* new_command_args1[MAX_ARGS_SIZE];
 	char* new_command_args2[MAX_ARGS_SIZE];
-    int new_args_size1 = tokenize_command(command1, new_command_args, MAX_ARGS_SIZE);
-	int new_args_size2 = tokenize_command(command2, new_command_args, MAX_ARGS_SIZE);
+    int new_args_size1 = tokenize_command(command1, new_command_args1, MAX_ARGS_SIZE);
+	int new_args_size2 = tokenize_command(command2, new_command_args2, MAX_ARGS_SIZE);
 
 
     // Check for correct syntax with "then", "else", and "fi"
