@@ -114,7 +114,7 @@ int interpreter(char* command_args[], int args_size){
     if (args_size != 3) return badcommand();
     return my_cp(command_args[1], command_args[2]);
 	}
-	else if (strcmp(command_args[0], "if") == 0) {
+	else if (strcmp(command_args[0], "ifStatement") == 0) {
 	if (args_size != 9) return badcommand();
 	return ifStatement(command_args[0]);
 	}
@@ -332,7 +332,8 @@ int ifStatement(char *input){
 
 	//variables for tokenizing the commands
 	int result;
-	char* new_command_args[MAX_ARGS_SIZE];
+	char* new_command_args1[MAX_ARGS_SIZE];
+	char* new_command_args2[MAX_ARGS_SIZE];
     int new_args_size1 = tokenize_command(command1, new_command_args, MAX_ARGS_SIZE);
 	int new_args_size2 = tokenize_command(command2, new_command_args, MAX_ARGS_SIZE);
 
@@ -345,20 +346,20 @@ int ifStatement(char *input){
     // Variable substitution (if identifier starts with $, use the variable value instead)
     char value1[101] = {0}, value2[101] = {0};
     if (identifier1[0] == '$') {
-        strcpy(value1, echo(identifier1 + 1)); 
+        strcpy(value1, mem_get_value(identifier1 + 1)); 
         identifier1 = value1;
     }
     if (identifier2[0] == '$') {
-        strcpy(value2, echo(identifier2 + 1)); 
+        strcpy(value2, mem_get_value(identifier2 + 1)); 
         identifier2 = value2;
     }
 
     // Perform the comparison and execute the corresponding command
     if ((strcmp(op, "==") == 0 && strcmp(identifier1, identifier2) == 0) ||
         (strcmp(op, "!=") == 0 && strcmp(identifier1, identifier2) != 0)) {
-        result = interpreter(new_command_args, new_args_size);
+        result = interpreter(new_command_args1, new_args_size1);
     } else {
-        result = interpreter(new_command_args, new_args_size);
+        result = interpreter(new_command_args2, new_args_size2);
     }
 	return result;
 }
