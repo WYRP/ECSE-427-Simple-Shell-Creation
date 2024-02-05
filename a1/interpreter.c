@@ -96,28 +96,27 @@ int interpreter(char* command_args[], int args_size){
 		return my_touch(command_args[1]);
 	}
 	else if (strcmp(command_args[0], "echo") == 0) {
-    if (args_size != 2) return badcommand();
-    return echo(command_args[1]);
+		if (args_size != 2) return badcommand();
+		return echo(command_args[1]);
 	}
 	else if (strcmp(command_args[0], "my_mkdir") == 0) {
-    if (args_size != 2) return badcommand();
-    return my_mkdir(command_args[1]);
+		if (args_size != 2) return badcommand();
+		return my_mkdir(command_args[1]);
 	}
 	else if (strcmp(command_args[0], "my_cd") == 0) {
-    if (args_size != 2) return badcommand();
-    return my_cd(command_args[1]);
+		if (args_size != 2) return badcommand();
+		return my_cd(command_args[1]);
 	}
 	else if (strcmp(command_args[0], "my_cat") == 0) {
-    if (args_size != 2) return badcommand();
-    return my_cat(command_args[1]);
+		if (args_size != 2) return badcommand();
+		return my_cat(command_args[1]);
 	}
 	else if (strcmp(command_args[0], "my_cp") == 0) {
-    if (args_size != 3) return badcommand();
-    return my_cp(command_args[1], command_args[2]);
+		if (args_size != 3) return badcommand();
+		return my_cp(command_args[1], command_args[2]);
 	}
 	else if (strcmp(command_args[0], "if") == 0) {
-	if (args_size != 9) return badcommand();
-	return ifStatement(command_args, args_size);
+		return ifStatement(command_args, args_size);
 	}
 	else return badcommand();
 }
@@ -161,7 +160,7 @@ int echo(char* var){
 		//search for the corresponding value in the memory
 		char* val = mem_get_value(var+1);
 		if (val == NULL){
-			printf("%s\n", "Variable Does Not Exist");
+			printf("\n");
 		}
 		else {
 			printf("%s\n", val);
@@ -314,9 +313,6 @@ If the condition (identifier op identifier) is true, then command1 should be exe
 command2 should be executed.
 Commands can be any series of alphanumeric tokens until the else or newline.*/
 int ifStatement(char* command_args[], int args_size){
-    if (args_size != 9) {
-        return badcommandSpecific("if");
-    }
 
     // Fetch the identifiers and operator
     char *identifier1 = command_args[1];
@@ -324,52 +320,68 @@ int ifStatement(char* command_args[], int args_size){
     char *identifier2 = command_args[3];
     char *then = command_args[4];
 
-	int else_index = 0;
+	int elseIndex = 0;
 
-	if (! (op == "==" || op == "!=")){
-		printf("%s\n", "Bad command: Invalid operator");
-		return 1;
+	if (! (strcmp(op, "==") == 0 || strcmp(op, "!=") == 0)){
+		return badcommandSpecific("Invalid operator");
 	}
-	if (! (then == "then")){
-		printf("%s\n", "Bad command: Invalid syntax");
-		return 1;
+	else if (! strcmp(then, "then") == 0 || ! strcmp(command_args[args_size - 1], "fi") == 0){
+		return badcommandSpecific("Bad syntax");
 	}
 
-	for (int i = 5; i < args_size; i++){
-		if (command_args[i] == "else"){
-			else_index = i;
+	//find index of else
+	for (int i = 5; i < args_size - 1; i++){
+		if (strcmp(command_args[i], "else") == 0){
+			elseIndex = i;
 			break;
 		}
-		else {
-			printf("%s\n", "Bad command: No else statement");
-			return 1;
+		else if (i == args_size - 2 && ! (strcmp(command_args[i], "else") == 0)){
+			return badcommandSpecific("Bad syntax");
 		}
 	}
 
-	Boolean use_command1 = false;
+	//find the variable in memory if identifiers start with $
+	if (identifier1[0] == '$'){
+		if (mem_get_value(identifier1+1) == NULL){
+			printf("%s doesn't exist", identifier1);
+			return 1;
+		}
+		else {
+			identifier1 = mem_get_value(identifier1+1);
 
+		}
+	}
+	if (identifier2[0] == '$'){
+		if (mem_get_value(identifier2+1) == NULL){
+			printf("%s doesn't exist", identifier2);
+			return 1;
+		}
+		else {
+			identifier2 = mem_get_value(identifier2+1);
+		}
+	}
+	bool execCommand1 = true;
+
+	//if operator is == -> execute command 1 if id1 == id2
 	if (strcmp(op, "==") == 0){
-		use_command1 = (strcmp(identifier1, identifier2) == 0);
+		execCommand1 = (strcmp(identifier1, identifier2) == 0);
 	}else if (strcmp(op, "!=") == 0){
-		use_command1 = (strcmp(identifier1, identifier2) != 0);
-	} else {
-		printf("%s\n", "Bad command: Invalid operator");
-		return 1;
+		execCommand1 = (strcmp(identifier1, identifier2) != 0);
 	}
 
 	int command_size = 0;
 	char* command[MAX_ARGS_SIZE];
 	
-	if (use_command1){
-		command_size = else_index - 5;
-		for (int i = 5; i < else_index; i++){
+	if (execCommand1){
+		command_size = elseIndex - 5;
+		for (int i = 5; i < elseIndex; i++){
 			command[i-5] = command_args[i];
 		}
 		return interpreter(command, command_size);
 	}else{
-		command_size = args_size - else_index - 2;
-		for (int i = else_index + 1; i < args_size; i++){
-			command[i-else_index-1] = command_args[i];
+		command_size = args_size - elseIndex - 2;
+		for (int i = elseIndex + 1; i < args_size; i++){
+			command[i-elseIndex-1] = command_args[i];
 		}
 		return interpreter(command, command_size);
 	}
