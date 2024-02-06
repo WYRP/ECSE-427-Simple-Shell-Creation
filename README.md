@@ -8,6 +8,16 @@
 <br>
 
 ### Usage
+* The function "ifStatement" has two parameters: char* command_args[], int args_size
+* Input for user in the shell is a string with the following fomat: 
+**if identifier1 op identifier2 then command1 else command2 fi**
+where keywords "if", "op", "then", "else", and "fi" must present.
+* "if" must be at index 0
+* "op" must be at index 2
+* "then" must be at index 4
+* "fi" must be the last index of the command argument
+* identifier1 and identifer2 consiste of 1 token
+* command1 and command2 can have multiple tokens
 
 ### Functionality
 The "ifStatement" interprets and executes a custom "if" statement syntax for a shell running in Docker, based on the provided command line arguments. It validates the syntax by checking for equality or inequality operators, and the presence of "then" and "fi" keywords, and searches for an "else" keyword to determine the flow of execution. If identifiers start with $, it attempts to fetch their values from memory; then, based on the evaluation of the condition, it executes the command block before or after the "else" keyword. The function returns an error code if syntax validation fails or if the specified identifiers do not exist in memory.## Functionality
