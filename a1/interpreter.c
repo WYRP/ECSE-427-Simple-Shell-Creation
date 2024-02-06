@@ -5,15 +5,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include <unistd.h> 
-//#include <sys/stat.h> // these could be useful?
 #include <ctype.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <stdbool.h>
 #include "shellmemory.h"
 #include "shell.h"
-#include <stdbool.h>
 
 int MAX_ARGS_SIZE = 20;
 
@@ -104,11 +102,11 @@ int interpreter(char* command_args[], int args_size){
 		return my_mkdir(command_args[1]);
 	}
 	else if (strcmp(command_args[0], "my_cd") == 0) {
-		if (args_size != 2) return badcommand();
+		if (args_size != 2) return badcommandSpecific("my_cd");
 		return my_cd(command_args[1]);
 	}
 	else if (strcmp(command_args[0], "my_cat") == 0) {
-		if (args_size != 2) return badcommand();
+		if (args_size != 2) return badcommandSpecific("my_cat");
 		return my_cat(command_args[1]);
 	}
 	else if (strcmp(command_args[0], "my_cp") == 0) {
@@ -181,20 +179,6 @@ int my_ls(){
 	return 0;
 }
 
-/*Helper function to determine whether the filename is alphanumeric*/
-int is_alphanumeric(char *str) {
-    while (*str) {
-        // If the current character is not alphanumeric
-		// return 0
-        if (!isalnum((unsigned char)*str)) {
-            return 0;
-        }
-        str++;
-    }
-    // reached the end without finding 
-	// a non-alphanumeric character, return 1
-    return 1;
-}
 /*create a new directory called dirname in the
 current directory.*/
 int my_mkdir(char* dir){
@@ -222,16 +206,10 @@ int my_cd(char* dirname) {
 
 /*creats a new empty file inside the current directory*/
 int my_touch(char *filename){
-	//check the length of the filename
 	if (strlen(filename) > 100){
-		printf("File name is too long.\n");
-		return 1; // Return 1 for error
-	}
-	//check if the filename is alphanumeric
-	if (is_alphanumeric(filename)== 0){
-		printf("File name is not alphanumeric.\n");
-		return 1; // Return 1 for error
-	}
+        printf("File name is too long.\n");
+        return 1; // Return 1 for error
+    }
 	//create the file
 	FILE *file;
 	file = fopen(filename, "w");
@@ -241,7 +219,6 @@ int my_touch(char *filename){
 
 
 int my_cat(char *filename) {
-
 	FILE *file;
 	file = fopen(filename, "r");
 	if (file == NULL) return badcommandSpecific("my_cat");
@@ -287,18 +264,6 @@ int run(char* script){
 	return errCode;
 }
 
-/*
-Helper Function for ifStatement implementation*/
-// Helper function to tokenize a command string into an array of arguments
-int tokenize_command(char* command, char* args[], int max_args) {
-    int args_size = 0;
-    char* token = strtok(command, " ");
-    while (token != NULL && args_size < max_args) {
-        args[args_size++] = token;
-        token = strtok(NULL, " ");
-    }
-    return args_size; // Return the number of arguments
-}
 
 /*Optional: 
 The following part is not worth any marks and will not be graded. However, if you pass
@@ -322,11 +287,14 @@ int ifStatement(char* command_args[], int args_size){
 
 	int elseIndex = 0;
 
+	//check command syntax, re
 	if (! (strcmp(op, "==") == 0 || strcmp(op, "!=") == 0)){
-		return badcommandSpecific("Invalid operator");
+		printf("%s\n", "Empty if clause");
+		return 1;
 	}
 	else if (! strcmp(then, "then") == 0 || ! strcmp(command_args[args_size - 1], "fi") == 0){
-		return badcommandSpecific("Bad syntax");
+		printf("%s\n", "Empty if clause");
+		return 1;
 	}
 
 	//find index of else
@@ -336,12 +304,14 @@ int ifStatement(char* command_args[], int args_size){
 			break;
 		}
 	}
+
+	//there's no else keyword
 	if (elseIndex == 0){
 		printf("%s\n", "Empty if clause");
 		return 1;
 	}
 
-	//find the variable in memory if identifiers start with $
+	//find the value of the identifiers in memory if identifiers start with $
 	if (identifier1[0] == '$'){
 		if (mem_get_value(identifier1+1) == NULL){
 			printf("%s doesn't exist", identifier1);
@@ -363,7 +333,7 @@ int ifStatement(char* command_args[], int args_size){
 	}
 	bool execCommand1 = true;
 
-	//if operator is == -> execute command 1 if id1 == id2
+	//evaluates statement and checks which command to execute
 	if (strcmp(op, "==") == 0){
 		execCommand1 = (strcmp(identifier1, identifier2) == 0);
 	}else if (strcmp(op, "!=") == 0){
@@ -385,8 +355,7 @@ int ifStatement(char* command_args[], int args_size){
 		}
 	}
 	if (command_size == 0){
-		printf("%s\n", "Empty if clause");
-		return 1;
+		return badcommandSpecific("my_if");
 	}
 	return interpreter(command, command_size);
 }
