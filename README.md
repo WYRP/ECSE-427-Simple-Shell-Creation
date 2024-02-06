@@ -2,6 +2,14 @@
 * Yongru Pan: 261001758
 * Yixuan Qin: 261010963
 
+## Optional Question 8
+<p>if statementc support </p>
+<br>
+
+#### Usage
+The "ifStatement" interprets and executes a custom "if" statement syntax for a shell running in Docker, based on the provided command line arguments. It validates the syntax by checking for equality or inequality operators, and the presence of "then" and "fi" keywords, and searches for an "else" keyword to determine the flow of execution. If identifiers start with $, it attempts to fetch their values from memory; then, based on the evaluation of the condition, it executes the command block before or after the "else" keyword. The function returns an error code if syntax validation fails or if the specified identifiers do not exist in memory.## Functionality
+
+
 ## Optional Question 9
 #### Command
 <p>my_cp</p>
