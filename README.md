@@ -29,7 +29,7 @@ The "ifStatement" interprets and executes a custom "if" statement syntax for a s
 <br>
 
 ### Usage
-<p>my_cp _srcFileName_ _destFileName</p>_
+**my_cp srcFileName destFileName**
 
 * srcFileName: name of the source file (with extension) which you want to copy the content from.
 * destFileName: name of the destination file (with extension) which you want to copy the content to.
