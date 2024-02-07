@@ -128,13 +128,6 @@ set VAR STRING		Assigns a value to shell memory\n \
 print VAR		Displays the STRING assigned to VAR\n \
 run SCRIPT.TXT		Executes the file SCRIPT.TXT\n \
 echo $VAR		Displays the value assigned to VAR\n \
-my_ls			Lists all the files in the current directory\n \
-my_mkdir DIR		Creates a new directory in the current directory\n \
-my_cd DIR		Changes the current directory to DIR\n \
-my_touch FILE		Creates an empty file in the current directory\n \
-my_cat FILE		Displays the contents of FILE\n \
-my_cp SRC DEST		Copies the contents of SRC to DEST\n \
-if IDENTIFIER == IDENTIFIER then COMMAND1 else COMMAND2 fi	Executes COMMAND1 if the two IDENTIFIERS are equal, otherwise executes COMMAND2\n";
 	printf("%s\n", help_string);
 	return 0;
 }
