@@ -14,7 +14,7 @@ int parseInput(char ui[]);
 int main(int argc, char *argv[]) {
 
     //just in case it already exists
-    system("rm -rf ./backing_store")
+    system("rm -rf ./backing_store");
     // Create backing store directory
     system("mkdir ./backing_store");
 

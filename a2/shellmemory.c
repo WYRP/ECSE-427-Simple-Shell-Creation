@@ -11,7 +11,18 @@ struct memory_struct{
 	char *value;
 };
 
+//where the FRAME STORE and the VARIABLE store are;
+//we would need a hard line to seperate the two
+//EG
+int FRAME_STORE_SIZE = 2;
+int FRAME_SIZE = 3;
+
+int THRESHOLD = FRAME_STORE_SIZE * FRAME_SIZE;
+
+
 struct memory_struct shellmemory[SHELL_MEM_LENGTH];
+
+
 
 // Helper functions
 int match(char *model, char *var) {
