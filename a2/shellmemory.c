@@ -14,15 +14,19 @@ struct memory_struct{
 //where the FRAME STORE and the VARIABLE store are;
 //we would need a hard line to seperate the two
 //EG
-int FRAME_STORE_SIZE = 2;
-int FRAME_SIZE = 3;
+const int FRAME_STORE_SIZE = 2;
+const int FRAME_SIZE = 3;
 
-int THRESHOLD = FRAME_STORE_SIZE * FRAME_SIZE;
+const int THRESHOLD = FRAME_STORE_SIZE * FRAME_SIZE;
 
 
+//frame store and variable store
 struct memory_struct shellmemory[SHELL_MEM_LENGTH];
 
-
+//helper function to alloc a frame
+void allocate_frame(char command){
+	mem_set_value(NULL, command);
+}
 
 // Helper functions
 int match(char *model, char *var) {
@@ -49,9 +53,9 @@ char *extract(char *model) {
 
 // Shell memory functions
 
-void mem_init(){
+void variable_store_init(){
 	int i;
-	for (i=0; i<1000; i++){		
+	for (i=THRESHOLD; i<1000; i++){		
 		shellmemory[i].var = "none";
 		shellmemory[i].value = "none";
 	}

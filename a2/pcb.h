@@ -1,6 +1,15 @@
 #ifndef PCB_H
 #define PCB_H
 #include <stdbool.h>
+
+typedef struct PAGE PAGE;
+struct PAGE
+{   
+    int index[3];
+    int valid_bits[3];
+    int page_index;
+    int page_pid;
+};
 /*
  * Struct:  PCB 
  * --------------------
@@ -11,16 +20,6 @@
  * job_length_score: for EXEC AGING use only, stores the job length score
  */
 
-//newly added not from the statar code
-typedef struct PAGE PAGE;
-struct PAGE
-{   
-    int index[3];
-    int valid_bits[3];
-    int page_index;
-    int page_pid
-}
-
 typedef struct
 {
     bool priority;
@@ -29,6 +28,8 @@ typedef struct
     int start;
     int end;
     int job_length_score;
+    int number_of_pages;
+    PAGE** page_table;
 }PCB;
 
 int generatePID();
