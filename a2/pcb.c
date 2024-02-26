@@ -3,10 +3,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "pcb.h"
+#include "shellmemory.h"
 
 int pid_counter = 1;
-const int FRAME_STORE_SIZE = 2;
-
 
 int generatePID(){
     return pid_counter++;

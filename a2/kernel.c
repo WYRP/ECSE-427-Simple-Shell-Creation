@@ -16,26 +16,44 @@ bool debug = false;
 bool in_background = false;
 
 int process_initialize(char *filename){
-    FILE* fp;
-    int* start = (int*)malloc(sizeof(int));
-    int* end = (int*)malloc(sizeof(int));
+    //copy files to backing store
+    filename = copy_to_backing_store(filename);
+    int commandLength = 100;
+    char command[commandLength];
+    //load from backing store to frame store
+    FILE *fp;
+    fp = fopen(filename, "r");
     
-    fp = fopen(filename, "rt");
     if(fp == NULL){
 		return FILE_DOES_NOT_EXIST;
     }
-    int error_code = load_file(fp, start, end, filename);
-    if(error_code != 0){
-        fclose(fp);
-        return FILE_ERROR;
+    //load file line by line
+    while(fgets(command, commandLength, fp)) {
+        printf("%s\n", command);
     }
-    PCB* newPCB = makePCB(*start,*end);
-    QueueNode *node = malloc(sizeof(QueueNode));
-    node->pcb = newPCB;
 
-    ready_queue_add_to_tail(node);
 
-    fclose(fp);
+    //original code
+    // FILE* fp;
+    // int* start = (int*)malloc(sizeof(int));
+    // int* end = (int*)malloc(sizeof(int));
+    
+    // fp = fopen(filename, "rt");
+    // if(fp == NULL){
+	// 	return FILE_DOES_NOT_EXIST;
+    // }
+    // int error_code = load_file(fp, start, end, filename);
+    // if(error_code != 0){
+    //     fclose(fp);
+    //     return FILE_ERROR;
+    // }
+    // PCB* newPCB = makePCB(*start,*end);
+    // QueueNode *node = malloc(sizeof(QueueNode));
+    // node->pcb = newPCB;
+
+    // ready_queue_add_to_tail(node);
+
+    // fclose(fp);
     return 0;
 }
 

@@ -271,6 +271,6 @@ int exec(char *fname1, char *fname2, char *fname3) {
 }
 
 int resetmem(){
-	variable_store_init();
+	clear_variable_store();
 	return 0;
 }

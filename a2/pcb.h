@@ -33,5 +33,5 @@ typedef struct
 }PCB;
 
 int generatePID();
-PCB * makePCB(int start, int end);
+PCB* makePCB(int start, int end);
 #endif

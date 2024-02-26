@@ -2,6 +2,9 @@
 #include<string.h>
 #include<stdio.h>
 #include<stdbool.h>
+#include<unistd.h>
+#include "interpreter.h"
+#include "shellmemory.h"
 
 #define SHELL_MEM_LENGTH 1000
 
@@ -14,19 +17,12 @@ struct memory_struct{
 //where the FRAME STORE and the VARIABLE store are;
 //we would need a hard line to seperate the two
 //EG
-const int FRAME_STORE_SIZE = 2;
 const int FRAME_SIZE = 3;
 
 const int THRESHOLD = FRAME_STORE_SIZE * FRAME_SIZE;
 
-
 //frame store and variable store
 struct memory_struct shellmemory[SHELL_MEM_LENGTH];
-
-//helper function to alloc a frame
-void allocate_frame(char command){
-	mem_set_value(NULL, command);
-}
 
 // Helper functions
 int match(char *model, char *var) {
@@ -53,7 +49,15 @@ char *extract(char *model) {
 
 // Shell memory functions
 
-void variable_store_init(){
+void mem_init(){
+	int i;
+	for (i=0; i<1000; i++){		
+		shellmemory[i].var = "none";
+		shellmemory[i].value = "none";
+	}
+}
+
+void clear_variable_store(){
 	int i;
 	for (i=THRESHOLD; i<1000; i++){		
 		shellmemory[i].var = "none";
@@ -82,6 +86,11 @@ void mem_set_value(char *var_in, char *value_in) {
 
 	return;
 
+}
+
+//helper function to alloc a frame
+void allocate_frame(char* command){
+	mem_set_value("allocated", command);
 }
 
 //get value based on input key
@@ -192,7 +201,18 @@ int load_file(FILE* fp, int* pStart, int* pEnd, char* filename)
     return error_code;
 }
 
-
+char* copy_to_backing_store(char* filename){
+	int copy = 1;
+	//if the file exists, add a subfix to it so that the file is not overwritten
+	while (access(filename, F_OK) == 0){
+		sprintf(filename, "%s_%d", filename, copy);
+		copy++;
+	}
+	char command[128];
+	snprintf(command, sizeof(command), "cp %s ./backing_store", filename);
+	system(command);
+	return filename;
+}
 
 char * mem_get_value_at_line(int index){
 	if(index<0 || index > SHELL_MEM_LENGTH) return NULL; 

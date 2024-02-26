@@ -9,7 +9,6 @@
 #include "shell.h"
 
 int MAX_USER_INPUT = 1000;
-int parseInput(char ui[]);
 
 int main(int argc, char *argv[]) {
 
@@ -30,7 +29,7 @@ int main(int argc, char *argv[]) {
 		userInput[i] = '\0';
 	
 	//init shell memory
-	mem_init();
+	mem_init(0);
 
 	while(1) {						
         if (isatty(fileno(stdin))) printf("%c ",prompt);
