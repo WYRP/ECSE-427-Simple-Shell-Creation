@@ -90,13 +90,11 @@ bool execute_process(QueueNode *node, int quanta){
         PAGE* cur_page = page_table[pcb->PC[0]];
         int cur_line_index = cur_page->index[pcb->PC[1]];
         line = mem_get_value_at_line(cur_line_index);
-        //update pc
-        updatePC(pcb);
+        
         in_background = true;
         if(pcb->priority) {
             pcb->priority = false;
         }
-        
         if(cur_line_index == pcb->last_line_index){
             parseInput(line);
             terminate_process(node);
@@ -105,6 +103,8 @@ bool execute_process(QueueNode *node, int quanta){
         }
         parseInput(line);
         in_background = false;
+        //update pc
+        updatePC(pcb);
     }
     return false;
 }
@@ -255,12 +255,12 @@ int load_page_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
     set_pcb_last_line_index(pcb, line_location);
     set_pcb_last_page_index(pcb, page_index);
     //if current page is not fully occupied, fill it up
-
-    while (line_index_in_page < 3){
+    while (line_index_in_page < 2){
+        line_index_in_page++;
         set_page_index(page,line_index_in_page, -1);
         set_page_valid_bits(page, line_index_in_page, 0);
-        line_index_in_page++;
     }
+    
     return 0;
 }
 

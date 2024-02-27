@@ -52,5 +52,6 @@ void updatePC(PCB* pcb){
     }
     else if(pcb->PC[0] < pcb->last_page_index){
         pcb->PC[0]++;
+        pcb->PC[1] = 0;
     }
 }
