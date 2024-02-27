@@ -234,8 +234,9 @@ int my_cd(char* dirname){
 int run(char* script){
 	//errCode 11: bad command file does not exist
 	int errCode = 0;
+	int pid = 0;
 	//load script into shell
-	errCode = process_initialize(script);
+	errCode = process_initialize(script, pid);
 	if(errCode == 11){
 		return handle_error(errCode);
 	}
@@ -246,23 +247,27 @@ int run(char* script){
 
 int exec(char *fname1, char *fname2, char *fname3) {
 	int error_code = 0;
+	int pid = 0;
 	if(fname1 != NULL){
-        error_code = process_initialize(fname1);
+        error_code = process_initialize(fname1, pid);
 		if(error_code != 0){
 			return handle_error(error_code);
 		}
+		pid++;
     }
     if(fname2 != NULL){
-        error_code = process_initialize(fname2);
+        error_code = process_initialize(fname2, pid);
 		if(error_code != 0){
 			return handle_error(error_code);
 		}
+		pid++;
     }
     if(fname3 != NULL){
-        error_code = process_initialize(fname3);
+        error_code = process_initialize(fname3, pid);
 		if(error_code != 0){
 			return handle_error(error_code);
 		}
+		pid++;
     } 
 	error_code = schedule_by_policy("RR");
 	if(error_code != 0){

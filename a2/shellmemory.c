@@ -17,7 +17,6 @@ struct memory_struct{
 //where the FRAME STORE and the VARIABLE store are;
 //we would need a hard line to seperate the two
 //EG
-const int FRAME_SIZE = 3;
 
 const int THRESHOLD = FRAME_STORE_SIZE * FRAME_SIZE;
 
@@ -65,10 +64,10 @@ void clear_variable_store(){
 	}
 }
 
-// Set key value pair
+// Set key value pair in the variable store
 void mem_set_value(char *var_in, char *value_in) {
 	int i;
-	for (i=0; i<1000; i++){
+	for (i=THRESHOLD; i<1000; i++){
 		if (strcmp(shellmemory[i].var, var_in) == 0){
 			shellmemory[i].value = strdup(value_in);
 			return;
@@ -76,7 +75,7 @@ void mem_set_value(char *var_in, char *value_in) {
 	}
 
 	//Value does not exist, need to find a free spot.
-	for (i=0; i<1000; i++){
+	for (i=THRESHOLD; i<1000; i++){
 		if (strcmp(shellmemory[i].var, "none") == 0){
 			shellmemory[i].var = strdup(var_in);
 			shellmemory[i].value = strdup(value_in);
@@ -89,8 +88,16 @@ void mem_set_value(char *var_in, char *value_in) {
 }
 
 //helper function to alloc a frame
-void allocate_frame(char* command){
-	mem_set_value("allocated", command);
+//returns the index that it stored the variable at
+int allocate_frame(char *var_in, char *value_in){
+	for (int i=0; i<THRESHOLD; i++){
+		if (strcmp(shellmemory[i].var, "none") == 0){
+			shellmemory[i].var = strdup(var_in);
+			shellmemory[i].value = strdup(value_in);
+			return i;
+		} 
+	}
+	return -1;
 }
 
 //get value based on input key
@@ -201,17 +208,29 @@ int load_file(FILE* fp, int* pStart, int* pEnd, char* filename)
     return error_code;
 }
 
-char* copy_to_backing_store(char* filename){
-	int copy = 1;
-	//if the file exists, add a subfix to it so that the file is not overwritten
-	while (access(filename, F_OK) == 0){
-		sprintf(filename, "%s_%d", filename, copy);
-		copy++;
-	}
-	char command[128];
-	snprintf(command, sizeof(command), "cp %s ./backing_store", filename);
+void copy_to_backing_store(char* filename){
+	// int copy = 1;
+	// char buffer[100];
+	// sprintf(buffer, "./backing_store/%s", filename);
+	// //if the file exists, add a subfix to it so that the file is not overwritten
+	// while (access(buffer, F_OK) == 0){
+	// 	buffer[0] = '\0';
+	// 	sprintf(buffer, "./backing_store/%s_%d", filename, copy);
+	// 	copy++;
+	// }
+	// FILE* fp = fopen(filename, "r");
+	// FILE* fp_copy = fopen(buffer, "w");
+	// int c = fgetc(fp); 
+	// while (c != EOF) 
+    // { 
+    //     fprintf (fp_copy, "%c", c); 
+    //     c = fgetc(fp); 
+    // } 
+	// fclose(fp);
+	// fclose(fp_copy);
+	char command[100];
+	sprintf(command, "cp %s ./backing_store", filename);
 	system(command);
-	return filename;
 }
 
 char * mem_get_value_at_line(int index){
@@ -221,13 +240,17 @@ char * mem_get_value_at_line(int index){
 
 void mem_free_lines_between(int start, int end){
 	for (int i=start; i<=end && i<SHELL_MEM_LENGTH; i++){
-		if(shellmemory[i].var != NULL){
-			free(shellmemory[i].var);
-		}	
-		if(shellmemory[i].value != NULL){
-			free(shellmemory[i].value);
-		}	
-		shellmemory[i].var = "none";
-		shellmemory[i].value = "none";
+		mem_free_line(i);
 	}
+}
+
+void mem_free_line(int i){
+	if(shellmemory[i].var != NULL){
+		free(shellmemory[i].var);
+	}	
+	if(shellmemory[i].value != NULL){
+		free(shellmemory[i].value);
+	}	
+	shellmemory[i].var = "none";
+	shellmemory[i].value = "none";
 }

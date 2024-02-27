@@ -12,16 +12,45 @@ int generatePID(){
 }
 
 //In this implementation, Pid is the same as file ID 
-PCB* makePCB(int start, int end){
+PCB* makePCB(PAGE** page_table){
     PCB* newPCB = malloc(sizeof(PCB));
-    PAGE** page_table = malloc(sizeof(PAGE*) * FRAME_STORE_SIZE);
     newPCB->pid = generatePID();
-    newPCB->PC = start;
-    newPCB->start  = start;
-    newPCB->end = end;
-    newPCB->job_length_score = 1+end-start;
+    newPCB->PC[0] = 0;
+    newPCB->PC[1] = 0;
     newPCB->priority = false;
-    newPCB->number_of_pages = FRAME_STORE_SIZE;
     newPCB->page_table = page_table;
     return newPCB;
+}
+
+PAGE* makePAGE(int page_index,int page_pid){
+    PAGE* newPAGE = malloc(sizeof(PAGE));
+    newPAGE->page_index = page_index;
+    newPAGE->page_pid = page_pid;
+    return newPAGE;
+}
+
+void set_page_index(PAGE* page, int i, int value){
+    page->index[i] = value;
+}
+
+void set_page_valid_bits(PAGE* page, int i, int value){
+    page->valid_bits[i] = value;
+}
+
+void set_pcb_last_line_index(PCB* pcb, int last_page_index){
+    pcb->last_line_index = last_page_index;
+}
+
+void set_pcb_last_page_index(PCB* pcb, int n){
+    pcb->last_page_index = n;
+}
+
+void updatePC(PCB* pcb){
+    //if not yet reach the last page
+    if (pcb->PC[1] < 2){
+        pcb->PC[1]++;
+    }
+    else if(pcb->PC[0] < pcb->last_page_index){
+        pcb->PC[0]++;
+    }
 }

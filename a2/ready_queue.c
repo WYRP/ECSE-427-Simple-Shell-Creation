@@ -66,7 +66,16 @@ void print_ready_queue(){
 
 void terminate_process(QueueNode *node){
     //node should not be in the ready queue
-    mem_free_lines_between(node->pcb->start, node->pcb->end);
+    for(int i = 0; i <= node->pcb->last_page_index; i++){
+        PAGE* curPage = node->pcb->page_table[i];
+        for(int j=0; j<3; j++){
+            if (curPage->valid_bits[j] == 0){
+                free(node);
+                return;
+            }
+            mem_free_line(curPage->index[j]);
+        }
+    } 
     free(node);
 }
 

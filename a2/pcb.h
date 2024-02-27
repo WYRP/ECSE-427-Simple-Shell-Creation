@@ -2,14 +2,13 @@
 #define PCB_H
 #include <stdbool.h>
 
-typedef struct PAGE PAGE;
-struct PAGE
+typedef struct
 {   
     int index[3];
     int valid_bits[3];
     int page_index;
     int page_pid;
-};
+}PAGE;
 /*
  * Struct:  PCB 
  * --------------------
@@ -24,14 +23,19 @@ typedef struct
 {
     bool priority;
     int pid;
-    int PC;
-    int start;
-    int end;
+    int PC[2];
     int job_length_score;
-    int number_of_pages;
+    int last_line_index;
+    int last_page_index;
     PAGE** page_table;
 }PCB;
 
 int generatePID();
-PCB* makePCB(int start, int end);
+PCB* makePCB(PAGE** page_table);
+PAGE* makePAGE(int page_index,int page_pid);
+void set_page_index(PAGE* page, int i, int value);
+void set_page_valid_bits(PAGE* page, int i, int value);
+void set_pcb_last_line_index(PCB* pcb, int last_page_index);
+void set_pcb_last_page_index(PCB* pcb, int n);
+void updatePC(PCB* pcb);
 #endif
