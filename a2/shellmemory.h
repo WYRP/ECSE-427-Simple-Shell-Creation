@@ -8,6 +8,12 @@
 #define VARIABLE_STORE_SIZE varmemsize
 #define FRAME_SIZE 3
 
+struct memory_struct {
+    char *var;
+    char *value;
+    time_t last_accessed; // Ensure you have this field if you're using it
+};
+
 void mem_init();
 char *mem_get_value(char *var);
 void mem_set_value(char *var_in, char *value_in);

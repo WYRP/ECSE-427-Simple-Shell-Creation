@@ -29,7 +29,7 @@ PAGE* makePAGE(int page_index,int page_pid){
     PAGE* newPAGE = malloc(sizeof(PAGE));
     newPAGE->page_index = page_index;
     newPAGE->page_pid = page_pid;
-    newPage->last_accessed = time(NULL); // Set the current time
+    newPAGE->last_accessed = time(NULL); // Set the current time
     return newPAGE;
 }
 

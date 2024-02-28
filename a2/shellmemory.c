@@ -3,17 +3,12 @@
 #include<stdio.h>
 #include<stdbool.h>
 #include<unistd.h>
-#include<time.h>qui
+#include<time.h>
 #include "interpreter.h"
 #include "shellmemory.h"
 
 #define SHELL_MEM_LENGTH 1000
 
-
-struct memory_struct{
-	char *var;
-	char *value;
-};
 
 //where the FRAME STORE and the VARIABLE store are;
 //we would need a hard line to seperate the two
