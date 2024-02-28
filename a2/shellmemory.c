@@ -119,12 +119,9 @@ int allocate_frame(char *var_in, char *value_in){
 		 //this might not be the most standard way of printing the content
 		 //LINE BY LINE according to the instruction
 		 //might need update
-        if (shellmemory[leastRecentlyUsedIndex].var != NULL) {
-            printf("var: %s\n", shellmemory[leastRecentlyUsedIndex].var);
-        }
-        if (shellmemory[leastRecentlyUsedIndex].value != NULL) {
-            printf("value: %s\n", shellmemory[leastRecentlyUsedIndex].value);
-        }
+		 if (shellmemory[leastRecentlyUsedIndex].var != NULL && shellmemory[leastRecentlyUsedIndex].value != NULL){
+        	printf("\nline %d: key: %s\t\tvalue: %s\n", leastRecentlyUsedIndex, shellmemory[leastRecentlyUsedIndex].var, 
+			shellmemory[leastRecentlyUsedIndex].value);}
         printf("End of victim page contents.\n");
         mem_free_line(leastRecentlyUsedIndex);
         shellmemory[leastRecentlyUsedIndex].var = strdup(var_in);
