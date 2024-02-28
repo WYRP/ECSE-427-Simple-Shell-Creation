@@ -76,7 +76,6 @@ bool execute_process(QueueNode *node, int quanta){
         // this if statement will be true
         if(cur_page == NULL){
             // then we handle the page fault
- 
             //first interrupt the current process (P)
             // by adding it to the tail of the ready queue
             ready_queue_add_to_tail(node);
@@ -86,11 +85,13 @@ bool execute_process(QueueNode *node, int quanta){
             schedule_by_policy("AGING");
 
             //while the P is in the background, we need to load the missing page to memory
-            //then we go to the allocate_frame function to load the page to frame store
-            //and update the page table
-            allocate_frame(pcb->filename, NULL);
             //load page to frame store and update table
+            //inside the load_missing_page_to_mem function, allocate_frame is called
+            //which will allocate a frame in the frame store
+            //or if there is no space, it will evict necceary pages according to the 
+            // LRU policy
             load_missing_page_to_mem(pcb);
+        
             in_background = false; //? not sure what does in_background do
             return false;
         }
