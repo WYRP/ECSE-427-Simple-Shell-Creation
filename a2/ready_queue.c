@@ -66,7 +66,7 @@ void print_ready_queue(){
 
 void terminate_process(QueueNode *node){
     //node should not be in the ready queue
-    for(int i = 0; i <= node->pcb->last_page_index; i++){
+    for(int i = 0; i <= node->pcb->last_page_number; i++){
         PAGE* curPage = node->pcb->page_table[i];
         for(int j=0; j<3; j++){
             if (curPage->valid_bits[j] == 0){

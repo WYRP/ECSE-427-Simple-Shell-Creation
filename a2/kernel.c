@@ -29,34 +29,15 @@ int process_initialize(char *filename, int pid){
     }
     //load page to shell memory
     PAGE** page_table = malloc(sizeof(PAGE*) * FRAME_STORE_SIZE);
-    PCB* newPCB = makePCB(page_table);
+    page_table_init(page_table);
+    PCB* newPCB = makePCB(page_table, buffer);
     
-    load_page_to_memory(fp, pid, page_table, newPCB);
+    load_pages_to_memory(fp, pid, page_table, newPCB);
     QueueNode *node = malloc(sizeof(QueueNode));
     node->pcb = newPCB;
     ready_queue_add_to_tail(node);
     fclose(fp);
-    //original code
-    // FILE* fp;
-    // int* start = (int*)malloc(sizeof(int));
-    // int* end = (int*)malloc(sizeof(int));
-    
-    // fp = fopen(filename, "rt");
-    // if(fp == NULL){
-	// 	return FILE_DOES_NOT_EXIST;
-    // }
-    // int error_code = load_file(fp, start, end, filename);
-    // if(error_code != 0){
-    //     fclose(fp);
-    //     return FILE_ERROR;
-    // }
-    // PCB* newPCB = makePCB(*start,*end);
-    // QueueNode *node = malloc(sizeof(QueueNode));
-    // node->pcb = newPCB;
 
-    // ready_queue_add_to_tail(node);
-
-    // fclose(fp);
     return 0;
 }
 
@@ -88,6 +69,15 @@ bool execute_process(QueueNode *node, int quanta){
         PAGE** page_table = pcb->page_table;
         //get current line
         PAGE* cur_page = page_table[pcb->PC[0]];
+
+        if(cur_page == NULL){
+            //handle page fault
+            //load page to frame store and update table
+            load_missing_page_to_mem(pcb);
+            in_background = false; //? not sure what does in_background do
+            return false;
+        }
+
         int cur_line_index = cur_page->index[pcb->PC[1]];
         line = mem_get_value_at_line(cur_line_index);
         
@@ -95,7 +85,7 @@ bool execute_process(QueueNode *node, int quanta){
         if(pcb->priority) {
             pcb->priority = false;
         }
-        if(cur_line_index == pcb->last_line_index){
+        if(cur_line_index == pcb->last_line_number){
             parseInput(line);
             terminate_process(node);
             in_background = false;
@@ -215,7 +205,7 @@ int schedule_by_policy(char* policy){ //, bool mt){
     return 0;
 }
 
-int load_page_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
+void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
     int commandLength = 100;
     char command[commandLength];
     int index[3];
@@ -225,9 +215,16 @@ int load_page_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
     PAGE* page;
     int line_location = 0;
     //load file line by line
-    while(fgets(command, commandLength, fp)) {
+    while(!feof(fp)) {
         //some local var setup
         page_index = lineCount / 3;
+
+        //load only 2 pages
+        if(page_index == 2) {
+            lineCount++;
+            break;
+        }
+
         line_index_in_page = lineCount % 3;
         //convert pid id to string
         char pid_string[1];
@@ -240,13 +237,9 @@ int load_page_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
         }
 
         //find a space in frame store and keep a record of the index
+        fgets(command, commandLength, fp);
         line_location = allocate_frame(pid_string, command);
-        
-        //if there's no space
-        if (line_location == -1){
-            int error_code = 21;
-		    return error_code;
-        }
+
         set_page_index(page, line_index_in_page, line_location);
         set_page_valid_bits(page, line_index_in_page, 1);
         
@@ -254,6 +247,7 @@ int load_page_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
     }
     set_pcb_last_line_index(pcb, line_location);
     set_pcb_last_page_index(pcb, page_index);
+    set_pcb_line_executed(pcb, lineCount);
     //if current page is not fully occupied, fill it up
     while (line_index_in_page < 2){
         line_index_in_page++;
@@ -261,7 +255,54 @@ int load_page_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
         set_page_valid_bits(page, line_index_in_page, 0);
     }
     
-    return 0;
+    return;
+}
+
+void load_missing_page_to_mem(PCB* pcb){
+    int commandLength = 100;
+    char command[commandLength];
+    int index[3];
+    int lineCount = pcb->line_executed;
+    int page_index = lineCount / 3;
+    int line_index_in_page = 0;
+    PAGE* page;
+    int line_location = 0;
+    FILE * fp = fopen(pcb->filename, "r");
+
+    for(int i=0; i < 3; i++){
+        line_index_in_page = lineCount % 3;
+        //convert pid id to string
+        char pid_string[1];
+        sprintf(pid_string, "%d", pcb->pid);
+
+        //when a new page starts, create a new page
+        if (line_index_in_page == 0){
+            page = makePAGE(page_index, pcb->pid);
+            pcb->page_table[page_index] = page;
+        }
+
+        //find a space in frame store and keep a record of the index
+        fgets(command, commandLength, fp);
+        line_location = allocate_frame(pid_string, command);
+        
+        set_page_index(page, line_index_in_page, line_location);
+        set_page_valid_bits(page, line_index_in_page, 1);
+        
+        lineCount++;
+    }
+    if (feof(fp)){    
+        set_pcb_last_line_index(pcb, line_location);
+        set_pcb_last_page_index(pcb, page_index);
+    }
+
+    set_pcb_line_executed(pcb, lineCount);
+    //if current page is not fully occupied, fill it up
+    while (line_index_in_page < 2){
+        line_index_in_page++;
+        set_page_index(page,line_index_in_page, -1);
+        set_page_valid_bits(page, line_index_in_page, 0);
+    }
+    return;
 }
 
 

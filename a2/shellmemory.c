@@ -97,7 +97,14 @@ int allocate_frame(char *var_in, char *value_in){
 			return i;
 		} 
 	}
-	return -1;
+
+	//handle page fault
+	mem_free_lines_between(0, 2);
+	for (int i=0; i<3; i++){
+		shellmemory[i].var = strdup(var_in);
+		shellmemory[i].value = strdup(value_in);
+		return i;
+	}
 }
 
 //get value based on input key
