@@ -34,6 +34,7 @@ int match(char *model, char *var) {
 		return 0;
 }
 
+
 char *extract(char *model) {
 	char token='=';    // look for this to find value
 	char value[1000];  // stores the extract value
@@ -97,15 +98,15 @@ int allocate_frame(char *var_in, char *value_in){
 			return i;
 		} 
 	}
-
-	//handle page fault
+	//if the frame store is full, we need to evict out a page
 	mem_free_lines_between(0, 2);
 	for (int i=0; i<3; i++){
 		shellmemory[i].var = strdup(var_in);
 		shellmemory[i].value = strdup(value_in);
-		return i;
 	}
+	return -1;
 }
+
 
 //get value based on input key
 char *mem_get_value(char *var_in) {

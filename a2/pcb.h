@@ -1,6 +1,7 @@
 #ifndef PCB_H
 #define PCB_H
 #include <stdbool.h>
+#include <time.h>
 
 typedef struct
 {   
@@ -8,6 +9,7 @@ typedef struct
     int valid_bits[3];
     int page_index;
     int page_pid;
+    time_t last_accessed; // Timestamp of the last access
 }PAGE;
 /*
  * Struct:  PCB 
