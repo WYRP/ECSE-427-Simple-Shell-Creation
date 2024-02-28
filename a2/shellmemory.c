@@ -91,19 +91,40 @@ void mem_set_value(char *var_in, char *value_in) {
 //helper function to alloc a frame
 //returns the index that it stored the variable at
 int allocate_frame(char *var_in, char *value_in){
+	int leastRecentlyUsedIndex = -1;
+	time_t oldestAccessTime = time(NULL);
 	for (int i=0; i<THRESHOLD; i++){
 		if (strcmp(shellmemory[i].var, "none") == 0){
 			shellmemory[i].var = strdup(var_in);
 			shellmemory[i].value = strdup(value_in);
+			shellmemory[i].last_accessed = time(NULL); // Update access time
 			return i;
 		} 
+		else if (shellmemory[i].last_accessed < oldestAccessTime) {
+            // Keep track of the least recently used frame
+            oldestAccessTime = shellmemory[i].last_accessed;
+            leastRecentlyUsedIndex = i;
+        }
 	}
-	//if the frame store is full, we need to evict out a page
-	mem_free_lines_between(0, 2);
-	for (int i=0; i<3; i++){
-		shellmemory[i].var = strdup(var_in);
-		shellmemory[i].value = strdup(value_in);
-	}
+	if (leastRecentlyUsedIndex != -1) {
+
+		 printf("Page fault! Victim page contents:\n");
+		 //this might not be the most standard way of printing the content
+		 //LINE BY LINE according to the instruction
+		 //might need update
+        if (shellmemory[leastRecentlyUsedIndex].var != NULL) {
+            printf("var: %s\n", shellmemory[leastRecentlyUsedIndex].var);
+        }
+        if (shellmemory[leastRecentlyUsedIndex].value != NULL) {
+            printf("value: %s\n", shellmemory[leastRecentlyUsedIndex].value);
+        }
+        printf("End of victim page contents.\n");
+        mem_free_line(leastRecentlyUsedIndex);
+        shellmemory[leastRecentlyUsedIndex].var = strdup(var_in);
+        shellmemory[leastRecentlyUsedIndex].value = strdup(value_in);
+        shellmemory[leastRecentlyUsedIndex].last_accessed = time(NULL); // Update access time
+        return leastRecentlyUsedIndex;
+    }
 	return -1;
 }
 
