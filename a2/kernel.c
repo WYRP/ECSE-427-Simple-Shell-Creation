@@ -229,8 +229,16 @@ int load_page_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
         //some local var setup
         page_index = lineCount / 3;
         line_index_in_page = lineCount % 3;
+
+        //we want to stop loading after the first two pages are loaded
+        if (page_index > 1){
+            break;
+        }
+
         //convert pid id to string
-        char pid_string[1];
+        //change to 2 because the the pid is one 
+        //and then the null terminator is also 1
+        char pid_string[2];
         sprintf(pid_string, "%d", pid);
 
         //when a new page starts, create a new page
