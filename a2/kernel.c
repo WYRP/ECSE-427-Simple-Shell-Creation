@@ -10,6 +10,7 @@
 #include "interpreter.h"
 #include "ready_queue.h"
 #include "interpreter.h"
+#include <time.h>
 
 bool active = false;
 bool debug = false;

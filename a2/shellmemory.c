@@ -3,6 +3,7 @@
 #include<stdio.h>
 #include<stdbool.h>
 #include<unistd.h>
+#include<time.h>qui
 #include "interpreter.h"
 #include "shellmemory.h"
 
