@@ -81,8 +81,9 @@ bool execute_process(QueueNode *node, int quanta){
             // by adding it to the tail of the ready queue
             ready_queue_add_to_tail(node);
             //after we added the P to the tail of the ready queue
-            //we need to execute the first process from the ready queue
-            ready_queue_pop_head();
+            //we need to execute the next process from the ready queue
+            //by calling the schedule function ???quit 
+            schedule_by_policy("AGING");
 
             //while the P is in the background, we need to load the missing page to memory
             //then we go to the allocate_frame function to load the page to frame store
