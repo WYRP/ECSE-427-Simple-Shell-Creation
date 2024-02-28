@@ -88,8 +88,19 @@ void mem_set_value(char *var_in, char *value_in) {
 
 }
 
-//helper function to alloc a frame
-//returns the index that it stored the variable at
+//helper function to alloc a frame && handling page fault
+
+// this function handles two cases:
+// 1. if the variable is already in the memory, 
+//it updates the value
+// 2. if the variable is not in the memory,
+//it finds a free spot and stores the variable there
+// if there is no free spot, it will find the least recently used
+// spot and store the variable there
+// if the variable is already in the memory, it will update the value
+// and return the index
+// if the variable is not in the memory, it will return the index
+// that it stored the variable at
 int allocate_frame(char *var_in, char *value_in){
 	int leastRecentlyUsedIndex = -1;
 	time_t oldestAccessTime = time(NULL);

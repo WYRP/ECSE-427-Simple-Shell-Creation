@@ -70,8 +70,23 @@ bool execute_process(QueueNode *node, int quanta){
         //get current line
         PAGE* cur_page = page_table[pcb->PC[0]];
     
+        // if the next line of code that resides in a page 
+        //which is not yet in memory
+        // this if statement will be true
         if(cur_page == NULL){
-            //handle page fault
+            // then we handle the page fault
+ 
+            //first interrupt the current process (P)
+            // by adding it to the tail of the ready queue
+            ready_queue_add_to_tail(node);
+            //after we added the P to the tail of the ready queue
+            //we need to execute the first process from the ready queue
+            ready_queue_pop_head();
+
+            //while the P is in the background, we need to load the missing page to memory
+            //then we go to the allocate_frame function to load the page to frame store
+            //and update the page table
+            allocate_frame(pcb->filename, NULL);
             //load page to frame store and update table
             load_missing_page_to_mem(pcb);
             in_background = false; //? not sure what does in_background do
@@ -86,8 +101,15 @@ bool execute_process(QueueNode *node, int quanta){
         if(pcb->priority) {
             pcb->priority = false;
         }
+        // this means that the process has reached the last line 
+        // and it is about to terminate
         if(cur_line_index == pcb->last_line_number){
             parseInput(line);
+            //we would like to terminate the process
+            // by calling the terminate_process function
+            // however, we do not want to clean up the process's corresponding 
+            // pages in the frame store
+            // something is being done in the terminate_process function
             terminate_process(node);
             in_background = false;
             return true;

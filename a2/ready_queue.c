@@ -73,7 +73,8 @@ void terminate_process(QueueNode *node){
                 free(node);
                 return;
             }
-            mem_free_line(curPage->index[j]);
+            //removed this line because we do not want to clean up its corresponding pages int eh frame store
+            //mem_free_line(curPage->index[j]);
         }
     } 
     free(node);
