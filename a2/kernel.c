@@ -95,19 +95,19 @@ bool execute_process(QueueNode *node, int quanta){
             //which will allocate a frame in the frame store
             //or if there is no space, it will evict necceary pages according to the 
             // LRU policy
-            printf("testing1");
+            
             load_missing_page_to_mem(pcb);
         
             in_background = false; //? not sure what does in_background do
             return false;
         }
-        printf("testing_execute_process6\n");
+        
         //cur_page->last_accessed = time(NULL); // Correctly update the timestamp of the accessed page
-        printf("testing_execute_process7\n");
+       
         int cur_line_index = cur_page->index[pcb->PC[1]];
-        printf("testing_execute_process8\n");
+       
         line = mem_get_value_at_line(cur_line_index);
-        printf("testing_execute_process9\n");
+    
         in_background = true;
         if(pcb->priority) {
             pcb->priority = false;
@@ -121,6 +121,7 @@ bool execute_process(QueueNode *node, int quanta){
             // however, we do not want to clean up the process's corresponding 
             // pages in the frame store
             // something is being done in the terminate_process function
+            printf("testing_execute_process10\n");
             terminate_process(node);
             in_background = false;
             return true;
