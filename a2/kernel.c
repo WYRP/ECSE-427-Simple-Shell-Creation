@@ -253,11 +253,6 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
 
         line_index_in_page = lineCount % 3;
 
-        //we want to stop loading after the first two pages are loaded
-        if (page_index > 1){
-            break;
-        }
-
         //convert pid id to string
         //change to 2 because the the pid is one 
         //and then the null terminator is also 1
@@ -284,7 +279,8 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
     set_pcb_last_line_index(pcb, line_location);
     set_pcb_last_page_index(pcb, page_index);
     set_pcb_line_executed(pcb, lineCount);
-    //if current page is not fully occupied, fill it up
+    //if current page is not fully occupied
+    //we put some place holders. 
     while (line_index_in_page < 2){
         line_index_in_page++;
         set_page_index(page,line_index_in_page, -1);
