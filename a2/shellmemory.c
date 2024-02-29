@@ -100,6 +100,7 @@ void mem_set_value(char *var_in, char *value_in) {
 int allocate_frame(char *var_in, char *value_in){
 	int leastRecentlyUsedIndex = -1;
 	time_t oldestAccessTime = time(NULL);
+	printf("check if the variable is already in the memory\n");
 	for (int i=0; i<THRESHOLD; i++){
 		if (strcmp(shellmemory[i].var, "none") == 0){
 			shellmemory[i].var = strdup(var_in);
@@ -111,7 +112,8 @@ int allocate_frame(char *var_in, char *value_in){
 		} 
 		// If the frame store is full, find the least recently used frame
 		if (shellmemory[i].last_accessed < oldestAccessTime) {
-            // Keep track of the least recently used frame
+            printf("found a least recently used frame\n");
+			// Keep track of the least recently used frame
             oldestAccessTime = shellmemory[i].last_accessed;
             leastRecentlyUsedIndex = i;
         }
