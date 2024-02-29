@@ -272,7 +272,7 @@ void copy_to_backing_store(char* filename){
 }
 
 char * mem_get_value_at_line(int index){
-	printf("somehting")
+	printf("somehting");
 	if(index<0 || index > SHELL_MEM_LENGTH) return NULL; 
 	return shellmemory[index].value;
 }
