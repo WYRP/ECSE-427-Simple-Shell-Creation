@@ -331,10 +331,8 @@ void load_missing_page_to_mem(PCB* pcb){
     int line_index_in_page = 0;
     PAGE* page;
     int line_location = 0;
-
     FILE * fp = fopen(pcb->filename, "r");
     printf("%s\n", pcb->filename);
-    printf("testing 2\n");
 
     for(int i=0; i < 3; i++){
         line_index_in_page = lineCount % 3;

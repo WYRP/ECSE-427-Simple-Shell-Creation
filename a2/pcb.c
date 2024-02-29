@@ -14,15 +14,15 @@ int generatePID(){
 //In this implementation, Pid is the same as file ID 
 PCB* makePCB(PAGE** page_table, char* filename){
     PCB* newPCB = malloc(sizeof(PCB));
+    newPCB->filename = malloc(strlen(filename) + 1);
+    strcpy(newPCB->filename, filename);
     newPCB->pid = generatePID();
-    newPCB->filename = filename;
     newPCB->PC[0] = 0;
     newPCB->PC[1] = 0;
     newPCB->priority = false;
     newPCB->page_table = page_table;
     newPCB->last_line_number = -1;
     newPCB->last_page_number = -1;
-    printf("%s\n", newPCB->filename);
     return newPCB;
 }
 
