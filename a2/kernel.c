@@ -10,7 +10,6 @@
 #include "interpreter.h"
 #include "ready_queue.h"
 #include "interpreter.h"
-#include <time.h>
 
 bool active = false;
 bool debug = false;
@@ -29,7 +28,7 @@ int process_initialize(char *filename, int pid){
 		return FILE_DOES_NOT_EXIST;
     }
     //load page to shell memory
-    PAGE** page_table = malloc(sizeof(PAGE*) * FRAME_STORE_SIZE);
+    PAGE** page_table = malloc(sizeof(PAGE*) * MAX_PAGES);
     page_table_init(page_table);
     PCB* newPCB = makePCB(page_table, buffer);
 
@@ -64,29 +63,26 @@ int process_initialize(char *filename, int pid){
 // }
 
 bool execute_process(QueueNode *node, int quanta){
-    char *line = NULL;
+    char* line = NULL;
     PCB *pcb = node->pcb;
     
     for(int i=0; i<quanta; i++){
         PAGE** page_table = pcb->page_table;
         //get current line
         PAGE* cur_page = page_table[pcb->PC[0]];
-        // if the next line of code that resides in a page 
-        //which is not yet in memory
-        // this if statement will be true
-
         if(cur_page == NULL){
-            // printf("prior to load_missing_page_to_mem\n");
             load_missing_page_to_mem(pcb);
             in_background = false; //? not sure what does in_background do
             return false;
         }
+
+        //if executing a new page add it to the LRU queue
         if(pcb->PC[1] == 0){
             LruQueueNode *LRUnode = malloc(sizeof(LruQueueNode));
             LRUnode->page = cur_page;
             LRU_queue_add_to_tail(LRUnode);
         }
-        
+
         int cur_line_index = cur_page->index[pcb->PC[1]];
         line = mem_get_value_at_line(cur_line_index);
         in_background = true;
@@ -226,44 +222,15 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
     int line_index_in_page = 0;
     PAGE* page;
     int line_location = 0;
-    char pid_string[2];
-    sprintf(pid_string, "%d", pid);
     //load file line by line
     while(!feof(fp)) {
-        //some local var setup
-        //let's assume lineCount counts the 
-        //number of lines that we have read so far
-        //then page_index will represent how many pages
-        //we have used so far to store the lines from the input file
         page_index = lineCount / 3;
-
-        //"only the first two pages of each program"
-        //"should be loaded into the frame store"
         if(page_index == 2) {
             break;
         }
 
-        //line_index_in_page is the index of the 
-        //line in the page
-        // for example
-        // if line_index_in_page is 0, then it means
-        // it is the first line in prog2-page0 (the current page of the current process)
-        // if line_index_in_page is 1, then it means
-        // it is the second line in prog2-page0 (the current page of the current process)
-        // since the lineCount is not necessarily a multiple of 3
-        // we need to use the modulo operator to get the line_index_in_page
-        //so the possible value for line_index_in_page is 0, 1, 2
         line_index_in_page = lineCount % 3;
 
-        //convert pid id to string
-        //change to 2 because the the pid is one 
-        //and then the null terminator is also 1
-
-
-        //when a line is the first line of a page
-        //we create a new page
-        //because it would be set back to 0
-        //once the previous page is full by doing the modulo operation
         if (line_index_in_page == 0){
             page = makePAGE(page_index, pid);
             page_table[page_index] = page;
@@ -274,7 +241,7 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
         // line_location is the location (index) of the line
         // that we loaded into the frame store 
         // it is the index of the frame store. 
-        line_location = allocate_frame(pid_string, command, pcb);
+        line_location = allocate_frame(command, pcb);
         set_page_index(page, line_index_in_page, line_location);
         set_page_valid_bits(page, line_index_in_page, 1);
         
@@ -290,7 +257,7 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
     //we put some place holders. 
     while (line_index_in_page < 2){
         line_index_in_page++;
-        line_location = allocate_frame(pid_string, command, pcb);
+        line_location = allocate_frame(command, pcb);
         set_page_index(page, line_index_in_page, line_location);
         set_page_index(page,line_index_in_page, -1);
         set_page_valid_bits(page, line_index_in_page, 0);
@@ -308,8 +275,6 @@ void load_missing_page_to_mem(PCB* pcb){
     PAGE* page;
     int line_location = 0;
     int counter=0;
-    char pid_string[2];
-    sprintf(pid_string, "%d", pcb->pid);
     FILE * fp = fopen(pcb->filename, "r");
 
     for(int i=0; i < lineCount;i++){
@@ -324,10 +289,9 @@ void load_missing_page_to_mem(PCB* pcb){
         }
         //find a space in frame store and keep a record of the index
         fgets(command, commandLength, fp);
-        line_location = allocate_frame(pid_string, command, pcb);
+        line_location = allocate_frame(command, pcb);
         set_page_index(page, line_index_in_page, line_location);
         set_page_valid_bits(page, line_index_in_page, 1);
-        
         lineCount++;
         counter++;
     }
@@ -340,7 +304,7 @@ void load_missing_page_to_mem(PCB* pcb){
     //if current page is not fully occupied, fill it up
     while (line_index_in_page < 2){
         line_index_in_page++;
-        line_location = allocate_frame(pid_string, "", pcb);
+        line_location = allocate_frame("", pcb);
         set_page_index(page, line_index_in_page, line_location);
         set_page_valid_bits(page, line_index_in_page, 0);
     }
