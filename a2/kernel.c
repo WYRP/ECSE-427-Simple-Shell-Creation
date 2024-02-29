@@ -276,8 +276,7 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
         
         lineCount++;
     }
-            
-    printShellMemory();
+
     if (feof(fp)){    
         set_pcb_last_line_index(pcb, line_location);
         set_pcb_last_page_index(pcb, page_index);
