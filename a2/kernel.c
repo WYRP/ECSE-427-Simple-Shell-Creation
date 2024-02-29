@@ -314,7 +314,6 @@ void load_missing_page_to_mem(PCB* pcb){
 
     while(!feof(fp) && counter < 3) {
         line_index_in_page = lineCount % 3;
-
         if (line_index_in_page == 0){
             page = makePAGE(page_index, pcb->pid);
             pcb->page_table[page_index] = page;
@@ -337,7 +336,7 @@ void load_missing_page_to_mem(PCB* pcb){
     //if current page is not fully occupied, fill it up
     while (line_index_in_page < 2){
         line_index_in_page++;
-        line_location = allocate_frame(pid_string, command, pcb);
+        line_location = allocate_frame(pid_string, "", pcb);
         set_page_index(page, line_index_in_page, line_location);
         set_page_valid_bits(page, line_index_in_page, 0);
     }
