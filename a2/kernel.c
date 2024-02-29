@@ -235,7 +235,6 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
         //"only the first two pages of each program"
         //"should be loaded into the frame store"
         if(page_index == 2) {
-            lineCount++;
             break;
         }
 
