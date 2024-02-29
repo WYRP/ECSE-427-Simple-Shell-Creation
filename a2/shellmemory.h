@@ -6,7 +6,6 @@
 // Use macros for frame store and variable store sizes
 #define FRAME_STORE_SIZE framesize
 #define VARIABLE_STORE_SIZE varmemsize
-#define FRAME_SIZE 3
 
 struct memory_struct {
     char *var;

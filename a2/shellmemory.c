@@ -14,7 +14,7 @@
 //we would need a hard line to seperate the two
 //EG
 
-const int THRESHOLD = FRAME_STORE_SIZE * FRAME_SIZE;
+const int THRESHOLD = FRAME_STORE_SIZE;
 
 //frame store and variable store
 struct memory_struct shellmemory[SHELL_MEM_LENGTH];
@@ -105,14 +105,19 @@ int allocate_frame(char *var_in, char *value_in){
 			shellmemory[i].var = strdup(var_in);
 			shellmemory[i].value = strdup(value_in);
 			shellmemory[i].last_accessed = time(NULL); // Update access time
+			// if the program finds enough space to store the line 
+			// in the frame store, it will return the index
 			return i;
 		} 
-		else if (shellmemory[i].last_accessed < oldestAccessTime) {
+		// If the frame store is full, find the least recently used frame
+		if (shellmemory[i].last_accessed < oldestAccessTime) {
             // Keep track of the least recently used frame
             oldestAccessTime = shellmemory[i].last_accessed;
             leastRecentlyUsedIndex = i;
         }
 	}
+
+	// when the frame store is full, we evict the LRU and store the new line 
 	if (leastRecentlyUsedIndex != -1) {
 
 		 printf("Page fault! Victim page contents:\n");
