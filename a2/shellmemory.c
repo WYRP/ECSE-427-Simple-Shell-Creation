@@ -123,25 +123,6 @@ int allocate_frame(char *var_in, char *value_in, PCB* pcb){
 	//free victim_page
 	free(victim_page);
 	return new_index;
-
-	// // when the frame store is full, we evict the LRU and store the new line 
-	// if (leastRecentlyUsedIndex != -1) {
-
-	// 	 printf("Page fault! Victim page contents:\n");
-	// 	 //this might not be the most standard way of printing the content
-	// 	 //LINE BY LINE according to the instruction
-	// 	 //might need update
-	// 	 if (shellmemory[leastRecentlyUsedIndex].var != NULL && shellmemory[leastRecentlyUsedIndex].value != NULL){
-    //     	printf("\nline %d: key: %s\t\tvalue: %s\n", leastRecentlyUsedIndex, shellmemory[leastRecentlyUsedIndex].var, 
-	// 		shellmemory[leastRecentlyUsedIndex].value);}
-    //     printf("End of victim page contents.\n");
-    //     mem_free_line(leastRecentlyUsedIndex);
-    //     shellmemory[leastRecentlyUsedIndex].var = strdup(var_in);
-    //     shellmemory[leastRecentlyUsedIndex].value = strdup(value_in);
-    //     shellmemory[leastRecentlyUsedIndex].last_accessed = time(NULL); // Update access time
-    //     return leastRecentlyUsedIndex;
-    // }
-	// return -1;
 }
 
 

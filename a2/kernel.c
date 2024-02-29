@@ -327,6 +327,7 @@ void load_missing_page_to_mem(PCB* pcb){
         // printf("line count: %d\n", lineCount);
         // printf("line index in page: %d\n", line_index_in_page);
         line_location = allocate_frame(pid_string, command, pcb);
+        printf("%d\n", line_location);
         set_page_index(page, line_index_in_page, line_location);
         set_page_valid_bits(page, line_index_in_page, 1);
         
