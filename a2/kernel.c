@@ -31,9 +31,9 @@ int process_initialize(char *filename, int pid){
     //load page to shell memory
     PAGE** page_table = malloc(sizeof(PAGE*) * FRAME_STORE_SIZE);
     page_table_init(page_table);
-    printf("%s\n", buffer);
     PCB* newPCB = makePCB(page_table, buffer);
-    
+    printf("%s\n", newPCB->filename);
+
     load_pages_to_memory(fp, pid, page_table, newPCB);
     QueueNode *node = malloc(sizeof(QueueNode));
     node->pcb = newPCB;
