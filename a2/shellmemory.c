@@ -118,7 +118,6 @@ int allocate_frame(char *var_in, char *value_in, PCB* pcb){
         //     leastRecentlyUsedIndex = i;
         // }
 	}
-	printf("Page fault! Victim page contents:\n");
 	//remove page at pcb->LRU_page_number
 	PAGE* victim_page = pcb->page_table[pcb->LRU_page_number++];
 	printf("Page fault! Victim page contents:\n");
