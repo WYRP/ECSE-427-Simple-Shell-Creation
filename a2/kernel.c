@@ -101,7 +101,7 @@ bool execute_process(QueueNode *node, int quanta){
             return false;
         }
         
-        //cur_page->last_accessed = time(NULL); // Correctly update the timestamp of the accessed page
+        cur_page->last_accessed = time(NULL); // Correctly update the timestamp of the accessed page
        
         int cur_line_index = cur_page->index[pcb->PC[1]];
        
@@ -323,7 +323,6 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
 }
 
 void load_missing_page_to_mem(PCB* pcb){
-    printf("testing\n");
     int commandLength = 100;
     char command[commandLength];
     int index[3];
