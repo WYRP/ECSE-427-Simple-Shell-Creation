@@ -312,16 +312,9 @@ void load_missing_page_to_mem(PCB* pcb){
         fgets(command, commandLength, fp);
     }
 
-    while(!feof(fp)) {
-        if (counter >= 3){
-            break;
-        }
+    while(!feof(fp) && counter < 3) {
         line_index_in_page = lineCount % 3;
-        //convert pid id to string
-        //need to be 2 because we want to acount for the null terminator
 
-
-        //when a new page starts, create a new page
         if (line_index_in_page == 0){
             page = makePAGE(page_index, pcb->pid);
             pcb->page_table[page_index] = page;
@@ -335,7 +328,6 @@ void load_missing_page_to_mem(PCB* pcb){
         lineCount++;
         counter++;
     }
-    set_pcb_line_executed(pcb, lineCount);
     if (feof(fp)){    
         set_pcb_last_line_index(pcb, line_location);
         set_pcb_last_page_index(pcb, page_index);
