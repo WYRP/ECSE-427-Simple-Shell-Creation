@@ -32,7 +32,6 @@ int process_initialize(char *filename, int pid){
     PAGE** page_table = malloc(sizeof(PAGE*) * FRAME_STORE_SIZE);
     page_table_init(page_table);
     PCB* newPCB = makePCB(page_table, buffer);
-    printf("%s\n", newPCB->filename);
 
     load_pages_to_memory(fp, pid, page_table, newPCB);
     QueueNode *node = malloc(sizeof(QueueNode));
@@ -100,9 +99,7 @@ bool execute_process(QueueNode *node, int quanta){
             in_background = false; //? not sure what does in_background do
             return false;
         }
-        
-        cur_page->last_accessed = time(NULL); // Correctly update the timestamp of the accessed page
-       
+
         int cur_line_index = cur_page->index[pcb->PC[1]];
        
         line = mem_get_value_at_line(cur_line_index);
@@ -247,6 +244,7 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
     int line_index_in_page = 0;
     PAGE* page;
     int line_location = 0;
+
     //load file line by line
     while(!feof(fp)) {
         //some local var setup
@@ -295,12 +293,10 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
         // line_location is the location (index) of the line
         // that we loaded into the frame store 
         // it is the index of the frame store. 
-        line_location = allocate_frame(pid_string, command);
+        line_location = allocate_frame(pid_string, command, pcb);
 
         set_page_index(page, line_index_in_page, line_location);
         set_page_valid_bits(page, line_index_in_page, 1);
-        page->last_accessed = time(NULL); // Update to current time
-
         
         lineCount++;
     }
@@ -315,8 +311,6 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
         line_index_in_page++;
         set_page_index(page,line_index_in_page, -1);
         set_page_valid_bits(page, line_index_in_page, 0);
-        page->last_accessed = time(NULL); // Update to current time
-
     }
     
     return;
@@ -353,13 +347,10 @@ void load_missing_page_to_mem(PCB* pcb){
 
         //find a space in frame store and keep a record of the index
         fgets(command, commandLength, fp);
-        printf("command: %s\n", command);
-        line_location = allocate_frame(pid_string, command);
+        line_location = allocate_frame(pid_string, command, pcb);
         
         set_page_index(page, line_index_in_page, line_location);
         set_page_valid_bits(page, line_index_in_page, 1);
-        page->last_accessed = time(NULL); // Update to current time
-
         
         lineCount++;
     }
@@ -374,7 +365,6 @@ void load_missing_page_to_mem(PCB* pcb){
         line_index_in_page++;
         set_page_index(page,line_index_in_page, -1);
         set_page_valid_bits(page, line_index_in_page, 0);
-        page->last_accessed = time(NULL); // Update to current time
 
     }
     fclose(fp);

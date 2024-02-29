@@ -6,6 +6,7 @@
 #include<time.h>
 #include "interpreter.h"
 #include "shellmemory.h"
+#include "pcb.h"
 
 #define SHELL_MEM_LENGTH 1000
 
@@ -97,45 +98,61 @@ void mem_set_value(char *var_in, char *value_in) {
 // and return the index
 // if the variable is not in the memory, it will return the index
 // that it stored the variable at
-int allocate_frame(char *var_in, char *value_in){
+int allocate_frame(char *var_in, char *value_in, PCB* pcb){
 	int leastRecentlyUsedIndex = -1;
 	time_t oldestAccessTime = time(NULL);
 	for (int i=0; i<THRESHOLD; i++){
 		if (strcmp(shellmemory[i].var, "none") == 0){
 			shellmemory[i].var = strdup(var_in);
 			shellmemory[i].value = strdup(value_in);
-			shellmemory[i].last_accessed = time(NULL); // Update access time
+			// shellmemory[i].last_accessed = time(NULL); // Update access time
 			// if the program finds enough space to store the line 
 			// in the frame store, it will return the index
 			return i;
 		} 
-		// If the frame store is full, find the least recently used frame
-		if (shellmemory[i].last_accessed < oldestAccessTime) {
-            printf("found a least recently used frame\n");
-			// Keep track of the least recently used frame
-            oldestAccessTime = shellmemory[i].last_accessed;
-            leastRecentlyUsedIndex = i;
-        }
+		// // If the frame store is full, find the least recently used frame
+		// if (shellmemory[i].last_accessed < oldestAccessTime) {
+        //     printf("found a least recently used frame\n");
+		// 	// Keep track of the least recently used frame
+        //     oldestAccessTime = shellmemory[i].last_accessed;
+        //     leastRecentlyUsedIndex = i;
+        // }
 	}
 
-	// when the frame store is full, we evict the LRU and store the new line 
-	if (leastRecentlyUsedIndex != -1) {
+	//remove page at pcb->LRU_page_number
+	PAGE* victim_page = pcb->page_table[pcb->LRU_page_number++];
+	printf("Page fault! Victim page contents:\n");
+	for (int i=0; i < 3; i++){
+		printf("%s\n", shellmemory[victim_page->index[i]]);
+		mem_free_line(victim_page->index[i]);
+	}
+	printf("End of victim page contents.\n");
+	int new_index = victim_page->index[0];
+	//allocate new line to this free spot (index 0 of the victim page)
+	shellmemory[new_index].var = strdup(var_in);
+	shellmemory[new_index].value = strdup(value_in);
+	//free victim_page
+	free(victim_page);
+	return new_index;
 
-		 printf("Page fault! Victim page contents:\n");
-		 //this might not be the most standard way of printing the content
-		 //LINE BY LINE according to the instruction
-		 //might need update
-		 if (shellmemory[leastRecentlyUsedIndex].var != NULL && shellmemory[leastRecentlyUsedIndex].value != NULL){
-        	printf("\nline %d: key: %s\t\tvalue: %s\n", leastRecentlyUsedIndex, shellmemory[leastRecentlyUsedIndex].var, 
-			shellmemory[leastRecentlyUsedIndex].value);}
-        printf("End of victim page contents.\n");
-        mem_free_line(leastRecentlyUsedIndex);
-        shellmemory[leastRecentlyUsedIndex].var = strdup(var_in);
-        shellmemory[leastRecentlyUsedIndex].value = strdup(value_in);
-        shellmemory[leastRecentlyUsedIndex].last_accessed = time(NULL); // Update access time
-        return leastRecentlyUsedIndex;
-    }
-	return -1;
+	// // when the frame store is full, we evict the LRU and store the new line 
+	// if (leastRecentlyUsedIndex != -1) {
+
+	// 	 printf("Page fault! Victim page contents:\n");
+	// 	 //this might not be the most standard way of printing the content
+	// 	 //LINE BY LINE according to the instruction
+	// 	 //might need update
+	// 	 if (shellmemory[leastRecentlyUsedIndex].var != NULL && shellmemory[leastRecentlyUsedIndex].value != NULL){
+    //     	printf("\nline %d: key: %s\t\tvalue: %s\n", leastRecentlyUsedIndex, shellmemory[leastRecentlyUsedIndex].var, 
+	// 		shellmemory[leastRecentlyUsedIndex].value);}
+    //     printf("End of victim page contents.\n");
+    //     mem_free_line(leastRecentlyUsedIndex);
+    //     shellmemory[leastRecentlyUsedIndex].var = strdup(var_in);
+    //     shellmemory[leastRecentlyUsedIndex].value = strdup(value_in);
+    //     shellmemory[leastRecentlyUsedIndex].last_accessed = time(NULL); // Update access time
+    //     return leastRecentlyUsedIndex;
+    // }
+	// return -1;
 }
 
 

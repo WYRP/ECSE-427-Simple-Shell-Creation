@@ -23,6 +23,7 @@ PCB* makePCB(PAGE** page_table, char* filename){
     newPCB->page_table = page_table;
     newPCB->last_line_number = -1;
     newPCB->last_page_number = -1;
+    newPCB->LRU_page_number = 0;
     return newPCB;
 }
 
@@ -30,7 +31,6 @@ PAGE* makePAGE(int page_index,int page_pid){
     PAGE* newPAGE = malloc(sizeof(PAGE));
     newPAGE->page_index = page_index;
     newPAGE->page_pid = page_pid;
-    newPAGE->last_accessed = time(NULL); // Set the current time
     return newPAGE;
 }
 
@@ -70,4 +70,8 @@ void page_table_init(PAGE** page_table){
 
 void set_pcb_line_executed(PCB* pcb, int line_executed){
     pcb->line_executed = line_executed;
+}
+
+void set_pcb_LRU_page_number(PCB* pcb, int page_number){
+    pcb->LRU_page_number = page_number;
 }
