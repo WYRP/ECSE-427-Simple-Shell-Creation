@@ -68,10 +68,8 @@ bool execute_process(QueueNode *node, int quanta){
     PCB *pcb = node->pcb;
     
     for(int i=0; i<quanta; i++){
-        
         PAGE** page_table = pcb->page_table;
         //get current line
-        
         PAGE* cur_page = page_table[pcb->PC[0]];
     
         // if the next line of code that resides in a page 
@@ -79,24 +77,8 @@ bool execute_process(QueueNode *node, int quanta){
         // this if statement will be true
 
         if(cur_page == NULL){
-            // then we handle the page fault
-            //first interrupt the current process (P)
-            // by adding it to the tail of the ready queue
-            //ready_queue_add_to_tail(node);
-            //after we added the P to the tail of the ready queue
-            //we need to execute the next process from the ready queue
-            //by calling the schedule function ???quit 
-           //schedule_by_policy("AGING");
-
-            //while the P is in the background, we need to load the missing page to memory
-            //load page to frame store and update table
-            //inside the load_missing_page_to_mem function, allocate_frame is called
-            //which will allocate a frame in the frame store
-            //or if there is no space, it will evict necceary pages according to the 
-            // LRU policy
             // printf("prior to load_missing_page_to_mem\n");
             load_missing_page_to_mem(pcb);
-        
             in_background = false; //? not sure what does in_background do
             return false;
         }
@@ -113,11 +95,6 @@ bool execute_process(QueueNode *node, int quanta){
         // and it is about to terminate
         if(cur_line_index == pcb->last_line_number){
             parseInput(line);
-            //we would like to terminate the process
-            // by calling the terminate_process function
-            // however, we do not want to clean up the process's corresponding 
-            // pages in the frame store
-            // something is being done in the terminate_process function
             terminate_process(node);
             in_background = false;
             return true;
@@ -318,7 +295,6 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
 }
 
 void load_missing_page_to_mem(PCB* pcb){
-    printf("inside load_missing_page_to_mem\n");
     int commandLength = 100;
     char command[commandLength];
     int index[3];
@@ -348,6 +324,7 @@ void load_missing_page_to_mem(PCB* pcb){
         }
         //find a space in frame store and keep a record of the index
         fgets(command, commandLength, fp);
+        printf("inside load_missing_page_to_mem\n");
         line_location = allocate_frame(pid_string, command, pcb);
         
         set_page_index(page, line_index_in_page, line_location);
