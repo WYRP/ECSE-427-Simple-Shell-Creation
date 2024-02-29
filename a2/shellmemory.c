@@ -103,26 +103,15 @@ int allocate_frame(char *var_in, char *value_in, PCB* pcb){
 		if (strcmp(shellmemory[i].var, "none") == 0){
 			shellmemory[i].var = strdup(var_in);
 			shellmemory[i].value = strdup(value_in);
-			// shellmemory[i].last_accessed = time(NULL); // Update access time
-			// if the program finds enough space to store the line 
-			// in the frame store, it will return the index
 			return i;
 		} 
-		// // If the frame store is full, find the least recently used frame
-		// if (shellmemory[i].last_accessed < oldestAccessTime) {
-        //     printf("found a least recently used frame\n");
-		// 	// Keep track of the least recently used frame
-        //     oldestAccessTime = shellmemory[i].last_accessed;
-        //     leastRecentlyUsedIndex = i;
-        // }
 	}
 	//remove page at pcb->LRU_page_number
 	PAGE* victim_page = pcb->page_table[pcb->LRU_page_number++];
 	printf("Page fault! Victim page contents:\n");
-	printf("%s\n", shellmemory[victim_page->index[0]]);
 
 	for (int i=0; i < 3; i++){
-		// printf("%s\n", shellmemory[victim_page->index[i]]);
+		printf("%s\n", shellmemory[victim_page->index[i]]);
 		mem_free_line(victim_page->index[i]);
 	}
 	printf("End of victim page contents.\n");
