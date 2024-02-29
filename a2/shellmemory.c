@@ -106,12 +106,9 @@ int allocate_frame(char *var_in, char *value_in, PCB* pcb){
 			return i;
 		} 
 	}
-	printf("I'm full\n");
 	//remove page at pcb->LRU_page_number
 	PAGE* victim_page = pcb->page_table[pcb->LRU_page_number++];
-	printf("%s\n", shellmemory[victim_page->index[0]]);
 	printf("Page fault! Victim page contents:\n");
-
 	for (int i=0; i < 3; i++){
 		printf("%s\n", shellmemory[victim_page->index[i]]);
 		mem_free_line(victim_page->index[i]);
