@@ -332,6 +332,7 @@ void load_missing_page_to_mem(PCB* pcb){
     int line_location = 0;
 
     FILE * fp = fopen(pcb->filename, "r");
+    printf("%s\n", pcb->filename);
     printf("testing 2\n");
 
     for(int i=0; i < 3; i++){
