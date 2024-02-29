@@ -106,7 +106,6 @@ int allocate_frame(char *var_in, char *value_in, PCB* pcb){
 			return i;
 		} 
 	}
-	printf("%d\n", pcb->LRU_page_number);
 	//remove page at pcb->LRU_page_number
 	PAGE* victim_page = pcb->page_table[pcb->LRU_page_number++];
 	printf("page 0 index: %d\n", victim_page->index[0]);
@@ -120,8 +119,6 @@ int allocate_frame(char *var_in, char *value_in, PCB* pcb){
 	//allocate new line to this free spot (index 0 of the victim page)
 	shellmemory[new_index].var = strdup(var_in);
 	shellmemory[new_index].value = strdup(value_in);
-	//free victim_page
-	free(victim_page);
 	return new_index;
 }
 

@@ -69,12 +69,7 @@ void terminate_process(QueueNode *node){
     for(int i = 0; i <= node->pcb->last_page_number; i++){
         PAGE* curPage = node->pcb->page_table[i];
         for(int j=0; j<3; j++){
-            if (curPage->valid_bits[j] == 0){
-                free(node);
-                return;
-            }
-            //removed this line because we do not want to clean up its corresponding pages int eh frame store
-            //mem_free_line(curPage->index[j]);
+            mem_free_line(curPage->index[j]);
         }
     } 
     free(node);
