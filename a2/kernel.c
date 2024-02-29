@@ -331,8 +331,8 @@ void load_missing_page_to_mem(PCB* pcb){
     int line_index_in_page = 0;
     PAGE* page;
     int line_location = 0;
+
     FILE * fp = fopen(pcb->filename, "r");
-    printf("%s\n", pcb->filename);
 
     for(int i=0; i < 3; i++){
         line_index_in_page = lineCount % 3;
@@ -345,6 +345,10 @@ void load_missing_page_to_mem(PCB* pcb){
         if (line_index_in_page == 0){
             page = makePAGE(page_index, pcb->pid);
             pcb->page_table[page_index] = page;
+        }
+
+        for(int i=0; i < lineCount;i++){
+            fgets(command, commandLength, fp);
         }
 
         //find a space in frame store and keep a record of the index

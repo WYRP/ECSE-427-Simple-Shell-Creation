@@ -100,7 +100,6 @@ void mem_set_value(char *var_in, char *value_in) {
 int allocate_frame(char *var_in, char *value_in){
 	int leastRecentlyUsedIndex = -1;
 	time_t oldestAccessTime = time(NULL);
-	printf("check if the variable is already in the memory\n");
 	for (int i=0; i<THRESHOLD; i++){
 		if (strcmp(shellmemory[i].var, "none") == 0){
 			shellmemory[i].var = strdup(var_in);
