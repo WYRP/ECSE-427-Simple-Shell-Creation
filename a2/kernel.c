@@ -90,6 +90,7 @@ bool execute_process(QueueNode *node, int quanta){
             //which will allocate a frame in the frame store
             //or if there is no space, it will evict necceary pages according to the 
             // LRU policy
+            printf("testing1");
             load_missing_page_to_mem(pcb);
         
             in_background = false; //? not sure what does in_background do
@@ -243,14 +244,29 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
     //load file line by line
     while(!feof(fp)) {
         //some local var setup
+        //let's assume lineCount counts the 
+        //number of lines that we have read so far
+        //then page_index will represent how many pages
+        //we have used so far to store the lines from the input file
         page_index = lineCount / 3;
 
-        //load only 2 pages
+        //"only the first two pages of each program"
+        //"should be loaded into the frame store"
         if(page_index == 2) {
             lineCount++;
             break;
         }
 
+        //line_index_in_page is the index of the 
+        //line in the page
+        // for example
+        // if line_index_in_page is 0, then it means
+        // it is the first line in prog2-page0 (the current page of the current process)
+        // if line_index_in_page is 1, then it means
+        // it is the second line in prog2-page0 (the current page of the current process)
+        // since the lineCount is not necessarily a multiple of 3
+        // we need to use the modulo operator to get the line_index_in_page
+        //so the possible value for line_index_in_page is 0, 1, 2
         line_index_in_page = lineCount % 3;
 
         //convert pid id to string
@@ -259,7 +275,10 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
         char pid_string[2];
         sprintf(pid_string, "%d", pid);
 
-        //when a new page starts, create a new page
+        //when a line is the first line of a page
+        //we create a new page
+        //because it would be set back to 0
+        //once the previous page is full by doing the modulo operation
         if (line_index_in_page == 0){
             page = makePAGE(page_index, pid);
             page_table[page_index] = page;
@@ -267,6 +286,9 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
 
         //find a space in frame store and keep a record of the index
         fgets(command, commandLength, fp);
+        // line_location is the location (index) of the line
+        // that we loaded into the frame store 
+        // it is the index of the frame store. 
         line_location = allocate_frame(pid_string, command);
 
         set_page_index(page, line_index_in_page, line_location);
@@ -293,6 +315,7 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
 }
 
 void load_missing_page_to_mem(PCB* pcb){
+    printf("testing\n");
     int commandLength = 100;
     char command[commandLength];
     int index[3];
@@ -341,6 +364,7 @@ void load_missing_page_to_mem(PCB* pcb){
         page->last_accessed = time(NULL); // Update to current time
 
     }
+    fclose(fp);
     return;
 }
 
