@@ -106,17 +106,16 @@ int allocate_frame(char *var_in, char *value_in, PCB* pcb){
 			return i;
 		} 
 	}
-
+	printf("%s\n", pcb->page_table[0]->index[0]);
 	//remove page at pcb->LRU_page_number
-	PAGE* victim_page = pcb->page_table[pcb->LRU_page_number];
+	PAGE* victim_page = pcb->page_table[pcb->LRU_page_number++];
 	printf("page 0 index: %d\n", victim_page->index[0]);
 	printf("Page fault! Victim page contents:\n");
 	for (int i=0; i < 3; i++){
-		printf("%s\n", shellmemory[victim_page->index[i]]);
+		printf("%s\n", shellmemory[victim_page->index[i]].value);
 		mem_free_line(victim_page->index[i]);
 	}
 	printf("End of victim page contents.\n");
-	set_pcb_LRU_page_number(pcb, pcb->LRU_page_number + 1);
 	int new_index = victim_page->index[0];
 	//allocate new line to this free spot (index 0 of the victim page)
 	shellmemory[new_index].var = strdup(var_in);
