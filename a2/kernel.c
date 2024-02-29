@@ -71,7 +71,6 @@ bool execute_process(QueueNode *node, int quanta){
         PAGE** page_table = pcb->page_table;
         //get current line
         PAGE* cur_page = page_table[pcb->PC[0]];
-    
         // if the next line of code that resides in a page 
         //which is not yet in memory
         // this if statement will be true
@@ -82,11 +81,14 @@ bool execute_process(QueueNode *node, int quanta){
             in_background = false; //? not sure what does in_background do
             return false;
         }
-
+        if(pcb->PC[1] == 0){
+            LruQueueNode *LRUnode = malloc(sizeof(LruQueueNode));
+            LRUnode->page = cur_page;
+            LRU_queue_add_to_tail(LRUnode);
+        }
+        
         int cur_line_index = cur_page->index[pcb->PC[1]];
-       
         line = mem_get_value_at_line(cur_line_index);
-    
         in_background = true;
         if(pcb->priority) {
             pcb->priority = false;

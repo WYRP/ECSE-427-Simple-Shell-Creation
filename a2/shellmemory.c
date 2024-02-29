@@ -16,10 +16,11 @@
 //EG
 
 const int THRESHOLD = FRAME_STORE_SIZE;
+LruQueueNode* LRU_head = NULL;
 
 //frame store and variable store
 struct memory_struct shellmemory[SHELL_MEM_LENGTH];
-int LRU_page_number = 0;
+// int LRU_page_number = 0;
 
 // Helper functions
 int match(char *model, char *var) {
@@ -85,6 +86,25 @@ void mem_set_value(char *var_in, char *value_in) {
 	return;
 
 }
+void LRU_queue_add_to_tail(LruQueueNode* node)
+{
+    if(!LRU_head){
+        LRU_head = node;
+        LRU_head->next = NULL;
+    }
+    else{
+        LruQueueNode* cur = LRU_head;
+        while(cur->next!=NULL) cur = cur->next;
+        cur->next = node;
+        cur->next->next = NULL;
+    }
+}
+
+LruQueueNode *LRU_queue_pop_head(){
+    LruQueueNode *tmp = LRU_head;
+    if(LRU_head!=NULL) LRU_head = LRU_head->next;
+    return tmp;
+}
 
 int allocate_frame(char *var_in, char *value_in, PCB* pcb){
 	for (int i=0; i<THRESHOLD; i++){
@@ -96,20 +116,18 @@ int allocate_frame(char *var_in, char *value_in, PCB* pcb){
 	}
 	//remove page at pcb->LRU_page_number
 	// PAGE* victim_page = pcb->page_table[pcb->LRU_page_number++];
+	LruQueueNode* victim_page_node = LRU_queue_pop_head();
+	PAGE* victim_page = victim_page_node->page;
 	printf("Page fault! Victim page contents:\n");
 	for (int i=0; i < 3; i++){
-		printf("%s", shellmemory[LRU_page_number + i].value);
-		mem_free_line(LRU_page_number + i);
+		printf("%s", shellmemory[victim_page->index[i]].value);
+		mem_free_line(victim_page->index[i]);
 	}
 	printf("End of victim page contents.\n");
-	int new_index = LRU_page_number;
+	int new_index = victim_page->index[0];
 	//allocate new line to this free spot (index 0 of the victim page)
 	shellmemory[new_index].var = strdup(var_in);
 	shellmemory[new_index].value = strdup(value_in);
-	LRU_page_number+=3;
-	if (LRU_page_number >= THRESHOLD){
-		LRU_page_number = 0;
-	}
 	return new_index;
 }
 
@@ -249,3 +267,4 @@ void mem_free_line(int i){
 	shellmemory[i].var = "none";
 	shellmemory[i].value = "none";
 }
+
