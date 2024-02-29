@@ -296,7 +296,7 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
 void load_missing_page_to_mem(PCB* pcb){
     int commandLength = 100;
     char command[commandLength];
-    int lineCount = pcb->line_executed;
+    int lineCount = pcb->line_loaded;
     int page_index = lineCount / 3;
     int line_index_in_page = 0;
     PAGE* page;
@@ -323,16 +323,16 @@ void load_missing_page_to_mem(PCB* pcb){
         //find a space in frame store and keep a record of the index
         fgets(command, commandLength, fp);
         // printf("command:%s\n", command);
-        // printf("page index: %d\n", page_index);
+        printf("page index: %d\n", page_index);
         // printf("line count: %d\n", lineCount);
         // printf("line index in page: %d\n", line_index_in_page);
         line_location = allocate_frame(pid_string, command, pcb);
-        printf("%d\n", line_location);
         set_page_index(page, line_index_in_page, line_location);
         set_page_valid_bits(page, line_index_in_page, 1);
         
         lineCount++;
     }
+    set_pcb_line_executed(pcb, lineCount);
     if (feof(fp)){    
         set_pcb_last_line_index(pcb, line_location);
         set_pcb_last_page_index(pcb, page_index);

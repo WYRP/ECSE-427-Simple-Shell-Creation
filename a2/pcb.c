@@ -68,8 +68,8 @@ void page_table_init(PAGE** page_table){
     }
 }
 
-void set_pcb_line_executed(PCB* pcb, int line_executed){
-    pcb->line_executed = line_executed;
+void set_pcb_line_executed(PCB* pcb, int line_loaded){
+    pcb->line_loaded = line_loaded;
 }
 
 void set_pcb_LRU_page_number(PCB* pcb, int page_number){

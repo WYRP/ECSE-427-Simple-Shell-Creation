@@ -29,7 +29,7 @@ typedef struct
     int job_length_score;
     int last_line_number;
     int last_page_number;
-    int line_executed;
+    int line_loaded;
     int LRU_page_number;
     PAGE** page_table;
 }PCB;
@@ -43,6 +43,6 @@ void set_pcb_last_line_index(PCB* pcb, int last_page_number);
 void set_pcb_last_page_index(PCB* pcb, int n);
 void updatePC(PCB* pcb);
 void page_table_init(PAGE** page_table);
-void set_pcb_line_executed(PCB* pcb, int line_executed);
+void set_pcb_line_executed(PCB* pcb, int line_loaded);
 void set_pcb_LRU_page_number(PCB* pcb, int page_number);
 #endif
