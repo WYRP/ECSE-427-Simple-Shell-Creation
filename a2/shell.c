@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
     system("mkdir ./backing_store");
 
 
-	printf("%s\n", "Shell v2.0\n");
+	printf("%s\n", "Shell v2.0");
     printf("Frame Store Size = %d; Variable Store Size = %d\n", FRAME_STORE_SIZE, VARIABLE_STORE_SIZE);
 
 
