@@ -116,7 +116,6 @@ int allocate_frame(char *var_in, char *value_in, PCB* pcb){
         //     leastRecentlyUsedIndex = i;
         // }
 	}
-	printf("I'm full\n");
 	//remove page at pcb->LRU_page_number
 	PAGE* victim_page = pcb->page_table[pcb->LRU_page_number++];
 	printf("Page fault! Victim page contents:\n");
@@ -263,25 +262,6 @@ int load_file(FILE* fp, int* pStart, int* pEnd, char* filename)
 }
 
 void copy_to_backing_store(char* filename){
-	// int copy = 1;
-	// char buffer[100];
-	// sprintf(buffer, "./backing_store/%s", filename);
-	// //if the file exists, add a subfix to it so that the file is not overwritten
-	// while (access(buffer, F_OK) == 0){
-	// 	buffer[0] = '\0';
-	// 	sprintf(buffer, "./backing_store/%s_%d", filename, copy);
-	// 	copy++;
-	// }
-	// FILE* fp = fopen(filename, "r");
-	// FILE* fp_copy = fopen(buffer, "w");
-	// int c = fgetc(fp); 
-	// while (c != EOF) 
-    // { 
-    //     fprintf (fp_copy, "%c", c); 
-    //     c = fgetc(fp); 
-    // } 
-	// fclose(fp);
-	// fclose(fp_copy);
 	char command[100];
 	sprintf(command, "cp %s ./backing_store", filename);
 	system(command);
