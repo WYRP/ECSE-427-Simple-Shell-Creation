@@ -222,7 +222,8 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
     int line_index_in_page = 0;
     PAGE* page;
     int line_location = 0;
-
+    char pid_string[2];
+    sprintf(pid_string, "%d", pid);
     //load file line by line
     while(!feof(fp)) {
         //some local var setup
@@ -253,8 +254,7 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
         //convert pid id to string
         //change to 2 because the the pid is one 
         //and then the null terminator is also 1
-        char pid_string[2];
-        sprintf(pid_string, "%d", pid);
+
 
         //when a line is the first line of a page
         //we create a new page
@@ -286,6 +286,8 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
     //we put some place holders. 
     while (line_index_in_page < 2){
         line_index_in_page++;
+        line_location = allocate_frame(pid_string, command, pcb);
+        set_page_index(page, line_index_in_page, line_location);
         set_page_index(page,line_index_in_page, -1);
         set_page_valid_bits(page, line_index_in_page, 0);
     }
@@ -302,7 +304,8 @@ void load_missing_page_to_mem(PCB* pcb){
     PAGE* page;
     int line_location = 0;
     int counter=0;
-
+    char pid_string[2];
+    sprintf(pid_string, "%d", pcb->pid);
     FILE * fp = fopen(pcb->filename, "r");
 
     for(int i=0; i < lineCount;i++){
@@ -316,8 +319,7 @@ void load_missing_page_to_mem(PCB* pcb){
         line_index_in_page = lineCount % 3;
         //convert pid id to string
         //need to be 2 because we want to acount for the null terminator
-        char pid_string[2];
-        sprintf(pid_string, "%d", pcb->pid);
+
 
         //when a new page starts, create a new page
         if (line_index_in_page == 0){
@@ -343,9 +345,9 @@ void load_missing_page_to_mem(PCB* pcb){
     //if current page is not fully occupied, fill it up
     while (line_index_in_page < 2){
         line_index_in_page++;
-        set_page_index(page,line_index_in_page, -1);
+        line_location = allocate_frame(pid_string, command, pcb);
+        set_page_index(page, line_index_in_page, line_location);
         set_page_valid_bits(page, line_index_in_page, 0);
-
     }
     fclose(fp);
     return;
