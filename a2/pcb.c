@@ -23,7 +23,6 @@ PCB* makePCB(PAGE** page_table, char* filename){
     newPCB->page_table = page_table;
     newPCB->last_line_number = -1;
     newPCB->last_page_number = -1;
-    newPCB->LRU_page_number = 0;
     return newPCB;
 }
 
@@ -70,8 +69,4 @@ void page_table_init(PAGE** page_table){
 
 void set_pcb_line_executed(PCB* pcb, int line_loaded){
     pcb->line_loaded = line_loaded;
-}
-
-void set_pcb_LRU_page_number(PCB* pcb, int page_number){
-    pcb->LRU_page_number = page_number;
 }

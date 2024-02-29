@@ -19,6 +19,7 @@ const int THRESHOLD = FRAME_STORE_SIZE;
 
 //frame store and variable store
 struct memory_struct shellmemory[SHELL_MEM_LENGTH];
+int LRU_page_number = 0;
 
 // Helper functions
 int match(char *model, char *var) {
@@ -97,15 +98,18 @@ int allocate_frame(char *var_in, char *value_in, PCB* pcb){
 	// PAGE* victim_page = pcb->page_table[pcb->LRU_page_number++];
 	printf("Page fault! Victim page contents:\n");
 	for (int i=0; i < 3; i++){
-		printf("%s", shellmemory[pcb->LRU_page_number + i].value);
-		mem_free_line(pcb->LRU_page_number + i);
+		printf("%s", shellmemory[LRU_page_number + i].value);
+		mem_free_line(LRU_page_number + i);
 	}
 	printf("End of victim page contents.\n");
-	int new_index = pcb->LRU_page_number;
+	int new_index = LRU_page_number;
 	//allocate new line to this free spot (index 0 of the victim page)
 	shellmemory[new_index].var = strdup(var_in);
 	shellmemory[new_index].value = strdup(value_in);
-	pcb->LRU_page_number+=3;
+	LRU_page_number+=3;
+	if (LRU_page_number >= THRESHOLD){
+		LRU_page_number = 0;
+	}
 	return new_index;
 }
 

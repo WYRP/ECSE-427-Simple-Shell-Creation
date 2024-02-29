@@ -44,5 +44,4 @@ void set_pcb_last_page_index(PCB* pcb, int n);
 void updatePC(PCB* pcb);
 void page_table_init(PAGE** page_table);
 void set_pcb_line_executed(PCB* pcb, int line_loaded);
-void set_pcb_LRU_page_number(PCB* pcb, int page_number);
 #endif
