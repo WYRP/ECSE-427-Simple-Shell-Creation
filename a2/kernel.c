@@ -101,11 +101,13 @@ bool execute_process(QueueNode *node, int quanta){
             in_background = false; //? not sure what does in_background do
             return false;
         }
+        printf("testing_execute_process6\n");
         cur_page->last_accessed = time(NULL); // Correctly update the timestamp of the accessed page
-
-        int cur_line_index = cur_page->index[pcb->PC[1]];
+        printf("testing_execute_process7\n");
+        //int cur_line_index = cur_page->index[pcb->PC[1]];
+        printf("testing_execute_process8\n");
         line = mem_get_value_at_line(cur_line_index);
-        
+        printf("testing_execute_process9\n");
         in_background = true;
         if(pcb->priority) {
             pcb->priority = false;
