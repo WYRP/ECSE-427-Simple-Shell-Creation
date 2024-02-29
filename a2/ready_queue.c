@@ -69,37 +69,15 @@ void terminate_process(QueueNode *node){
     for(int i = 0; i <= node->pcb->last_page_number; i++){
         PAGE* curPage = node->pcb->page_table[i];
         for(int j=0; j<3; j++){
+            if (curPage->valid_bits[j] == 0){
+                free(node);
+                return;
+            }
             mem_free_line(curPage->index[j]);
         }
     } 
     free(node);
 }
-
-/*
-void terminate_process(QueueNode *node) {
-    // Ensure the node and its PCB are valid before proceeding.
-    if (node == NULL || node->pcb == NULL) {
-        return;
-    }
-
-    // No need to check each page's valid bits or clean frame store pages.
-
-    // Free the page table array itself if it was dynamically allocated.
-    // Assuming the page table is an array of PAGE* pointers and needs to be freed.
-    if (node->pcb->page_table != NULL) {
-        free(node->pcb->page_table);
-        node->pcb->page_table = NULL; // Avoid dangling pointer.
-    }
-
-    // Free the PCB structure.
-    free(node->pcb);
-    node->pcb = NULL; // Avoid dangling pointer.
-
-    // Finally, free the QueueNode structure.
-    free(node);
-}
-*/
-
 
 bool is_ready_empty(){
     return head==NULL;
