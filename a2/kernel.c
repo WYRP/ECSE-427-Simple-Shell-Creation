@@ -304,6 +304,10 @@ void load_missing_page_to_mem(PCB* pcb){
 
     FILE * fp = fopen(pcb->filename, "r");
 
+    for(int i=0; i < lineCount;i++){
+        fgets(command, commandLength, fp);
+    }
+
     for(int i=0; i < 3; i++){
         line_index_in_page = lineCount % 3;
         //convert pid id to string
@@ -315,10 +319,6 @@ void load_missing_page_to_mem(PCB* pcb){
         if (line_index_in_page == 0){
             page = makePAGE(page_index, pcb->pid);
             pcb->page_table[page_index] = page;
-        }
-
-        for(int i=0; i < lineCount;i++){
-            fgets(command, commandLength, fp);
         }
         //find a space in frame store and keep a record of the index
         fgets(command, commandLength, fp);
