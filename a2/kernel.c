@@ -346,7 +346,7 @@ void load_missing_page_to_mem(PCB* pcb){
         for(int i=0; i < lineCount;i++){
             fgets(command, commandLength, fp);
         }
-
+        printf("I'm here");
         //find a space in frame store and keep a record of the index
         fgets(command, commandLength, fp);
         line_location = allocate_frame(pid_string, command, pcb);
