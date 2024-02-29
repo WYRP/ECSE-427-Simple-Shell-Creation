@@ -66,20 +66,19 @@ int process_initialize(char *filename, int pid){
 bool execute_process(QueueNode *node, int quanta){
     char *line = NULL;
     PCB *pcb = node->pcb;
-    printf("testing_execute_process\n");
+    
     for(int i=0; i<quanta; i++){
-        printf("testing_execute_process2\n");
+        
         PAGE** page_table = pcb->page_table;
         //get current line
-        printf("testing_execute_process3\n");
+        
         PAGE* cur_page = page_table[pcb->PC[0]];
     
         // if the next line of code that resides in a page 
         //which is not yet in memory
         // this if statement will be true
-        printf("testing_execute_process4\n");
+
         if(cur_page == NULL){
-            printf("testing_execute_process5\n");
             // then we handle the page fault
             //first interrupt the current process (P)
             // by adding it to the tail of the ready queue
@@ -121,7 +120,6 @@ bool execute_process(QueueNode *node, int quanta){
             // however, we do not want to clean up the process's corresponding 
             // pages in the frame store
             // something is being done in the terminate_process function
-            printf("testing_execute_process10\n");
             terminate_process(node);
             in_background = false;
             return true;
@@ -306,8 +304,10 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
         
         lineCount++;
     }
-    set_pcb_last_line_index(pcb, line_location);
-    set_pcb_last_page_index(pcb, page_index);
+    if (feof(fp)){    
+        set_pcb_last_line_index(pcb, line_location);
+        set_pcb_last_page_index(pcb, page_index);
+    }
     set_pcb_line_executed(pcb, lineCount);
     //if current page is not fully occupied
     //we put some place holders. 
