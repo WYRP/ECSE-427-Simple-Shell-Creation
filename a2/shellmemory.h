@@ -1,7 +1,8 @@
 #ifndef SHELLMEMORY_H
 #define SHELLMEMORY_H
-#include "pcb.h"
 #include <stdio.h>
+#include "pcb.h"
+
 
 // Use macros for frame store and variable store sizes
 #define FRAME_STORE_SIZE framesize
