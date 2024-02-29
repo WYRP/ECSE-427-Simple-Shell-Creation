@@ -318,7 +318,7 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
 }
 
 void load_missing_page_to_mem(PCB* pcb){
-    // printf("inside load_missing_page_to_mem\n");
+    printf("inside load_missing_page_to_mem\n");
     int commandLength = 100;
     char command[commandLength];
     int index[3];
@@ -333,7 +333,7 @@ void load_missing_page_to_mem(PCB* pcb){
     for(int i=0; i < 3; i++){
         line_index_in_page = lineCount % 3;
         //convert pid id to string
-        // need to be 2 because we want to acount for the null terminator
+        //need to be 2 because we want to acount for the null terminator
         char pid_string[2];
         sprintf(pid_string, "%d", pcb->pid);
 
@@ -346,7 +346,6 @@ void load_missing_page_to_mem(PCB* pcb){
         for(int i=0; i < lineCount;i++){
             fgets(command, commandLength, fp);
         }
-        printf("I'm here");
         //find a space in frame store and keep a record of the index
         fgets(command, commandLength, fp);
         line_location = allocate_frame(pid_string, command, pcb);
