@@ -99,8 +99,6 @@ void mem_set_value(char *var_in, char *value_in) {
 // if the variable is not in the memory, it will return the index
 // that it stored the variable at
 int allocate_frame(char *var_in, char *value_in, PCB* pcb){
-	int leastRecentlyUsedIndex = -1;
-	time_t oldestAccessTime = time(NULL);
 	for (int i=0; i<THRESHOLD; i++){
 		if (strcmp(shellmemory[i].var, "none") == 0){
 			shellmemory[i].var = strdup(var_in);
@@ -118,6 +116,7 @@ int allocate_frame(char *var_in, char *value_in, PCB* pcb){
         //     leastRecentlyUsedIndex = i;
         // }
 	}
+	printf("I'm full\n");
 	//remove page at pcb->LRU_page_number
 	PAGE* victim_page = pcb->page_table[pcb->LRU_page_number++];
 	printf("Page fault! Victim page contents:\n");
