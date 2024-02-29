@@ -106,6 +106,7 @@ int allocate_frame(char *var_in, char *value_in, PCB* pcb){
 			return i;
 		} 
 	}
+	printf("LRU: %d\n", pcb->LRU_page_number);
 	//remove page at pcb->LRU_page_number
 	PAGE* victim_page = pcb->page_table[pcb->LRU_page_number++];
 	printf("Page fault! Victim page contents:\n");
