@@ -300,6 +300,7 @@ void load_missing_page_to_mem(PCB* pcb){
     int line_index_in_page = 0;
     PAGE* page;
     int line_location = 0;
+    int counter=0;
 
     FILE * fp = fopen(pcb->filename, "r");
 
@@ -307,7 +308,10 @@ void load_missing_page_to_mem(PCB* pcb){
         fgets(command, commandLength, fp);
     }
 
-    for(int i=0; i < 3; i++){
+    while(!feof(fp)) {
+        if (counter >= 3){
+            break;
+        }
         line_index_in_page = lineCount % 3;
         //convert pid id to string
         //need to be 2 because we want to acount for the null terminator
@@ -330,6 +334,7 @@ void load_missing_page_to_mem(PCB* pcb){
         set_page_valid_bits(page, line_index_in_page, 1);
         
         lineCount++;
+        counter++;
     }
     set_pcb_line_executed(pcb, lineCount);
     if (feof(fp)){    
