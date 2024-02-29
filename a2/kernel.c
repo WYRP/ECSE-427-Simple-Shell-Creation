@@ -68,14 +68,18 @@ bool execute_process(QueueNode *node, int quanta){
     PCB *pcb = node->pcb;
     printf("testing_execute_process\n");
     for(int i=0; i<quanta; i++){
+        printf("testing_execute_process2\n");
         PAGE** page_table = pcb->page_table;
         //get current line
+        printf("testing_execute_process3\n");
         PAGE* cur_page = page_table[pcb->PC[0]];
     
         // if the next line of code that resides in a page 
         //which is not yet in memory
         // this if statement will be true
+        printf("testing_execute_process4\n");
         if(cur_page == NULL){
+            printf("testing_execute_process5\n");
             // then we handle the page fault
             //first interrupt the current process (P)
             // by adding it to the tail of the ready queue
