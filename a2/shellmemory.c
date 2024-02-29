@@ -100,12 +100,15 @@ void mem_set_value(char *var_in, char *value_in) {
 // that it stored the variable at
 int allocate_frame(char *var_in, char *value_in, PCB* pcb){
 	for (int i=0; i<THRESHOLD; i++){
+		printf("I'm broken here");
 		if (strcmp(shellmemory[i].var, "none") == 0){
+			printf("I'm broken inside if");
 			shellmemory[i].var = strdup(var_in);
 			shellmemory[i].value = strdup(value_in);
 			return i;
 		} 
 	}
+	printf("hello");
 	//remove page at pcb->LRU_page_number
 	PAGE* victim_page = pcb->page_table[pcb->LRU_page_number++];
 	printf("Page fault! Victim page contents:\n");
