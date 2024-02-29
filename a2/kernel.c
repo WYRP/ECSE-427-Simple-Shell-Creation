@@ -264,7 +264,7 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
             page = makePAGE(page_index, pid);
             page_table[page_index] = page;
         }
-        printShellMemory();
+
         //find a space in frame store and keep a record of the index
         fgets(command, commandLength, fp);
         // line_location is the location (index) of the line
@@ -276,6 +276,8 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
         
         lineCount++;
     }
+            
+    printShellMemory();
     if (feof(fp)){    
         set_pcb_last_line_index(pcb, line_location);
         set_pcb_last_page_index(pcb, page_index);
