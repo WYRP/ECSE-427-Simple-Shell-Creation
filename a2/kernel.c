@@ -94,7 +94,7 @@ bool execute_process(QueueNode *node, int quanta){
             //which will allocate a frame in the frame store
             //or if there is no space, it will evict necceary pages according to the 
             // LRU policy
-            printf("prior to load_missing_page_to_mem\n");
+            // printf("prior to load_missing_page_to_mem\n");
             load_missing_page_to_mem(pcb);
         
             in_background = false; //? not sure what does in_background do
@@ -318,7 +318,7 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
 }
 
 void load_missing_page_to_mem(PCB* pcb){
-    printf("inside load_missing_page_to_mem\n");
+    // printf("inside load_missing_page_to_mem\n");
     int commandLength = 100;
     char command[commandLength];
     int index[3];
