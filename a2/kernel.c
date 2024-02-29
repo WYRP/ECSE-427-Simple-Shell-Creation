@@ -34,7 +34,6 @@ int process_initialize(char *filename, int pid){
     PCB* newPCB = makePCB(page_table, buffer);
     
     load_pages_to_memory(fp, pid, page_table, newPCB);
-    printShellMemory();
     QueueNode *node = malloc(sizeof(QueueNode));
     node->pcb = newPCB;
     ready_queue_add_to_tail(node);
@@ -67,6 +66,7 @@ int process_initialize(char *filename, int pid){
 bool execute_process(QueueNode *node, int quanta){
     char *line = NULL;
     PCB *pcb = node->pcb;
+    printf("testing_execute_process\n");
     for(int i=0; i<quanta; i++){
         PAGE** page_table = pcb->page_table;
         //get current line
