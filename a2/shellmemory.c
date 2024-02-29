@@ -99,6 +99,7 @@ void mem_set_value(char *var_in, char *value_in) {
 // if the variable is not in the memory, it will return the index
 // that it stored the variable at
 int allocate_frame(char *var_in, char *value_in, PCB* pcb){
+	printf("I'm in here'\n");
 	for (int i=0; i<THRESHOLD; i++){
 		if (strcmp(shellmemory[i].var, "none") == 0){
 			shellmemory[i].var = strdup(var_in);
