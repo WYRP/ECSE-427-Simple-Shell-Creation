@@ -323,7 +323,7 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
 }
 
 void load_missing_page_to_mem(PCB* pcb){
-    printf("Loading missing page to memory\n")
+    printf("Loading missing page to memory\n");
     int commandLength = 100;
     char command[commandLength];
     int index[3];
