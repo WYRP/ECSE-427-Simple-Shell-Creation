@@ -73,7 +73,7 @@ void terminate_process(QueueNode *node){
                 free(node);
                 return;
             }
-            mem_free_line(curPage->index[j]);
+            //mem_free_line(curPage->index[j]);
         }
     } 
     free(node);
