@@ -62,7 +62,7 @@ void updatePC(PCB* pcb){
 
 void page_table_init(PAGE** page_table){
 	int i;
-    for (i=0; i<FRAME_STORE_SIZE; i++){		
+    for (i=0; i<MAX_PAGES; i++){		
         page_table[i] = NULL;
     }
 }
