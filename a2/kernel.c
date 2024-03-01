@@ -40,6 +40,7 @@ int count_lines(FILE* file)
 }
 
 int process_initialize(char *filename, int pid){
+    count_lines(filename);
     //copy files to backing store
     copy_to_backing_store(filename);
     char buffer[100];
