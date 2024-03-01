@@ -14,12 +14,13 @@
 bool active = false;
 bool debug = false;
 bool in_background = false;
+#define BUF_SIZE 65536
 
 //helper function to count the number of lines in a file
 // so that we can dynamically allocate memory for the file
 int count_lines(FILE* file)
 {
-    char buf[65536];
+    char buf[BUF_SIZE];
     int counter = 0;
     for(;;)
     {
