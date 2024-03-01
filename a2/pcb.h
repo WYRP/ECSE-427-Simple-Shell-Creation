@@ -1,8 +1,8 @@
 #ifndef PCB_H
 #define PCB_H
 #include <stdbool.h>
-#define MAX_LINE 1000
 
+#define MAX_PAGES 1000
 typedef struct
 {   
     int index[3];
