@@ -35,8 +35,10 @@ int process_initialize(char *filename, int pid){
         num_lines_in_file++;
     }
 
+    int totalPages = (num_lines_in_file + 2) / 3;
+
     //load page to shell memory
-    PAGE** page_table = malloc(sizeof(PAGE*) * num_lines_in_file);
+    PAGE** page_table = malloc(sizeof(PAGE*) * totalPages);
     page_table_init(page_table);
     PCB* newPCB = makePCB(page_table, buffer);
 
