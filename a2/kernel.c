@@ -51,8 +51,8 @@ int process_initialize(char *filename, int pid){
     int counter = count_lines(fp);
     rewind(fp);
 
-    int total_line_count = total_line_count + counter;
-    printf("Number of lines in file: %d\n", total_line_count);
+    int total_line_count = total_line_count+ counter;
+
     if(fp == NULL){
 		return FILE_DOES_NOT_EXIST;
     }
