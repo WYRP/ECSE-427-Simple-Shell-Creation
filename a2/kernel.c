@@ -19,7 +19,7 @@ bool in_background = false;
 // so that we can dynamically allocate memory for the file
 int count_lines(FILE* file)
 {
-    char buf[BUF_SIZE];
+    char buf[65536];
     int counter = 0;
     for(;;)
     {
