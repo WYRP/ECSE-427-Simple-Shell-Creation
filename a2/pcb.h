@@ -1,7 +1,11 @@
 #ifndef PCB_H
 #define PCB_H
 #include <stdbool.h>
+<<<<<<< HEAD
 #define MAX_LINE 1000
+=======
+#include <time.h>
+>>>>>>> parent of 015540e (fix q9)
 
 typedef struct
 {   

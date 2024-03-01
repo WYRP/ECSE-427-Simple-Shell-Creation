@@ -31,7 +31,7 @@ int process_initialize(char *filename, int pid){
 
 
     //load page to shell memory
-    PAGE** page_table = malloc(sizeof(PAGE*) * MAX_PAGES);
+    PAGE** page_table = malloc(sizeof(PAGE*) * FRAME_STORE_SIZE);
     page_table_init(page_table);
     PCB* newPCB = makePCB(page_table, buffer);
 
