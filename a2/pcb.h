@@ -42,6 +42,6 @@ void set_page_valid_bits(PAGE* page, int i, int value);
 void set_pcb_last_line_index(PCB* pcb, int last_page_number);
 void set_pcb_last_page_index(PCB* pcb, int n);
 void updatePC(PCB* pcb);
-void page_table_init(PAGE** page_table);
+void page_table_init(PAGE** page_table, int page_num_by_file_length);
 void set_pcb_line_executed(PCB* pcb, int line_loaded);
 #endif

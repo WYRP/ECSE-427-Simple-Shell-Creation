@@ -60,9 +60,9 @@ void updatePC(PCB* pcb){
     }
 }
 
-void page_table_init(PAGE** page_table){
+void page_table_init(PAGE** page_table, int page_num_by_file_length){
 	int i;
-    for (i=0; i<MAX_PAGES; i++){		
+    for (i=0; i<page_num_by_file_length; i++){		
         page_table[i] = NULL;
     }
 }

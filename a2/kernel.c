@@ -48,17 +48,17 @@ int process_initialize(char *filename, int pid){
     FILE *fp;
 
     fp = fopen(buffer, "r");
-    int counter = count_lines(fp);
+    int file_length = count_lines(fp);
     rewind(fp);
-
-    int total_line_count = total_line_count+ counter;
+    
+    int page_size_by_file_length = file_length / 3 + 1;
 
     if(fp == NULL){
 		return FILE_DOES_NOT_EXIST;
     }
     //load page to shell memory
-    PAGE** page_table = malloc(sizeof(PAGE*) * MAX_PAGES);
-    page_table_init(page_table);
+    PAGE** page_table = malloc(sizeof(PAGE*) * page_size_by_file_length);
+    page_table_init(page_table, page_size_by_file_length);
     PCB* newPCB = makePCB(page_table, buffer);
 
     load_pages_to_memory(fp, pid, page_table, newPCB);
@@ -69,6 +69,9 @@ int process_initialize(char *filename, int pid){
 
     return 0;
 }
+
+
+
 
 // int shell_process_initialize(){
 //     //Note that "You can assume that the # option will only be used in batch mode."
