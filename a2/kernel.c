@@ -27,26 +27,9 @@ int process_initialize(char *filename, int pid){
     if(fp == NULL){
 		return FILE_DOES_NOT_EXIST;
     }
-
-    // Count the number of lines (pages) in the file
-    int lineCount = 0;
-    char line[256]; // Assuming each line fits in this buffer
-    while (fgets(line, sizeof(line), fp)) {
-        lineCount++;
-    }
-
-    int totalPages = (lineCount + 2) / 3; // Round up to handle incomplete pages
-
     //load page to shell memory
-    PAGE** page_table = malloc(sizeof(PAGE*) * totalPages);
-    if (page_table == NULL) {
-        fclose(fp);
-        perror("malloc error in process_initialize\n");
-        return -1; 
-    }
+    PAGE** page_table = malloc(sizeof(PAGE*) * MAX_PAGES);
     page_table_init(page_table);
-    fseek(fp, 0, SEEK_SET);
-
     PCB* newPCB = makePCB(page_table, buffer);
 
     load_pages_to_memory(fp, pid, page_table, newPCB);
