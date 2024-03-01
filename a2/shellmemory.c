@@ -8,7 +8,7 @@
 #include "shellmemory.h"
 #include "pcb.h"
 
-#define SHELL_MEM_LENGTH 1000
+#define SHELL_MEM_LENGTH 3001
 
 
 //where the FRAME STORE and the VARIABLE store are;

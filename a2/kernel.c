@@ -14,31 +14,6 @@
 bool active = false;
 bool debug = false;
 bool in_background = false;
-#define BUF_SIZE 65536
-
-//helper function to count the number of lines in a file
-// so that we can dynamically allocate memory for the file
-int count_lines(FILE* file)
-{
-    char buf[BUF_SIZE];
-    int counter = 0;
-    for(;;)
-    {
-        size_t res = fread(buf, 1, BUF_SIZE, file);
-        if (ferror(file))
-            return -1;
-
-        int i;
-        for(i = 0; i < res; i++)
-            if (buf[i] == '\n')
-                counter++;
-
-        if (feof(file))
-            break;
-    }
-
-    return counter;
-}
 
 int process_initialize(char *filename, int pid){
     //copy files to backing store
@@ -47,14 +22,13 @@ int process_initialize(char *filename, int pid){
     sprintf(buffer, "%s/%s", "./backing_store", filename);
     //load from backing store to frame store
     FILE *fp;
-    int counter = count_lines(fp);
     fp = fopen(buffer, "r");
     
     if(fp == NULL){
 		return FILE_DOES_NOT_EXIST;
     }
     //load page to shell memory
-    PAGE** page_table = malloc(sizeof(PAGE*) * counter);
+    PAGE** page_table = malloc(sizeof(PAGE*) * MAX_PAGES);
     page_table_init(page_table);
     PCB* newPCB = makePCB(page_table, buffer);
 
