@@ -19,7 +19,7 @@ bool in_background = false;
 int process_initialize(char *filename, int pid){
     //copy files to backing store
     copy_to_backing_store(filename);
-    char buffer[100];
+    char buffer[101];
     sprintf(buffer, "%s/%s", "./backing_store", filename);
     //load from backing store to frame store
     FILE *fp;
@@ -29,21 +29,9 @@ int process_initialize(char *filename, int pid){
 		return FILE_DOES_NOT_EXIST;
     }
 
-    // Count the lines
-    int num_lines_in_file = 0;
-    char file_lines[101]; // 100 chars + null terminator
-    while (fgets(file_lines, sizeof(file_lines), fp)) {
-        num_lines_in_file++;
-    }
-
-    int totalPages = (num_lines_in_file + 2) / 3;
 
     //load page to shell memory
-<<<<<<< HEAD
-    PAGE** page_table = malloc(sizeof(PAGE*) * totalPages);
-=======
-    PAGE** page_table = malloc(sizeof(PAGE*) * FRAME_STORE_SIZE);
->>>>>>> parent of 015540e (fix q9)
+    PAGE** page_table = malloc(sizeof(PAGE*) * MAX_PAGES);
     page_table_init(page_table);
     PCB* newPCB = makePCB(page_table, buffer);
 

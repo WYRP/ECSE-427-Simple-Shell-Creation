@@ -1,7 +1,7 @@
 #ifndef PCB_H
 #define PCB_H
 #include <stdbool.h>
-#include <time.h>
+#define MAX_LINE 1000
 
 typedef struct
 {   
