@@ -2,9 +2,6 @@
 * Yongru Pan: 261001758
 * Yixuan Qin: 261010963
 
-A2 Structure
-![image](https://github.com/WYRP/ECSE-427-Assignments/assets/93948251/076ee4d5-97bd-4d4a-b3a5-90de4a6e7806)
-
 
 
 ## Optional Question 8
