@@ -49,8 +49,8 @@ int process_initialize(char *filename, int pid){
 
     fp = fopen(buffer, "r");
     int counter = count_lines(fp);
+    rewind(fp);
     printf("Number of lines in file: %d\n", counter);
-    
     if(fp == NULL){
 		return FILE_DOES_NOT_EXIST;
     }
