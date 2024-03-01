@@ -34,8 +34,10 @@ int count_lines(FILE* file)
             if (buf[i] == '\n')
                 counter++;
 
-        if (feof(file))
+        if (feof(file)){
+            counter++;
             break;
+        }
     }
 
     return counter;
@@ -50,19 +52,16 @@ int process_initialize(char *filename, int pid){
     FILE *fp;
 
     fp = fopen(buffer, "r");
-    int file_length = count_lines(fp);
-    rewind(fp);
-    
-    int page_size_by_file_length = file_length / 3 + 1;
-
     if(fp == NULL){
 		return FILE_DOES_NOT_EXIST;
     }
+    int file_length = count_lines(fp);
+    rewind(fp);
+    int page_size_by_file_length = file_length / 3 + 1;
     //load page to shell memory
     PAGE** page_table = malloc(sizeof(PAGE*) * page_size_by_file_length);
     page_table_init(page_table, page_size_by_file_length);
     PCB* newPCB = makePCB(page_table, buffer);
-
     load_pages_to_memory(fp, pid, page_table, newPCB);
     QueueNode *node = malloc(sizeof(QueueNode));
     node->pcb = newPCB;
@@ -71,30 +70,6 @@ int process_initialize(char *filename, int pid){
 
     return 0;
 }
-
-
-
-
-// int shell_process_initialize(){
-//     //Note that "You can assume that the # option will only be used in batch mode."
-//     //So we know that the input is a file, we can directly load the file into ram
-//     int* start = (int*)malloc(sizeof(int));
-//     int* end = (int*)malloc(sizeof(int));
-//     int error_code = 0;
-//     error_code = load_file(stdin, start, end, "_SHELL");
-//     if(error_code != 0){
-//         return error_code;
-//     }
-//     PCB* newPCB = makePCB(*start,*end);
-//     newPCB->priority = true;
-//     QueueNode *node = malloc(sizeof(QueueNode));
-//     node->pcb = newPCB;
-
-//     ready_queue_add_to_head(node);
-
-//     freopen("/dev/tty", "r", stdin);
-//     return 0;
-// }
 
 bool execute_process(QueueNode *node, int quanta){
     char* line = NULL;
@@ -272,9 +247,6 @@ void load_pages_to_memory(FILE *fp, int pid, PAGE** page_table, PCB* pcb){
 
         //find a space in frame store and keep a record of the index
         fgets(command, commandLength, fp);
-        // line_location is the location (index) of the line
-        // that we loaded into the frame store 
-        // it is the index of the frame store. 
         line_location = allocate_frame(command, pcb);
         set_page_index(page, line_index_in_page, line_location);
         set_page_valid_bits(page, line_index_in_page, 1);
@@ -345,5 +317,3 @@ void load_missing_page_to_mem(PCB* pcb){
     fclose(fp);
     return;
 }
-
-

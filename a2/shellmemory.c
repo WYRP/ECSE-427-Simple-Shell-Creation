@@ -5,12 +5,9 @@
 #include<stdio.h>
 #include<stdbool.h>
 #include<unistd.h>
-#include<time.h>
 #include "interpreter.h"
 #include "shellmemory.h"
 #include "pcb.h"
-
-#define SHELL_MEM_LENGTH 3001
 
 
 //where the FRAME STORE and the VARIABLE store are;

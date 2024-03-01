@@ -3,6 +3,7 @@
 #ifndef KERNEL
 #define KERNEL
 #include "pcb.h"
+int count_lines(FILE* file);
 int process_initialize(char *filename, int pid);
 int schedule_by_policy(char* policy); //, bool mt);
 int shell_process_initialize();
