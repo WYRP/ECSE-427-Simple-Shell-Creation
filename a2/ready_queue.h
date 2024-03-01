@@ -1,3 +1,6 @@
+// Yixuan Qin, 261010963
+// Yongru Pan, 261001758 
+
 #ifndef READY_QUEUE_H
 #define READY_QUEUE_H
 #include "pcb.h"

@@ -1,3 +1,5 @@
+// Yixuan Qin, 261010963
+// Yongru Pan, 261001758 
 #ifndef KERNEL
 #define KERNEL
 #include "pcb.h"

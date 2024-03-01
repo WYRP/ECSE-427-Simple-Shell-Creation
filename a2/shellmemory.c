@@ -1,3 +1,5 @@
+// Yixuan Qin, 261010963
+// Yongru Pan, 261001758 
 #include<stdlib.h>
 #include<string.h>
 #include<stdio.h>

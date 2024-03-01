@@ -1,3 +1,5 @@
+// Yixuan Qin, 261010963
+// Yongru Pan, 261001758 
 #ifndef SHELLMEMORY_H
 #define SHELLMEMORY_H
 #include <stdio.h>

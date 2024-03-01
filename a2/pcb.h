@@ -1,3 +1,5 @@
+// Yixuan Qin, 261010963
+// Yongru Pan, 261001758 
 #ifndef PCB_H
 #define PCB_H
 #include <stdbool.h>

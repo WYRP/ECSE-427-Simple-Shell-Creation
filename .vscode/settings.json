@@ -3,6 +3,8 @@
         "stdlib.h": "c",
         "interpreter.h": "c",
         "pcb.h": "c",
-        "shellmemory.h": "c"
+        "shellmemory.h": "c",
+        "shell.h": "c",
+        "ready_queue.h": "c"
     }
 }
