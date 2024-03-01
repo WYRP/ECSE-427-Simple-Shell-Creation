@@ -27,8 +27,16 @@ int process_initialize(char *filename, int pid){
     if(fp == NULL){
 		return FILE_DOES_NOT_EXIST;
     }
+
+    // Count the lines
+    int num_lines_in_file = 0;
+    char file_lines[101]; // 100 chars + null terminator
+    while (fgets(file_lines, sizeof(file_lines), fp)) {
+        num_lines_in_file++;
+    }
+
     //load page to shell memory
-    PAGE** page_table = malloc(sizeof(PAGE*) * MAX_PAGES);
+    PAGE** page_table = malloc(sizeof(PAGE*) * num_lines_in_file);
     page_table_init(page_table);
     PCB* newPCB = makePCB(page_table, buffer);
 
