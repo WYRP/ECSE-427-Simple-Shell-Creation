@@ -15,6 +15,30 @@ bool active = false;
 bool debug = false;
 bool in_background = false;
 
+#define BUF_SIZE 65536
+
+int count_lines(FILE* file)
+{
+    char buf[BUF_SIZE];
+    int counter = 0;
+    for(;;)
+    {
+        size_t res = fread(buf, 1, BUF_SIZE, file);
+        if (ferror(file))
+            return -1;
+
+        int i;
+        for(i = 0; i < res; i++)
+            if (buf[i] == '\n')
+                counter++;
+
+        if (feof(file))
+            break;
+    }
+
+    return counter;
+}
+
 int process_initialize(char *filename, int pid){
     //copy files to backing store
     copy_to_backing_store(filename);
@@ -22,7 +46,10 @@ int process_initialize(char *filename, int pid){
     sprintf(buffer, "%s/%s", "./backing_store", filename);
     //load from backing store to frame store
     FILE *fp;
+
     fp = fopen(buffer, "r");
+    int counter = count_lines(fp);
+    printf("Number of lines in file: %d\n", counter);
     
     if(fp == NULL){
 		return FILE_DOES_NOT_EXIST;
