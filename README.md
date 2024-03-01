@@ -1,4 +1,4 @@
-# COMP310_W2024_A1
+# COMP310/ECSE427 Fall 2024 Assignment Repository
 
 Yongru Pan, 261001758
 Yixuan Qin, 261010963
