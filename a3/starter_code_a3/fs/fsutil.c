@@ -129,3 +129,42 @@ int fsutil_seek(char *file_name, int offset) {
 void fsutil_close(char *file_name) { remove_from_file_table(file_name); }
 
 int fsutil_freespace() { return num_free_sectors(); }
+
+void copy_in(File *filename){
+  //check if the file exists
+        // can use fsutil_ls to check if the file exists
+  //open the source file and read
+        //maybe we can use fsutil_read to read the file
+  //dtermine the file sie to see how much data needs to be copied
+        //maybe we can use fsutil_size to get the file size
+  //check available space (may need to call external function)
+  // create new file in the sysm hard drive with the same name in the root directory
+          // maybe we can use fsutil_create to create the file
+         //if this cannot be created, return an error flag
+  //read from the source file and write to the new file
+        // maybe we can use fsutil_write to write to the file
+  //close the source file
+        //maybe we can use fsutil_close to close the file
+  // return success flag
+
+if (fsutil_ls(filename->name) == 0){
+  char *buffer;
+  int size = fsutil_size(filename->name);
+  int read = fsutil_read(filename->name, buffer, size);
+
+  buffer = malloc(size * sizeof(char));
+  //chekc available space
+  if (fsutil_freespace() < size){
+    printf("Not enough space to copy file\n");
+    return;
+  }
+  else {
+    //create new file
+    if (fsutil_create(filename->name, size) == 0){
+      fsutil_write(filename->name, buffer, size);
+      fsutil_close(filename->name);
+    }
+  }
+  free(buffer);
+      
+}
