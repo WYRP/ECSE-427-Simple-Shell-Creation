@@ -33,8 +33,13 @@ int get_free_space() {
 
 /*copy from the real hard drive to the shell hard drive*/
 int copy_in(char *fname) {
+printf("I am here\n");
 FILE *f = fopen(fname, "r");
-  if (f != NULL){
+  if (f == NULL){
+    printf("Error: could not create file\n");
+      return 9; //file create error
+    }
+  else {
     char *buffer;
     int size = get_file_size(fname);
 
@@ -51,23 +56,18 @@ FILE *f = fopen(fname, "r");
       fsutil_write(fname, avail_buffer, available_space);
       printf("Warning: could only write %d out of %ld bytes (reached end of file", available_space, mylong);
       return 11; //file write error 
+      }
     }
     else {
-      printf("Error: could not create file\n");
-      return 9; //file create error
+      //create new file with the same information in the shell hard drive
+      fsutil_create(fname, size);
+      if (fsutil_create(fname, size) == 0){
+        fsutil_write(fname, buffer, size);
+        fsutil_close(fname);
+      }
     }
-  }
-  else {
-    //create new file with the same information in the shell hard drive
-    fsutil_create(fname, size);
-    if (fsutil_create(fname, size) == 0){
-      fsutil_write(fname, buffer, size);
-      fsutil_close(fname);
-    }
-  }
   free(buffer);
   fclose(f);
-      
   }
 else {
   printf("File does not exist\n");
