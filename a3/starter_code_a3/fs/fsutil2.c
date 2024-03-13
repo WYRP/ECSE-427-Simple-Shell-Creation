@@ -33,43 +33,47 @@ int get_free_space() {
 
 /*copy from the real hard drive to the shell hard drive*/
 int copy_in(char *fname) {
-    if (FILE* fopen(fname) != NULL){
+FILE *f = fopen(fname, "r");
+  if (f != NULL){
     char *buffer;
-    buffer = malloc(size * sizeof(char));
     int size = get_file_size(fname);
-    int content_from_read = fgets(fname, buffer, size);
+
+    buffer = malloc(size * sizeof(char));
+    char *content_from_read = fgets(buffer, size, f);
     //chekc available space in the shell hard drive
     if (fsutil_freespace() < size){
       //put as much content as possible from the real hard drive 
       // to the shell hard drive
       int available_space = fsutil_freespace();
+      long mylong = (long)content_from_read;
       char* avail_buffer = malloc(available_space * sizeof(char));
       if (fsutil_create(fname, available_space)==0){
       fsutil_write(fname, avail_buffer, available_space);
-      printf("Warning: could only write %d out of %ld bytes (reached end of file", available_space, content_from_read);
+      printf("Warning: could only write %d out of %ld bytes (reached end of file", available_space, mylong);
       return 11; //file write error 
-      }
-      else {
-        printf("Error: could not create file\n");
-        return 9; //file create error
-      }
     }
     else {
-      //create new file with the same information in the shell hard drive
-      fustil_create(fname, size)
-      if (fustil_create(fname, size) == 0){
-        fsutil_write(fname, buffer, size);
-        fsutil_close(fname);
-      }
+      printf("Error: could not create file\n");
+      return 9; //file create error
     }
-    free(buffer);
-    fclose(fname)
-        
   }
   else {
-    printf("File does not exist\n");
-    return 0; //file does not exist error flag
+    //create new file with the same information in the shell hard drive
+    fsutil_create(fname, size);
+    if (fsutil_create(fname, size) == 0){
+      fsutil_write(fname, buffer, size);
+      fsutil_close(fname);
+    }
   }
+  free(buffer);
+  fclose(f);
+      
+  }
+else {
+  printf("File does not exist\n");
+  return 0; //file does not exist error flag
+}
+return 0; // file does not exist error flag
 }
 
 /*copy contents from the shell hard drive to the real hard drive*/
