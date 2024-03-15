@@ -23,8 +23,11 @@ void filesys_init(bool format) {
     PANIC("No file system device found, can't initialize file system.");
 
   inode_init();
+  printf("I am here 1 \n");
   free_map_init();
+  printf("I am here 2 \n");
   buffer_cache_init();
+  printf("I am here 3 \n");
 
   if (format)
     do_format();

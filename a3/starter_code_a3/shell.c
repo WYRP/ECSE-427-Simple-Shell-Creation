@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
   // init FS
   ide_init(hd);
   filesys_init(format);
-
+ 
   while (1) {
     if (isatty(fileno(stdin)))
       printf("%c ", prompt);

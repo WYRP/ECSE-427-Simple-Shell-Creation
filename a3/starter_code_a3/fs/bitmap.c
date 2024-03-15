@@ -287,11 +287,14 @@ size_t bitmap_file_size(const struct bitmap *b) { return byte_cnt(b->bit_cnt); }
    otherwise. */
 bool bitmap_read(struct bitmap *b, struct file *file) {
   bool success = true;
+  printf("I am inside bitmap_read\n");
   if (b->bit_cnt > 0) {
+    printf("I am inside the if statement of bitmap_read\n");
     offset_t size = byte_cnt(b->bit_cnt);
     success = file_read_at(file, b->bits, size, 0) == size;
     b->bits[elem_cnt(b->bit_cnt) - 1] &= last_mask(b);
   }
+  printf("I don't think bitmap_read is the problem\n");
   return success;
 }
 

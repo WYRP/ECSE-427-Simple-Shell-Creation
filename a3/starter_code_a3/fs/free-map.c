@@ -49,11 +49,16 @@ void free_map_release(block_sector_t sector, size_t cnt) {
 
 /* Opens the free map file and reads it from disk. */
 void free_map_open(void) {
+  printf("I am inside free_map_open\n");
+  //inode_open(FREE_MAP_SECTOR); is like creating 
+  //a file with the inode number of FREE_MAP_SECTOR
+  //and then file_open is opening that file
   free_map_file = file_open(inode_open(FREE_MAP_SECTOR));
   if (free_map_file == NULL)
     PANIC("can't open free map");
   if (!bitmap_read(free_map, free_map_file))
     PANIC("can't read free map");
+  printf("I finished free_map_open with no problem\n");
 }
 
 /* Writes the free map to disk and closes the free map file. */

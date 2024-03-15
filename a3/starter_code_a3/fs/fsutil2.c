@@ -33,46 +33,42 @@ int get_free_space() {
 
 /*copy from the real hard drive to the shell hard drive*/
 int copy_in(char *fname) {
-printf("I am here\n");
+printf("I inside copy in\n");
 FILE *f = fopen(fname, "r");
-  if (f == NULL){
-    printf("Error: could not create file\n");
-      return 9; //file create error
-    }
-  else {
-    char *buffer;
-    int size = get_file_size(fname);
+if (f == NULL){
+  printf("Error: could not create file\n");
+    return 9; //file create error
+}
+else {
+  char *buffer;
+  int size = get_file_size(fname);
 
-    buffer = malloc(size * sizeof(char));
-    char *content_from_read = fgets(buffer, size, f);
-    //chekc available space in the shell hard drive
-    if (fsutil_freespace() < size){
-      //put as much content as possible from the real hard drive 
-      // to the shell hard drive
-      int available_space = fsutil_freespace();
-      long mylong = (long)content_from_read;
-      char* avail_buffer = malloc(available_space * sizeof(char));
-      if (fsutil_create(fname, available_space)==0){
-      fsutil_write(fname, avail_buffer, available_space);
-      printf("Warning: could only write %d out of %ld bytes (reached end of file", available_space, mylong);
-      return 11; //file write error 
-      }
+  buffer = malloc(size * sizeof(char));
+  char *content_from_read = fgets(buffer, size, f);
+  //chekc available space in the shell hard drive
+  if (fsutil_freespace() < size){
+    //put as much content as possible from the real hard drive 
+    // to the shell hard drive
+    int available_space = fsutil_freespace();
+    long mylong = (long)content_from_read;
+    char* avail_buffer = malloc(available_space * sizeof(char));
+    if (fsutil_create(fname, available_space)==0){
+    fsutil_write(fname, avail_buffer, available_space);
+    printf("Warning: could only write %d out of %ld bytes (reached end of file", available_space, mylong);
+    return 11; //file write error 
     }
-    else {
-      //create new file with the same information in the shell hard drive
-      fsutil_create(fname, size);
-      if (fsutil_create(fname, size) == 0){
-        fsutil_write(fname, buffer, size);
-        fsutil_close(fname);
-      }
+  }
+  else {
+    //create new file with the same information in the shell hard drive
+    fsutil_create(fname, size);
+    if (fsutil_create(fname, size) == 0){
+      fsutil_write(fname, buffer, size);
+      fsutil_close(fname);
     }
+  }
   free(buffer);
   fclose(f);
   }
-else {
-  printf("File does not exist\n");
-  return 0; //file does not exist error flag
-}
 return 0; // file does not exist error flag
 }
 
@@ -111,7 +107,20 @@ int copy_out(char *fname) {
 }
 
 void find_file(char *pattern) {
-  // TODO
+  //I take this pattern
+  //I go through a list of file that is in my root directory
+  //there should be a function that I can call to search through the root directory
+  //then I iterate over the list of files
+  // unless there is a smarter methods
+  //then after the for loop ends, I print the file name
+
+  // the for loop should be something like this
+  // for the length of the list of files in the root directory
+  // read each of the file
+  // if inside the file there is a match with the pattern
+  // I put the name of the file in a list?
+  // or should I just print it out?
+  //until I reach the end of the list.
   return;
 }
 
