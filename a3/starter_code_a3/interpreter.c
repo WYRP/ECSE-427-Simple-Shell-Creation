@@ -287,11 +287,11 @@ int interpreter(char *command_args[], int args_size, char *cwd) {
   } else if (strcmp(command_args[0], "copy_out") == 0) {
     if (args_size != 2)
       return handle_error(TOO_MANY_TOKENS);
-
-    return copy_out(command_args[1]);
+  return copy_out(command_args[1]);
   } else if (strcmp(command_args[0], "size") == 0) { // rm
     if (args_size != 2)
       return handle_error(TOO_MANY_TOKENS);
+
     int length = fsutil_size(command_args[1]);
     if (length == -1) {
       return handle_error(FILE_DOES_NOT_EXIST);
