@@ -51,7 +51,7 @@ int copy_in(char *fname) {
   fsutil_write(fname, buffer, size);
 return 0; // file does not exist error flag
 }
-
+ 
 /*copy contents from the shell hard drive to the real hard drive*/
 int copy_out(char *fname) {
   int size = fsutil_size(fname);
@@ -70,20 +70,14 @@ int copy_out(char *fname) {
 }
 
 void find_file(char *pattern) {
-  //I take this pattern
-  //I go through a list of file that is in my root directory
-  //there should be a function that I can call to search through the root directory
-  //then I iterate over the list of files
-  // unless there is a smarter methods
-  //then after the for loop ends, I print the file name
-
-  // the for loop should be something like this
-  // for the length of the list of files in the root directory
-  // read each of the file
-  // if inside the file there is a match with the pattern
-  // I put the name of the file in a list?
-  // or should I just print it out?
-  //until I reach the end of the list.
+  int num_files = sizeof(fsutil_ls());
+  for (int i = 0; i < num_files-1; i++) {
+    if (strcmp(pattern, file_table[i].file_name) == 0) {
+      printf("File found at index %d\n", i);
+      return;
+    }
+  }
+  
   return;
 }
 
