@@ -71,15 +71,11 @@ struct file *get_file_by_fname(char *fname) {
    and returns the new file.  Returns a null pointer if an
    allocation fails or if INODE is null. */
 struct file *file_open(struct inode *inode) {
-  printf("I am at the beginning of file_open\n");
   struct file *file = calloc(1, sizeof *file);
-  printf("I am at the second line of file_open\n");
   if (inode != NULL && file != NULL) {
-    printf("I am at the if statement of file_open\n");
     file->inode = inode;
     file->pos = 0;
     file->deny_write = false;
-    printf("I do not think the problem comes from file_open() \n");
     return file;
   } else {
     inode_close(inode);

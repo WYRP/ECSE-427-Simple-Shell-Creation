@@ -70,38 +70,57 @@ int copy_out(char *fname) {
 }
 
 void find_file(char *pattern) {
-
-  //used part of the code from fsutil_ls to create a 
-  //an array of file names in the root directory
   struct dir *dir;
-  char name[NAME_MAX + 1]; //NAME_MAX = 30
   dir = dir_open_root();
-  int num_files = 0;
+  char name[NAME_MAX + 1];
+
   if (dir == NULL){
     printf("Directory not found\n");
     return;
   }
-  while (dir_readdir(dir, name))
-    num_files++;
-  const char *ls_of_files[num_files];
-
-  int counter = 0;
   while (dir_readdir(dir, name)){
-    ls_of_files[counter] = name;
-    counter++;
-  }
-  dir_close(dir);
-
-  for (int i = 0; i < num_files-1; i++) {
-    const char *file_name = ls_of_files[i];
-    char *buffer = malloc((fsutil_size(file_name) + 1) * sizeof(char));
-    fsutil_read(fsutil_size(file_name), buffer, file_name);
+    char *buffer = malloc((fsutil_size(name) + 1) * sizeof(char));
+    fsutil_read(name, buffer, fsutil_size(name));
     if (strstr(buffer, pattern) != NULL) {
-      printf("Pattern Found%s\n", file_name);
+      printf("%s\n", name);
     }
+    free(buffer);
   }
-  printf("Pattern not found\n");
+
+  dir_close(dir);
   return;
+
+  // //used part of the code from fsutil_ls to create a 
+  // //an array of file names in the root directory
+  // struct dir *dir;
+  // char name[NAME_MAX + 1]; //NAME_MAX = 30
+  // dir = dir_open_root();
+  // int num_files = 0;
+  // if (dir == NULL){
+  //   printf("Directory not found\n");
+  //   return;
+  // }
+  // while (dir_readdir(dir, name))
+  //   num_files++;
+  // const char *ls_of_files[num_files];
+
+  // int counter = 0;
+  // while (dir_readdir(dir, name)){
+  //   ls_of_files[counter] = name;
+  //   counter++;
+  // }
+  // dir_close(dir);
+
+  // for (int i = 0; i < num_files-1; i++) {
+  //   const char *file_name = ls_of_files[i];
+  //   char *buffer = malloc((fsutil_size(file_name) + 1) * sizeof(char));
+  //   fsutil_read(fsutil_size(file_name), buffer, file_name);
+  //   if (strstr(buffer, pattern) != NULL) {
+  //     printf("Pattern Found%s\n", file_name);
+  //   }
+  // }
+  // printf("Pattern not found\n");
+  // return;
 }
 
 void fragmentation_degree() {
