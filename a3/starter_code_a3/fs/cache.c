@@ -26,7 +26,6 @@ void buffer_cache_init(void) {
     cache[i].occupied = false;
     cache[i].dirty = false;
   }
-  printf("I finished buffer_cache_init with no problem\n");
 }
 
 /* An internal method for flushing back the cache entry into disk. */

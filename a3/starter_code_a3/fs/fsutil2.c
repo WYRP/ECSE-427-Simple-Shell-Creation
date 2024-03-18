@@ -10,6 +10,7 @@
 #include "inode.h"
 #include "off_t.h"
 #include "partition.h"
+#include "../interpreter.h"
 
 
 #include <stdio.h>
@@ -26,13 +27,6 @@ int get_file_size(char *fname) {
   return st.st_size;
 }
 
-//helper function to get system free space
-int get_free_space() {
-  struct statvfs buf;
-  statvfs(".", &buf);
-  return buf.f_bsize * buf.f_bfree;
-}
-
 /*copy from the real hard drive to the shell hard drive*/
 int copy_in(char *fname) {
   int size = get_file_size(fname);
@@ -41,15 +35,30 @@ int copy_in(char *fname) {
 
   FILE *f = fopen(fname, "r");
   if (f == NULL){
-    printf("File does not exist \n");
-    return 0;
+    return FILE_DOES_NOT_EXIST;
   }
   fgets(buffer, size, f);
   fclose(f);
 
-  fsutil_create(fname, size);
-  fsutil_write(fname, buffer, size);
-return 0; // file does not exist error flag
+
+  int shell_space = fsutil_freespace();
+  if (shell_space == 0) {
+    printf("No space left on the shell hard drive\n");
+    return NO_MEM_SPACE;
+  }
+  if (size > shell_space) {
+    fsutil_create(fname, shell_space);
+    fsutil_write(fname, buffer, shell_space);
+    free(buffer); 
+    printf("Warning: could only write %d out of %d bytes (reached end of file)", shell_space, size);
+    return 0; //partial write
+  }
+  else{
+    fsutil_create(fname, size);
+    fsutil_write(fname, buffer, size);
+    free(buffer);
+    return 0; //success
+  }
 }
  
 /*copy contents from the shell hard drive to the real hard drive*/
