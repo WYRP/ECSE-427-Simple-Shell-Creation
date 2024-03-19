@@ -10,27 +10,104 @@
 #include "inode.h"
 #include "off_t.h"
 #include "partition.h"
+#include "../interpreter.h"
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-int copy_in(char *fname) {
-  // TODO
-  return 0;
+#include <sys/stat.h>
+#include <sys/statvfs.h>
+
+//helper function to get system file size
+int get_file_size(char *fname) {
+  struct stat st;
+  stat(fname, &st);
+  return st.st_size;
 }
 
+/*copy from the real hard drive to the shell hard drive*/
+int copy_in(char *fname) {
+  int size = get_file_size(fname);
+  char *buffer = malloc((size + 1) * sizeof(char));
+  memset(buffer, 0, (size + 1));
+
+  FILE *f = fopen(fname, "r");
+  if (f == NULL){
+    return FILE_DOES_NOT_EXIST;
+  }
+  fgets(buffer, size, f);
+  fclose(f);
+
+
+  int shell_space = fsutil_freespace();
+  if (shell_space == 0) {
+    printf("No space left on the shell hard drive\n");
+    return NO_MEM_SPACE;
+  }
+  if (size > shell_space) {
+    fsutil_create(fname, shell_space);
+    fsutil_write(fname, buffer, shell_space);
+    free(buffer); 
+    printf("Warning: could only write %d out of %d bytes (reached end of file)", shell_space, size);
+    return 0; //partial write
+  }
+  else{
+    fsutil_create(fname, size);
+    fsutil_write(fname, buffer, size);
+    free(buffer);
+    return 0; //success
+  }
+}
+ 
+/*copy contents from the shell hard drive to the real hard drive*/
 int copy_out(char *fname) {
-  // TODO
-  return 0;
+  int size = fsutil_size(fname);
+  char *buffer = malloc((size + 1) * sizeof(char));
+  memset(buffer, 0, (size + 1));
+  fsutil_read(fname, buffer, size);
+
+  FILE *f = fopen(fname, "w");
+  if (f == NULL){
+    printf("File does not exist \n");
+    return 0;
+  }
+  fputs(buffer, f);
+  fclose(f);
+  return -1; 
 }
 
 void find_file(char *pattern) {
-  // TODO
+  struct dir *dir;
+  dir = dir_open_root();
+  char name[NAME_MAX + 1];
+
+  if (dir == NULL){
+    printf("Directory not found\n");
+    return;
+  }
+  while (dir_readdir(dir, name)){
+    char *buffer = malloc((fsutil_size(name) + 1) * sizeof(char));
+    fsutil_read(name, buffer, fsutil_size(name));
+    if (strstr(buffer, pattern) != NULL) {
+      printf("%s\n", name);
+    }
+    free(buffer);
+  }
+
+  dir_close(dir);
   return;
 }
 
 void fragmentation_degree() {
   // TODO
+  //find fragmented files
+  //find the possible fragmentable files
+  //calculate the fragmentation degree
+
+  
+  return;
 }
 
 int defragment() {
