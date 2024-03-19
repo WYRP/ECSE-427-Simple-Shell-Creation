@@ -101,13 +101,38 @@ void find_file(char *pattern) {
 }
 
 void fragmentation_degree() {
-  // TODO
-  //find fragmented files
-  //find the possible fragmentable files
-  //calculate the fragmentation degree
+  struct dir *dir;
+  char name[NAME_MAX + 1];
+  int framentable_counter = 0;
+  int fragmented_counter = 0;
+  int fragmentation_degree = 0;
 
-  
-  return;
+  dir = dir_open_root();
+  if (dir == NULL)
+    return 0; // Directory not found
+  while (dir_readdir(dir, name)){
+    if (fsutil_size(name) > 512){
+      struct file *f = get_file_by_fname(name);
+      struct inode *fileNode = file_get_inode(f); //fileNode contains the inode of the file f
+      block_sector_t* mySectors = get_inode_data_sectors(fileNode); //sector indecies of the file f
+      if (get_num_fragmented(mySectors)){
+        fragmented_counter++;
+      }
+      framentable_counter++;
+    }
+  }
+  fragmentation_degree = (fragmented_counter / framentable_counter);
+  dir_close(dir);
+  print("framentation degree: %d \n", fragmentation_degree);
+  return; 
+}
+
+bool get_num_fragmented(block_sector_t* mySectors){
+  for (int i = 0; i < sizeof(mySectors); i++){
+    if (mySectors[i+1] - mySectors[i] > 3 ){
+      return true;
+  }
+  return false;
 }
 
 int defragment() {
