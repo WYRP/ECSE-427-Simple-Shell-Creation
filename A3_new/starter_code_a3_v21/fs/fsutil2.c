@@ -127,6 +127,8 @@ void fragmentation_degree() {
   return; 
 }
 
+//helper function to check if a file is fragmented
+//returns boolean value
 bool get_num_fragmented(block_sector_t* mySectors){
   for (int i = 0; i < sizeof(mySectors); i++){
     if (mySectors[i+1] - mySectors[i] > 3 ){
@@ -135,8 +137,24 @@ bool get_num_fragmented(block_sector_t* mySectors){
   return false;
 }
 
+//This function can be partly implemented by reading all files into memory (not necessarily the shell
+// memory, just a buffer);
+//???? am I doing this right?
 int defragment() {
-  // TODO
+  struct dir *dir;
+  char name[NAME_MAX + 1];
+  int size_of_all_files = num_free_sectors(); //not sure if this is the right function to use
+  char *buffer = malloc(size_of_all_files);
+
+  printf("Files in the root directory:\n");
+  dir = dir_open_root();
+  if (dir == NULL)
+    return 1;
+  while (dir_readdir(dir, name))
+    buffer = strcat(buffer, fsutil_read(name, buffer, fsutil_size(name)));
+  dir_close(dir);
+
+  // then I suppose I need to redistribute the files into the file system again.
   return 0;
 }
 
