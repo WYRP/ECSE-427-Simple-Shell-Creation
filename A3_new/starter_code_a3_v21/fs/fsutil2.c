@@ -162,6 +162,19 @@ void recover(int flag) {
   if (flag == 0) { // recover deleted inodes
 
     // TODO
+    //scan all empty sectors
+    int start = 0;
+    size_t i = bitmap_scan(free_map, start, bitmap_size(free_map), 0);
+    while(i != BITMAP_ERROR && start < bitmap_size(free_map)){
+        //check if contains inode that was deleted
+        struct inode *inode = malloc(BLOCK_SECTOR_SIZE);
+        buffer_cache_read(i, inode);
+        if (inode_is_removed(inode)){
+          //recover
+        }
+        start++;
+        i = bitmap_scan(free_map, start, bitmap_size(free_map), 0);
+    }
   } else if (flag == 1) { // recover all non-empty sectors
 
     // TODO
