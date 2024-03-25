@@ -164,13 +164,21 @@ void recover(int flag) {
     // TODO
     //scan all empty sectors
     int start = 0;
-    size_t i = bitmap_scan(free_map, start, bitmap_size(free_map), 0);
+    int i = bitmap_scan(free_map, start, bitmap_size(free_map), 0);
     while(i != BITMAP_ERROR && start < bitmap_size(free_map)){
         //check if contains inode that was deleted
-        struct inode *inode = malloc(BLOCK_SECTOR_SIZE);
-        buffer_cache_read(i, inode);
-        if (inode_is_removed(inode)){
+        struct inode *inode = inode_open(i);
+
+        if (inode != NULL && inode_is_removed(inode)){
           //recover
+          inode->removed = false;
+          int size = inode_length(inode);
+          char *buffer = malloc(size);
+          char fname[100];
+          sprintf(fname, "recovered0-%d", i);
+          inode_read_at(inode, buffer, size, 0);
+          fsutil_create(fname, size);
+          fsutil_write(fname, buffer, size);
         }
         start++;
         i = bitmap_scan(free_map, start, bitmap_size(free_map), 0);
