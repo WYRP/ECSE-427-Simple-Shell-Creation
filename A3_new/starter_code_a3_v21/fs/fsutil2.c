@@ -133,6 +133,7 @@ bool get_num_fragmented(block_sector_t* mySectors){
   for (int i = 0; i < sizeof(mySectors); i++){
     if (mySectors[i+1] - mySectors[i] > 3 ){
       return true;
+    }
   }
   return false;
 }
