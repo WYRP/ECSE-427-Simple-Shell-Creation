@@ -154,9 +154,31 @@ int defragment() {
   while (dir_readdir(dir, name))
     buffer = strcat(buffer, fsutil_read(name, buffer, fsutil_size(name)));
   dir_close(dir);
+  //This function should reduce the number of fragmented files to zero without any data loss.
 
   // then I suppose I need to redistribute the files into the file system again.
-  return 0;
+
+  //redistribution order
+  //inode, free map, buffer cache init, file table
+  //something like this?
+  // I am not sure about the filesystem architecture again
+  if (filesys_create(buffer, size_of_all_files, false)){
+    struct file *f = filesys_open(buffer);
+    struct inode *node = file_get_inode(f);
+    block_sector_t* new_sectors = get_inode_data_sectors(node);
+    if (free_map_allocate(size_of_all_files, node->sector)){
+    inode_write_at(node, buffer, size_of_all_files, 0);
+    return 0;
+    }
+    else{
+      printf("Not enough space to defragment");
+      return 1;
+    }
+  }
+  else{
+    printf("Not enough space to defragment");
+    return 1;
+  }
 }
 
 void recover(int flag) {
@@ -185,10 +207,64 @@ void recover(int flag) {
         i = bitmap_scan(free_map, start, bitmap_size(free_map), 0);
     }
   } else if (flag == 1) { // recover all non-empty sectors
-
-    // TODO
+    int start = 4; // Begin at sector 4, skipping reserved sectors
+    for (int i = start; i < bitmap_size(free_map); i++) {
+        if (!bitmap_test(free_map, i)) { // Sector is free, potential data remnants
+            char *buffer = malloc(BLOCK_SECTOR_SIZE);
+            if (buffer == NULL) {
+                break; // Insufficient memory to proceed
+            }
+            block_read(fs_device, i, buffer);
+            bool is_non_zero = false;
+            for (int j = 0; j < BLOCK_SECTOR_SIZE; j++) {
+                if (buffer[j] != 0) {
+                    is_non_zero = true;
+                    break;
+                }
+            }
+            if (is_non_zero) {
+                char filename[32];
+                sprintf(filename, "recovered1-%d.txt", i);
+                FILE *file = fopen(filename, "w");
+                fwrite(buffer, BLOCK_SECTOR_SIZE, 1, file);
+                fclose(file);
+            }
+            free(buffer);
+        }
+    }
   } else if (flag == 2) { // data past end of file.
-
-    // TODO
+    struct inode *inode;
+    for (int i = 0; i < inode_count; i++) { // Assume inode_count is defined
+        inode = inode_open(i);
+        if (inode != NULL && !inode_is_removed(inode)) {
+            int length = inode_length(inode);
+            int blocks = bytes_to_sectors(length);
+            int overflow = length % BLOCK_SECTOR_SIZE;
+            if (overflow > 0 && blocks > 0) { // There is potential hidden data
+                char *buffer = malloc(BLOCK_SECTOR_SIZE);
+                if (buffer == NULL) {
+                    inode_close(inode);
+                    break; // Insufficient memory
+                }
+                inode_read_at(inode, buffer, BLOCK_SECTOR_SIZE, blocks * BLOCK_SECTOR_SIZE - BLOCK_SECTOR_SIZE);
+                bool is_non_zero = false;
+                for (int j = overflow; j < BLOCK_SECTOR_SIZE; j++) {
+                    if (buffer[j] != 0) {
+                        is_non_zero = true;
+                        break;
+                    }
+                }
+                if (is_non_zero) {
+                    char filename[32];
+                    sprintf(filename, "recovered2-%s.txt", inode_name(inode)); // Assume inode_name() gets the name
+                    FILE *file = fopen(filename, "w");
+                    fwrite(buffer + overflow, BLOCK_SECTOR_SIZE - overflow, 1, file);
+                    fclose(file);
+                }
+                free(buffer);
+            }
+            inode_close(inode);
+        }
+    }
   }
 }
