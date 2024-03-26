@@ -146,6 +146,7 @@ int defragment() {
   char name[NAME_MAX + 1];
   int size_of_all_files = num_free_sectors(); //not sure if this is the right function to use
   char *buffer = malloc(size_of_all_files);
+  int num_sectors = 0;
 
   printf("Files in the root directory:\n");
   dir = dir_open_root();
@@ -154,31 +155,10 @@ int defragment() {
   while (dir_readdir(dir, name))
     buffer = strcat(buffer, fsutil_read(name, buffer, fsutil_size(name)));
   dir_close(dir);
-  //This function should reduce the number of fragmented files to zero without any data loss.
 
-  // then I suppose I need to redistribute the files into the file system again.
-
-  //redistribution order
-  //inode, free map, buffer cache init, file table
-  //something like this?
-  // I am not sure about the filesystem architecture again
-  if (filesys_create(buffer, size_of_all_files, false)){
-    struct file *f = filesys_open(buffer);
-    struct inode *node = file_get_inode(f);
-    block_sector_t* new_sectors = get_inode_data_sectors(node);
-    if (free_map_allocate(size_of_all_files, node->sector)){
-    inode_write_at(node, buffer, size_of_all_files, 0);
-    return 0;
-    }
-    else{
-      printf("Not enough space to defragment");
-      return 1;
-    }
-  }
-  else{
-    printf("Not enough space to defragment");
-    return 1;
-  }
+  free_map_release(0, size_of_all_files)
+  num_sectors = (size_of_all_files / BLOCK_SECTOR_SIZE) + 1;
+  free_map_allocate(num_sectors, 0);
 }
 
 void recover(int flag) {
@@ -188,7 +168,7 @@ void recover(int flag) {
     size_t start = 0;
     block_sector_t i = bitmap_scan(free_map, start, bitmap_size(free_map), 0);
     while(i != BITMAP_ERROR && start < bitmap_size(free_map)){
-        //check if contains inode that was deleted
+        //check if BLOCK_SECTOR_SIZEcontains inode that was deleted
         struct inode *inode = inode_open(i);
 
         if (inode != NULL && inode_is_removed(inode)){
