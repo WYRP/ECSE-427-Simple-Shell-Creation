@@ -38,7 +38,7 @@ int copy_in(char *fname) {
   if (f == NULL){
     return FILE_DOES_NOT_EXIST;
   }
-  fgets(buffer, size, f);
+  fread(buffer, size, 1, f);
   fclose(f);
 
 
