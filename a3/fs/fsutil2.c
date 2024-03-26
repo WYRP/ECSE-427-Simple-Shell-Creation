@@ -34,7 +34,7 @@ int copy_in(char *fname) {
   char *buffer = malloc((size + 1) * sizeof(char));
   memset(buffer, 0, (size + 1));
 
-  FILE *f = fopen(fname, "r");
+  FILE *f = fopen(fname, "rb");
   if (f == NULL){
     return FILE_DOES_NOT_EXIST;
   }
