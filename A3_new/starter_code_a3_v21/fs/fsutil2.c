@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include <sys/stat.h>
 #include <sys/statvfs.h>
@@ -100,6 +101,17 @@ void find_file(char *pattern) {
   return;
 }
 
+//helper function to check if a file is fragmented
+//returns boolean value
+bool get_num_fragmented(block_sector_t* mySectors){
+  for (int i = 0; i < sizeof(mySectors); i++){
+    if (mySectors[i+1] - mySectors[i] > 3 ){
+      return true;
+    }
+  }
+  return false;
+}
+
 void fragmentation_degree() {
   struct dir *dir;
   char name[NAME_MAX + 1];
@@ -108,8 +120,10 @@ void fragmentation_degree() {
   int fragmentation_degree = 0;
 
   dir = dir_open_root();
-  if (dir == NULL)
-    return 0; // Directory not found
+  if (dir == NULL){
+    printf("Directory not found\n");
+    return; // Directory not found
+  }
   while (dir_readdir(dir, name)){
     if (fsutil_size(name) > 512){
       struct file *f = get_file_by_fname(name);
@@ -123,20 +137,10 @@ void fragmentation_degree() {
   }
   fragmentation_degree = (fragmented_counter / framentable_counter);
   dir_close(dir);
-  print("framentation degree: %d \n", fragmentation_degree);
+  printf("framentation degree: %d \n", fragmentation_degree);
   return; 
 }
 
-//helper function to check if a file is fragmented
-//returns boolean value
-bool get_num_fragmented(block_sector_t* mySectors){
-  for (int i = 0; i < sizeof(mySectors); i++){
-    if (mySectors[i+1] - mySectors[i] > 3 ){
-      return true;
-    }
-  }
-  return false;
-}
 
 //This function can be partly implemented by reading all files into memory (not necessarily the shell
 // memory, just a buffer);
@@ -152,14 +156,20 @@ int defragment() {
   dir = dir_open_root();
   if (dir == NULL)
     return 1;
-  while (dir_readdir(dir, name))
-    buffer = strcat(buffer, fsutil_read(name, buffer, fsutil_size(name)));
+  while (dir_readdir(dir, name)){
+    char *temp_buffer = malloc(fsutil_size(name));
+    fsutil_read(name, temp_buffer, fsutil_size(name));
+    buffer = strcat(buffer, temp_buffer);
+  }
   dir_close(dir);
 
-  free_map_release(0, size_of_all_files)
+  free_map_release(0, size_of_all_files);
   num_sectors = (size_of_all_files / BLOCK_SECTOR_SIZE) + 1;
   free_map_allocate(num_sectors, 0);
+  return 0;
 }
+
+
 
 void recover(int flag) {
   if (flag == 0) { // recover deleted inodes
@@ -195,9 +205,8 @@ void recover(int flag) {
                 break; // Insufficient memory to proceed
             }
             block_read(fs_device, i, buffer);
-            bool is_non_zero = false;
             char filename[32];
-            sprintf(filename, "recovered1-%d.txt", i);
+            sprintf(filename, "recovered1-%d.txt", (int)i);
             FILE *file = fopen(filename, "w");
             fwrite(buffer, BLOCK_SECTOR_SIZE, 1, file);
             fclose(file);
@@ -207,29 +216,37 @@ void recover(int flag) {
   } else if (flag == 2) { // data past end of file.
     struct inode *inode;
     
-    for (size_t i = 0; i < inode_count; i++) { 
-        inode = inode_open(i);
-        if (inode != NULL && !inode_is_removed(inode)) {
-            int length = inode_length(inode);
-            int blocks = bytes_to_sectors(length);
-            int overflow = length % BLOCK_SECTOR_SIZE;
-            char *buffer = malloc(BLOCK_SECTOR_SIZE);
-            if (overflow > 0 && blocks > 0) { // There is potential hidden data
-                if (buffer == NULL) {
-                    inode_close(inode);
-                    break; // Insufficient memory
-                }
-                inode_read_at(inode, buffer, BLOCK_SECTOR_SIZE, blocks * BLOCK_SECTOR_SIZE - overflow);
-                char filename[32];
-                sprintf(filename, "recovered2-%s.txt", inode_name(inode)); // Assume inode_name() gets the name
-                FILE *file = fopen(filename, "w");
-                fwrite(buffer + overflow, BLOCK_SECTOR_SIZE - overflow, 1, file);
-                fclose(file);
-                }
-            }
-            free(buffer);
-            inode_close(inode);
-        }
+    struct dir *dir;
+    char name[NAME_MAX + 1];
+    dir = dir_open_root();
+    if (dir == NULL){
+      printf("Directory not found\n");
+      return;
     }
+    while (dir_readdir(dir, name)){
+      struct file *file = get_file_by_fname(name);
+      inode = file_get_inode(file);
+      if (inode != NULL && !inode_is_removed(inode)) {
+        int length = inode_length(inode);
+        int blocks = bytes_to_sectors(length);
+        int overflow = length % BLOCK_SECTOR_SIZE;
+        char *buffer = malloc(BLOCK_SECTOR_SIZE);
+        if (overflow > 0 && blocks > 0) { // There is potential hidden data
+          if (buffer == NULL) {
+              inode_close(inode);
+              break; // Insufficient memory
+          }
+          inode_read_at(inode, buffer, BLOCK_SECTOR_SIZE, blocks * BLOCK_SECTOR_SIZE - overflow);
+          char filename[100];
+          sprintf(filename, "recovered2-%s.txt", name); // Assume inode_name() gets the name
+          FILE *file = fopen(filename, "w");
+          fwrite(buffer + overflow, BLOCK_SECTOR_SIZE - overflow, 1, file);
+          fclose(file);
+        }
+        free(buffer);
+      }
+    }
+    dir_close(dir);
   }
 }
+
