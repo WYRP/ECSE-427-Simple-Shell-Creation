@@ -183,11 +183,10 @@ int defragment() {
 
 void recover(int flag) {
   if (flag == 0) { // recover deleted inodes
-
     // TODO
     //scan all empty sectors
-    int start = 0;
-    int i = bitmap_scan(free_map, start, bitmap_size(free_map), 0);
+    size_t start = 0;
+    block_sector_t i = bitmap_scan(free_map, start, bitmap_size(free_map), 0);
     while(i != BITMAP_ERROR && start < bitmap_size(free_map)){
         //check if contains inode that was deleted
         struct inode *inode = inode_open(i);
@@ -207,62 +206,48 @@ void recover(int flag) {
         i = bitmap_scan(free_map, start, bitmap_size(free_map), 0);
     }
   } else if (flag == 1) { // recover all non-empty sectors
-    int start = 4; // Begin at sector 4, skipping reserved sectors
-    for (int i = start; i < bitmap_size(free_map); i++) {
-        if (!bitmap_test(free_map, i)) { // Sector is free, potential data remnants
+    size_t start = 4; // Begin at sector 4, skipping reserved sectors
+    for (size_t i = start; i < bitmap_size(free_map); i++) {
+      //bitmap_test usage question
+        if (bitmap_test(free_map, i)) { // Sector is free, potential data remnants
             char *buffer = malloc(BLOCK_SECTOR_SIZE);
             if (buffer == NULL) {
                 break; // Insufficient memory to proceed
             }
             block_read(fs_device, i, buffer);
             bool is_non_zero = false;
-            for (int j = 0; j < BLOCK_SECTOR_SIZE; j++) {
-                if (buffer[j] != 0) {
-                    is_non_zero = true;
-                    break;
-                }
-            }
-            if (is_non_zero) {
-                char filename[32];
-                sprintf(filename, "recovered1-%d.txt", i);
-                FILE *file = fopen(filename, "w");
-                fwrite(buffer, BLOCK_SECTOR_SIZE, 1, file);
-                fclose(file);
-            }
+            char filename[32];
+            sprintf(filename, "recovered1-%d.txt", i);
+            FILE *file = fopen(filename, "w");
+            fwrite(buffer, BLOCK_SECTOR_SIZE, 1, file);
+            fclose(file);
             free(buffer);
         }
     }
   } else if (flag == 2) { // data past end of file.
     struct inode *inode;
-    for (int i = 0; i < inode_count; i++) { // Assume inode_count is defined
+    
+    for (size_t i = 0; i < inode_count; i++) { 
         inode = inode_open(i);
         if (inode != NULL && !inode_is_removed(inode)) {
             int length = inode_length(inode);
             int blocks = bytes_to_sectors(length);
             int overflow = length % BLOCK_SECTOR_SIZE;
+            char *buffer = malloc(BLOCK_SECTOR_SIZE);
             if (overflow > 0 && blocks > 0) { // There is potential hidden data
-                char *buffer = malloc(BLOCK_SECTOR_SIZE);
                 if (buffer == NULL) {
                     inode_close(inode);
                     break; // Insufficient memory
                 }
-                inode_read_at(inode, buffer, BLOCK_SECTOR_SIZE, blocks * BLOCK_SECTOR_SIZE - BLOCK_SECTOR_SIZE);
-                bool is_non_zero = false;
-                for (int j = overflow; j < BLOCK_SECTOR_SIZE; j++) {
-                    if (buffer[j] != 0) {
-                        is_non_zero = true;
-                        break;
-                    }
+                inode_read_at(inode, buffer, BLOCK_SECTOR_SIZE, blocks * BLOCK_SECTOR_SIZE - overflow);
+                char filename[32];
+                sprintf(filename, "recovered2-%s.txt", inode_name(inode)); // Assume inode_name() gets the name
+                FILE *file = fopen(filename, "w");
+                fwrite(buffer + overflow, BLOCK_SECTOR_SIZE - overflow, 1, file);
+                fclose(file);
                 }
-                if (is_non_zero) {
-                    char filename[32];
-                    sprintf(filename, "recovered2-%s.txt", inode_name(inode)); // Assume inode_name() gets the name
-                    FILE *file = fopen(filename, "w");
-                    fwrite(buffer + overflow, BLOCK_SECTOR_SIZE - overflow, 1, file);
-                    fclose(file);
-                }
-                free(buffer);
             }
+            free(buffer);
             inode_close(inode);
         }
     }
