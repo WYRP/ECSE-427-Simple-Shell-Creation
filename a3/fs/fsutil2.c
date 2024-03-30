@@ -104,7 +104,7 @@ void find_file(char *pattern) {
 //returns boolean value
 bool get_num_fragmented(block_sector_t* mySectors, offset_t size){
   for (int i = 0; i < size - 1; i++){
-    if (mySectors[i+1] - mySectors[i] > 3 ){
+    if (mySectors[i+1] - mySectors[i] >= 6 ){
       return true;
     }
   }
