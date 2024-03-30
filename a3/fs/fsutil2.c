@@ -156,7 +156,7 @@ int defragment() {
   printf("Files in the root directory:\n");
   dir = dir_open_root();
   if (dir == NULL)
-    return 1;
+    return FILE_DOES_NOT_EXIST;
   while (dir_readdir(dir, name)){
     char *temp_buffer = malloc(fsutil_size(name));
     fsutil_read(name, temp_buffer, fsutil_size(name));
