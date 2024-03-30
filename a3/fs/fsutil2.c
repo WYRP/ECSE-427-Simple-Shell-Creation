@@ -160,7 +160,7 @@ int defragment() {
   while (dir_readdir(dir, name)){
     char *temp_buffer = malloc(fsutil_size(name));
     fsutil_read(name, temp_buffer, fsutil_size(name));
-    buffer = strcat(buffer, temp_buffer);
+    strcat(buffer, temp_buffer);
     free(temp_buffer);
   }
   dir_close(dir);
@@ -174,18 +174,16 @@ int defragment() {
     return FILE_DOES_NOT_EXIST;
   }
   while (dir_readdir(dir, name)){
-    if (fsutil_size(name) > 512){
-      block_sector_t inode_sector = sector_offset;
-      struct file *f = get_file_by_fname(name);
-      struct inode *fileNode = file_get_inode(f); //fileNode contains the inode of the file f
-      block_sector_t* mySectors = get_inode_data_sectors(fileNode); //sector indecies of the file f
-      offset_t fileSize = fileNode->data.length;
-      free_map_release(inode_sector, bytes_to_sectors(fileSize));
-      free_map_allocate(bytes_to_sectors(fileSize), &inode_sector);
-      inode_write_at(fileNode, buffer, fileSize, offset);
-      offset += fileSize;
-      sector_offset += bytes_to_sectors(fileSize);
-    }
+    block_sector_t inode_sector = sector_offset;
+    struct file *f = get_file_by_fname(name);
+    struct inode *fileNode = file_get_inode(f); 
+    block_sector_t* mySectors = get_inode_data_sectors(fileNode); 
+    offset_t fileSize = fileNode->data.length;
+    free_map_release(inode_sector, bytes_to_sectors(fileSize));
+    free_map_allocate(bytes_to_sectors(fileSize), &inode_sector);
+    inode_write_at(fileNode, buffer, fileSize, offset);
+    offset += fileSize;
+    sector_offset += bytes_to_sectors(fileSize);
   }
   free_map_release(inode_sector, bitmap_size(free_map) - size_of_all_files);
   dir_close(dir);
