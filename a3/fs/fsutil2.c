@@ -71,12 +71,11 @@ int copy_out(char *fname) {
 
   FILE *f = fopen(fname, "w");
   if (f == NULL){
-    printf("File does not exist \n");
-    return 0;
+    return FILE_DOES_NOT_EXIST;
   }
   fputs(buffer, f);
   fclose(f);
-  return -1; 
+  return 0; 
 }
 
 void find_file(char *pattern) {
