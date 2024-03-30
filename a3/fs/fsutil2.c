@@ -114,9 +114,9 @@ bool get_num_fragmented(block_sector_t* mySectors){
 void fragmentation_degree() {
   struct dir *dir;
   char name[NAME_MAX + 1];
-  int framentable_counter = 0;
+  int fragmentable_counter = 0;
   int fragmented_counter = 0;
-  int fragmentation_degree = 0;
+  float fragmentation_degree = 0;
 
   dir = dir_open_root();
   if (dir == NULL){
@@ -131,12 +131,14 @@ void fragmentation_degree() {
       if (get_num_fragmented(mySectors)){
         fragmented_counter++;
       }
-      framentable_counter++;
+      fragmentable_counter++;
     }
   }
-  fragmentation_degree = (fragmented_counter / framentable_counter);
+  fragmentation_degree = (float) fragmented_counter / fragmentable_counter;
   dir_close(dir);
-  printf("framentation degree: %d \n", fragmentation_degree);
+  printf("Num fragmentable files: %d\n", fragmentable_counter);
+  printf("Num fragmented files: %d\n", fragmented_counter);
+  printf("framentation degree: %f\n", fragmentation_degree);
   return; 
 }
 
