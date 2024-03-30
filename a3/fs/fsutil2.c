@@ -164,11 +164,12 @@ int defragment() {
     free(temp_buffer);
   }
   dir_close(dir);
-
+  
   //offset into buffer
   offset_t offset = 0;
   //sector offset
   block_sector_t sector_offset = 0;
+  free_map_release(sector_offset, bytes_to_sectors(size_of_all_files));
   dir = dir_open_root();
   if (dir == NULL){
     return FILE_DOES_NOT_EXIST;
@@ -180,7 +181,6 @@ int defragment() {
       struct inode *fileNode = file_get_inode(f); //fileNode contains the inode of the file f
       block_sector_t* mySectors = get_inode_data_sectors(fileNode); //sector indecies of the file f
       offset_t fileSize = fileNode->data.length;
-      free_map_release(inode_sector, bytes_to_sectors(fileSize));
       free_map_allocate(bytes_to_sectors(fileSize), &inode_sector);
       inode_write_at(fileNode, buffer, fileSize, offset);
       offset += fileSize;
