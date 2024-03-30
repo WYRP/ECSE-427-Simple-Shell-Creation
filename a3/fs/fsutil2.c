@@ -169,7 +169,7 @@ int defragment() {
   offset_t offset = 0;
   //sector offset
   block_sector_t sector_offset = 0;
-  free_map_release(sector_offset, bytes_to_sectors(size_of_all_files));
+  free_map_release(sector_offset, size_of_all_files);
   dir = dir_open_root();
   if (dir == NULL){
     return FILE_DOES_NOT_EXIST;
