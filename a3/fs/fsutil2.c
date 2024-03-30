@@ -143,31 +143,49 @@ void fragmentation_degree() {
   return; 
 }
 
-
 //This function can be partly implemented by reading all files into memory (not necessarily the shell
 // memory, just a buffer);
-//???? am I doing this right?
 int defragment() {
+  block_sector_t inode_sector = 0;
   struct dir *dir;
   char name[NAME_MAX + 1];
-  int size_of_all_files = num_free_sectors(); //not sure if this is the right function to use
+  size_t size_of_all_files = bitmap_size(free_map) - num_free_sectors();
   char *buffer = malloc(size_of_all_files);
-  int num_sectors = 0;
 
-  printf("Files in the root directory:\n");
+  //read all files into a buffer
   dir = dir_open_root();
-  if (dir == NULL)
+  if (dir == NULL){
     return FILE_DOES_NOT_EXIST;
+  }
   while (dir_readdir(dir, name)){
     char *temp_buffer = malloc(fsutil_size(name));
     fsutil_read(name, temp_buffer, fsutil_size(name));
     buffer = strcat(buffer, temp_buffer);
+    free(temp_buffer);
   }
   dir_close(dir);
 
+//release all sectors
   free_map_release(0, size_of_all_files);
-  num_sectors = (size_of_all_files / BLOCK_SECTOR_SIZE) + 1;
-  free_map_allocate(num_sectors, 0);
+  offset_t offset = 0;
+  dir = dir_open_root();
+  if (dir == NULL){
+    return FILE_DOES_NOT_EXIST;
+  }
+  while (dir_readdir(dir, name)){
+    if (fsutil_size(name) > 512){
+      block_sector_t inode_sector = 0;
+      struct file *f = get_file_by_fname(name);
+      struct inode *fileNode = file_get_inode(f); //fileNode contains the inode of the file f
+      block_sector_t* mySectors = get_inode_data_sectors(fileNode); //sector indecies of the file f
+      offset_t fileSize = fileNode->data.length;
+      free_map_allocate(bytes_to_sectors(fileSize), &inode_sector);
+      inode_write_at(fileNode, buffer, fileSize, offset);
+      offset += fileSize;
+    }
+  }
+  dir_close(dir);
+  free(buffer);
   return 0;
 }
 
