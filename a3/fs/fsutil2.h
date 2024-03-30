@@ -7,7 +7,6 @@
 int copy_in(char *fname);
 int copy_out(char *fname);
 void find_file(char *pattern);
-bool get_num_fragmented(block_sector_t* mySectors, offset_t size);
 void fragmentation_degree();
 int defragment();
 void recover(int flag);
