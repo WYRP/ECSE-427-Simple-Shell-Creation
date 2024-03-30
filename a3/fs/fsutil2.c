@@ -103,10 +103,8 @@ void find_file(char *pattern) {
 //helper function to check if a file is fragmented
 //returns boolean value
 bool get_num_fragmented(block_sector_t* mySectors, offset_t size){
-  for (int i = 0; i < size - 1; i++){
+  for (int i = 0; i < size - 2; i++){
     if (abs(mySectors[i+1] - mySectors[i]) >= 6 ){
-      printf("%d\n", mySectors[i+1]);
-      printf("%d\n", mySectors[i]);
       return true;
     }
   }
