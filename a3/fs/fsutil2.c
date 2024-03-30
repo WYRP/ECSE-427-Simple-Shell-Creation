@@ -150,7 +150,7 @@ int defragment() {
   struct dir *dir;
   char name[NAME_MAX + 1];
   size_t size_of_all_files = bitmap_size(free_map) - num_free_sectors();
-  char *buffer = malloc(size_of_all_files);
+  char *buffer = malloc(size_of_all_files * 512);
 
   //read all files into a buffer
   dir = dir_open_root();
@@ -187,7 +187,7 @@ int defragment() {
       sector_offset += bytes_to_sectors(fileSize);
     }
   }
-  free_map_release(inode_sector, );
+  free_map_release(inode_sector, bitmap_size(free_map) - size_of_all_files);
   dir_close(dir);
   free(buffer);
   return 0;
