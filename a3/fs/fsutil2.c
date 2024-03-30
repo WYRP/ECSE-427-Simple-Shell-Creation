@@ -102,7 +102,7 @@ void find_file(char *pattern) {
 
 //helper function to check if a file is fragmented
 //returns boolean value
-bool get_num_fragmented(block_sector_t* mySectors, offset_t size){
+bool get_num_fragmented(block_sector_t* mySectors, size_t size){
   for (int i = 0; i < size - 1; i++){
     if (abs(mySectors[i+1] - mySectors[i]) >= 6 ){
       return true;
@@ -129,7 +129,7 @@ void fragmentation_degree() {
       struct inode *fileNode = file_get_inode(f); //fileNode contains the inode of the file f
       block_sector_t* mySectors = get_inode_data_sectors(fileNode); //sector indecies of the file f
       offset_t fileSize = fileNode->data.length;
-      if (get_num_fragmented(mySectors, fileSize / 512 + 1)){
+      if (get_num_fragmented(mySectors, bytes_to_sectors(fileSize))){
         fragmented_counter++;
       }
       fragmentable_counter++;
