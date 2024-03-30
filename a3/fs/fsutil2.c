@@ -38,7 +38,7 @@ int copy_in(char *fname) {
   if (f == NULL){
     return FILE_DOES_NOT_EXIST;
   }
-  fread(buffer, size, 1, f);
+  fread(buffer, size + 1, 1, f);
   fclose(f);
 
 
@@ -47,7 +47,7 @@ int copy_in(char *fname) {
     printf("No space left on the shell hard drive\n");
     return NO_MEM_SPACE;
   }
-  if (size > shell_space) {
+  if (size + 1 > shell_space) {
     fsutil_create(fname, shell_space);
     fsutil_write(fname, buffer, shell_space);
     free(buffer); 
@@ -55,8 +55,8 @@ int copy_in(char *fname) {
     return 0; //partial write
   }
   else{
-    fsutil_create(fname, size);
-    fsutil_write(fname, buffer, size);
+    fsutil_create(fname, size + 1);
+    fsutil_write(fname, buffer, size + 1);
     free(buffer);
     return 0; //success
   }
