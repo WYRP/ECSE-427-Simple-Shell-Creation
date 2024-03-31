@@ -104,7 +104,7 @@ void find_file(char *pattern) {
 //returns boolean value
 bool get_num_fragmented(block_sector_t* mySectors, size_t size){
   for (int i = 0; i < size - 1; i++){
-    if (mySectors[i+1] - mySectors[i] >= 6 ){
+    if (abs(mySectors[i+1] - mySectors[i]) >= 6 ){
       return true;
     }
   }
@@ -146,7 +146,6 @@ void fragmentation_degree() {
 //This function can be partly implemented by reading all files into memory (not necessarily the shell
 // memory, just a buffer);
 int defragment() {
-  block_sector_t inode_sector = 0;
   struct dir *dir;
   char name[NAME_MAX + 1];
   size_t size_of_all_files = bitmap_size(free_map) - num_free_sectors();
@@ -185,7 +184,7 @@ int defragment() {
     offset += fileSize;
     sector_offset += bytes_to_sectors(fileSize);
   }
-  free_map_release(inode_sector, bitmap_size(free_map) - size_of_all_files);
+  free_map_release(sector_offset, bitmap_size(free_map) - size_of_all_files);
   dir_close(dir);
   free(buffer);
   return 0;
