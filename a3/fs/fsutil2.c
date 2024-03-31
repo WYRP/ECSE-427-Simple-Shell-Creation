@@ -178,11 +178,14 @@ int defragment() {
     struct inode *fileNode = file_get_inode(f); 
     block_sector_t* mySectors = get_inode_data_sectors(fileNode); 
     offset_t fileSize = fileNode->data.length;
+    struct inode_disk *disk_inode = &fileNode->data;
 
     free_map_release(inode_sector, bytes_to_sectors(fileSize) + 1);
-    free_map_allocate(bytes_to_sectors(fileSize), &inode_sector);
     fileNode->sector = inode_sector;
     
+    buffer_cache_write(inode_sector, disk_inode);
+    free_map_allocate(bytes_to_sectors(fileSize), &inode_sector);
+
     inode_write_at(fileNode, buffer, fileSize, offset);
     offset += fileSize;
     sector_offset += bytes_to_sectors(fileSize);
