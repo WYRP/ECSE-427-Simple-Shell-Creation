@@ -234,9 +234,8 @@ void recover(int flag) {
     for (size_t i = 0; i < bitmap_size(free_map); i++) {
       //sector i is free - potential removed inode
       if (!bitmap_test(free_map, i)) {
-        //check if BLOCK_SECTOR_SIZE contains inode that was deleted
+        //checks if it's associated to a file inode
         struct inode *inode = inode_open(i);
-
         if (inode != NULL && !inode_is_directory(inode)){
           //recover
           offset_t size = inode_length(inode);
@@ -244,6 +243,7 @@ void recover(int flag) {
           char fname[100];
           sprintf(fname, "recovered0-%d", i);
           inode_read_at(inode, buffer, size, 0);
+          inode_close(i);
           fsutil_create(fname, size);
           fsutil_write(fname, buffer, size);
           free(buffer);
