@@ -214,36 +214,74 @@ int defragment() {
 
 void recover(int flag) {
   if (flag == 0) { // recover deleted inodes
-    // TODO
-    //scan all empty sectors
-    size_t start = 0;
-    printf("beginning of recover\n");
-    block_sector_t i = bitmap_scan(free_map, start, bitmap_size(free_map), 0);
-    printf("beginning of recover, before while loop\n");
-    // while(i != BITMAP_ERROR && start < bitmap_size(free_map)){
-    while(start < bitmap_size(free_map)){
-        //check if BLOCK_SECTOR_SIZEcontains inode that was deleted
-        printf("trying to find where the file read error is coming from 0");
-        struct inode *inode = inode_open(i);
+    // // TODO
+    // //scan all empty sectors
+    // size_t start = 0;
+    // printf("beginning of recover\n");
+    // block_sector_t i = bitmap_scan(free_map, start, bitmap_size(free_map), 0);
+    // printf("beginning of recover, before while loop\n");
+    // // while(i != BITMAP_ERROR && start < bitmap_size(free_map)){
+    // while(start < bitmap_size(free_map)){
+    //     //check if BLOCK_SECTOR_SIZEcontains inode that was deleted
+    //     printf("trying to find where the file read error is coming from 0");
+    //     struct inode *inode = inode_open(i);
 
-        if (inode != NULL && inode_is_removed(inode)){
-          //recover
-          inode->removed = false;
-          offset_t size = inode_length(inode);
-          char *buffer = malloc(size);
-          char fname[100];
-          printf("is bad command here if statement?\n");
-          sprintf(fname, "recovered0-%d", i);
-          inode_read_at(inode, buffer, size, 0);
-          fsutil_create(fname, size);
-          fsutil_write(fname, buffer, size);
-          free(buffer);
+    //     if (inode != NULL && inode_is_removed(inode)){
+    //       //recover
+    //       inode->removed = false;
+    //       offset_t size = inode_length(inode);
+    //       char *buffer = malloc(size);
+    //       char fname[100];
+    //       printf("is bad command here if statement?\n");
+    //       sprintf(fname, "recovered0-%d", i);
+    //       inode_read_at(inode, buffer, size, 0);
+    //       fsutil_create(fname, size);
+    //       fsutil_write(fname, buffer, size);
+    //       free(buffer);
+    //     }
+    //     start++;
+    //     printf("is bad command here if statement, or outside of the if statement?\n");
+    //     i = bitmap_scan(free_map, start, bitmap_size(free_map), 0);
+    // }
+    // printf("flag 0 end\n");
+    size_t start = 0;
+    printf("Beginning of recover for flag 0\n");
+    block_sector_t sector = bitmap_scan_and_flip(free_map, start, 1, false);
+
+    while (sector != BITMAP_ERROR && start < bitmap_size(free_map)) {
+      struct inode *inode = inode_open(sector);
+
+      if (inode != NULL && inode_is_removed(inode)) {
+        // Reset the removed flag
+        inode->removed = false;
+        // Read the size of the inode's data
+        off_t size = inode_length(inode);
+        // Allocate a buffer to hold the data
+        char *buffer = malloc(size);
+        // Check for successful allocation
+        if (buffer == NULL) {
+          printf("Failed to allocate memory for recovery.\n");
+          return;
         }
-        start++;
-        printf("is bad command here if statement, or outside of the if statement?\n");
-        i = bitmap_scan(free_map, start, bitmap_size(free_map), 0);
+        // Create a filename for the recovered file
+        char fname[100];
+        sprintf(fname, "recovered0-%d", sector);
+        // Read the data from the inode
+        inode_read_at(inode, buffer, size, 0);
+        // Write the data to the recovered file
+        filesys_create(fname, size);
+        int fd = filesys_open(fname);
+        file_write_at(fd, buffer, size, 0);
+        file_close(fd);
+        // Free the buffer
+        free(buffer);
+      }
+
+      inode_close(inode);
+      start = sector + 1;
+      sector = bitmap_scan_and_flip(free_map, start, 1, false);
     }
-    printf("flag 0 end\n");
+    printf("End of recover for flag 0\n");
   } else if (flag == 1) { // recover all non-empty sectors
     size_t start = 4; // Begin at sector 4, skipping reserved sectors
     printf("trying to find where the file read error is coming from 1");
