@@ -150,13 +150,16 @@ int defragment() {
   char name[NAME_MAX + 1];
   size_t size_of_all_files = bitmap_size(free_map) - num_free_sectors();
   char *buffer = malloc(size_of_all_files * 512);
+  int fileNumber = 0;
 
   //read all file content into a buffer
+  //count the number of files
   dir = dir_open_root();
   if (dir == NULL){
     return FILE_DOES_NOT_EXIST;
   }
   while (dir_readdir(dir, name)){
+    fileNumber++;
     char *temp_buffer = malloc(fsutil_size(name));
     fsutil_read(name, temp_buffer, fsutil_size(name));
     strcat(buffer, temp_buffer);
@@ -164,44 +167,39 @@ int defragment() {
   }
   dir_close(dir);
 
-  //move all directory inode to the beginning of free map
+  int file_sizes[fileNumber];
+  char file_names[fileNumber][NAME_MAX + 1];
+  int file_idx = 0;
 
-  //offset into buffer
-  offset_t offset = 0;
-  //sector offset
-  block_sector_t sector_offset = 0;
+  //remove all files
+  //record each file's size into file_sizes
+  //record each file's name into file_names
   dir = dir_open_root();
   if (dir == NULL){
     return FILE_DOES_NOT_EXIST;
   }
   while (dir_readdir(dir, name)){
-   
-    struct file *f = get_file_by_fname(name);
-    struct inode *fileNode = file_get_inode(f); 
-    block_sector_t* mySectors = get_inode_data_sectors(fileNode); 
-    offset_t fileSize = fileNode->data.length;
-    // struct inode_disk *disk_inode = &fileNode->data;
-    block_sector_t data_sector = sector_offset;
-    //release enough sector for inode + data
-    free_map_release(data_sector, bytes_to_sectors(fileSize) + 1);
-    
-    //allocate file data
-    free_map_allocate(bytes_to_sectors(fileSize), &data_sector);
-    inode_write_at(fileNode, buffer, fileSize, offset);
-    offset += fileSize;
-    sector_offset += bytes_to_sectors(fileSize);
-
-    block_sector_t inode_sector = sector_offset;
-    //allocate file inode
-    if(free_map_allocate(1, &inode_sector)){
-      //write the inode into inode_sector
-      buffer_cache_write(inode_sector, fileNode);
-      fileNode->sector = inode_sector;
-    }
-    //update inode_sector
-    sector_offset++;
+    file_sizes[file_idx] = fsutil_size(name);
+    strcpy(file_names[file_idx], name);
+    file_idx++;
+    fsutil_rm(name);
   }
-  free_map_release(sector_offset, bitmap_size(free_map) - size_of_all_files);
+  dir_close(dir);
+
+  //recreate all the files
+  int offset = 0;
+  dir = dir_open_root();
+  if (dir == NULL){
+    return FILE_DOES_NOT_EXIST;
+  }
+  for (int i = 0; i < fileNumber; i++){
+    char *tmp = malloc(file_sizes[i]);
+    strncpy(tmp, buffer + offset, file_sizes[i]);
+    fsutil_create(file_names[i], file_sizes[i]);
+    fsutil_write(file_names[i], tmp, file_sizes[i]);
+    free(tmp);
+    offset += file_sizes[i];
+  }
   dir_close(dir);
   free(buffer);
   return 0;
