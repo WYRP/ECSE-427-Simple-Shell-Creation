@@ -165,6 +165,7 @@ int defragment() {
     strcat(buffer, temp_buffer);
     free(temp_buffer);
   }
+  printf("%d\n", fileNumber);
   dir_close(dir);
 
   int file_sizes[fileNumber];
@@ -181,7 +182,7 @@ int defragment() {
   while (dir_readdir(dir, name)){
     file_sizes[file_idx] = fsutil_size(name);
     strcpy(file_names[file_idx], name);
-    printf("%s\n", file_names[file_idx]);
+    printf("file name: %s\n", file_names[file_idx]);
     file_idx++;
     fsutil_rm(name);
   }
@@ -196,7 +197,6 @@ int defragment() {
   for (int i = 0; i < fileNumber; i++){
     char *tmp = malloc(file_sizes[i]);
     strncpy(tmp, buffer + offset, file_sizes[i]);
-    printf("%s\n", tmp);
     fsutil_create(file_names[i], file_sizes[i]);
     fsutil_write(file_names[i], tmp, file_sizes[i]);
     free(tmp);
