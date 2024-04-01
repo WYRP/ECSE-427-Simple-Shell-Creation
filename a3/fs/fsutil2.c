@@ -225,6 +225,7 @@ void recover(int flag) {
           offset_t size = inode_length(inode);
           char *buffer = malloc(size);
           char fname[100];
+          printf("is bad command here if statement?\n");
           sprintf(fname, "recovered0-%d", i);
           inode_read_at(inode, buffer, size, 0);
           fsutil_create(fname, size);
@@ -245,6 +246,7 @@ void recover(int flag) {
             }
             block_read(fs_device, i, buffer);
             char filename[32];
+            printf("is bad command here else if 1?\n");
             sprintf(filename, "recovered1-%d.txt", (int)i);
             FILE *file = fopen(filename, "w");
             fwrite(buffer, BLOCK_SECTOR_SIZE, 1, file);
@@ -277,7 +279,7 @@ void recover(int flag) {
           }
           inode_read_at(inode, buffer, BLOCK_SECTOR_SIZE, blocks * BLOCK_SECTOR_SIZE - overflow);
           char filename[100];
-          printf("is bad command here?\n");
+          printf("is bad command here else if 2?\n");
           sprintf(filename, "recovered2-%s.txt", name); // Assume inode_name() gets the name
           FILE *file = fopen(filename, "w");
           fwrite(buffer + overflow, BLOCK_SECTOR_SIZE - overflow, 1, file);
