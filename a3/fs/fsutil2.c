@@ -220,7 +220,8 @@ void recover(int flag) {
     printf("beginning of recover\n");
     block_sector_t i = bitmap_scan(free_map, start, bitmap_size(free_map), 0);
     printf("beginning of recover, before while loop\n");
-    while(i != BITMAP_ERROR && start < bitmap_size(free_map)){
+    // while(i != BITMAP_ERROR && start < bitmap_size(free_map)){
+    while(start < bitmap_size(free_map)){
         //check if BLOCK_SECTOR_SIZEcontains inode that was deleted
         printf("trying to find where the file read error is coming from 0");
         struct inode *inode = inode_open(i);
@@ -242,6 +243,7 @@ void recover(int flag) {
         printf("is bad command here if statement, or outside of the if statement?\n");
         i = bitmap_scan(free_map, start, bitmap_size(free_map), 0);
     }
+    printf("flag 0 end\n");
   } else if (flag == 1) { // recover all non-empty sectors
     size_t start = 4; // Begin at sector 4, skipping reserved sectors
     printf("trying to find where the file read error is coming from 1");
