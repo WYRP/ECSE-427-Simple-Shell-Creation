@@ -281,7 +281,7 @@ void recover(int flag) {
             }
             block_read(fs_device, i, buffer);
             remove_nulls(buffer, &block_sector_size);
-            printf(sizeof(buffer) + "size of buffer");
+            printf("Size of dynamic_buffer: %zu bytes\n", sizeof(buffer));
             char filename[32];
             sprintf(filename, "recovered1-%d.txt", (int)i);
             FILE *file = fopen(filename, "w");
