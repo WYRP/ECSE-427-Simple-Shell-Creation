@@ -236,14 +236,16 @@ void recover(int flag) {
       if (!bitmap_test(free_map, i)) {
         //checks if it's associated to a file inode
         struct inode *inode = inode_open(i);
-        if (inode != NULL && !inode_is_directory(inode)){
+        if (inode != NULL && inode->data.magic == INODE_MAGIC){
+          if (inode_is_directory(inode)){
+            continue;
+          }
           //recover
           offset_t size = inode_length(inode);
           char *buffer = malloc(size);
           char fname[100];
           sprintf(fname, "recovered0-%d", i);
           inode_read_at(inode, buffer, size, 0);
-          inode_close(i);
           fsutil_create(fname, size);
           fsutil_write(fname, buffer, size);
           free(buffer);
