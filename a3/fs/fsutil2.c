@@ -217,6 +217,7 @@ void recover(int flag) {
     block_sector_t i = bitmap_scan(free_map, start, bitmap_size(free_map), 0);
     while(i != BITMAP_ERROR && start < bitmap_size(free_map)){
         //check if BLOCK_SECTOR_SIZEcontains inode that was deleted
+        printf("trying to find where the file read error is coming from")
         struct inode *inode = inode_open(i);
 
         if (inode != NULL && inode_is_removed(inode)){
