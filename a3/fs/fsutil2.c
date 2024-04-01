@@ -215,18 +215,29 @@ int defragment() {
 void recover(int flag) {
   if (flag == 0) { // recover deleted inodes
   struct dir *dir;
+  int *tmp_str_sectors = malloc(sizeof(int) * 128);
   char name[NAME_MAX + 1];
+  int counter = 0;
   dir = dir_open_root();
   if (dir == NULL){
     printf("Directory not found\n");
     return;
   }
-  block_sector_t mySectors = dir_readdir_inode(dir, name);
-  //前提是这个dir_readdir_inode returns all of the sector numbers in the directory
-  // as an array of block_sector_t
-  for (int i = 0; i < sizeof(mySectors); i++) {
+
+  while (dir_readdir(dir, name)){
+    block_sector_t mySectors = dir_readdir_inode(dir, name);
+    tmp_str_sectors [counter] = mySectors;
+    counter += 1;
+  }   
+
+  int list_of_sectors[counter];
+  for (int i = 0; i < counter; i++){
+    list_of_sectors[i] = tmp_str_sectors[i];
+  }
+  free(tmp_str_sectors);
+  for (int i = 0; i < sizeof(list_of_sectors); i++) {
     struct inode *myInode;
-    myInode = inode_open(mySectors[i]);
+    myInode = inode_open(list_of_sectors[i]);
     if (myInode->removed == true) {
       myInode->removed = false;
       struct file *file = file_open(myInode);
@@ -235,8 +246,8 @@ void recover(int flag) {
         break; // Insufficient memory to proceed
       }
       file_read_at(file, buffer, BLOCK_SECTOR_SIZE, 0);
-      sprintf(name, "recovered-%d.txt", (int)mySectors[i]);
-      if (dir_add(dir, name, mySectors[i], false)) {
+      sprintf(name, "recovered-%d.txt", list_of_sectors[i]);
+      if (dir_add(dir, name, list_of_sectors[i], false)) {
         inode_write_at(myInode, buffer, BLOCK_SECTOR_SIZE, 0);
       }
       free(buffer);
