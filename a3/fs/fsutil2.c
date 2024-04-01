@@ -281,8 +281,8 @@ void recover(int flag) {
             }
             block_read(fs_device, i, buffer);
             remove_nulls(buffer, &block_sector_size);
+            printf(sizeof(buffer) + "size of buffer");
             char filename[32];
-            printf("is bad command here else if 1?\n");
             sprintf(filename, "recovered1-%d.txt", (int)i);
             FILE *file = fopen(filename, "w");
             fwrite(buffer, BLOCK_SECTOR_SIZE, 1, file);
