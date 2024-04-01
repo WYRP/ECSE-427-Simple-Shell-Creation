@@ -237,7 +237,7 @@ void recover(int flag) {
         //check if BLOCK_SECTOR_SIZE contains inode that was deleted
         struct inode *inode = inode_open(i);
 
-        if (inode != NULL){
+        if (inode != NULL && inode_is_removed(inode)){
           //recover
           offset_t size = inode_length(inode);
           char *buffer = malloc(size);
