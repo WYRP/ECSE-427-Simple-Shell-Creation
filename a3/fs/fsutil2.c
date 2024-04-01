@@ -277,6 +277,7 @@ void recover(int flag) {
           }
           inode_read_at(inode, buffer, BLOCK_SECTOR_SIZE, blocks * BLOCK_SECTOR_SIZE - overflow);
           char filename[100];
+          printf("is bad command here?\n")
           sprintf(filename, "recovered2-%s.txt", name); // Assume inode_name() gets the name
           FILE *file = fopen(filename, "w");
           fwrite(buffer + overflow, BLOCK_SECTOR_SIZE - overflow, 1, file);
