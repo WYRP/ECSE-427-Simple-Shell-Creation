@@ -210,9 +210,24 @@ int defragment() {
   return 0;
 }
 
+void remove_nulls(char *buf, size_t *len) {
+    char *null_pos;
+    size_t shift_len;
 
+    while ((null_pos = memchr(buf, '\0', *len)) != NULL) {
+        // Calculate the number of bytes to shift
+        shift_len = *len - (null_pos - buf) - 1;
+
+        // Shift the memory to overwrite the null byte
+        memmove(null_pos, null_pos + 1, shift_len);
+
+        // Decrease the buffer length
+        (*len)--;
+    }
+}
 
 void recover(int flag) {
+  size_t block_sector_size = 512;
   if (flag == 0) { // recover deleted inodes
   struct dir *dir;
   int *tmp_str_sectors = malloc(sizeof(int) * 128);
@@ -257,7 +272,6 @@ void recover(int flag) {
 
   } else if (flag == 1) { // recover all non-empty sectors
     size_t start = 4; // Begin at sector 4, skipping reserved sectors
-    printf("trying to find where the file read error is coming from 1");
     for (size_t i = start; i < bitmap_size(free_map); i++) {
       //bitmap_test usage question
         if (bitmap_test(free_map, i)) { // Sector is free, potential data remnants
@@ -266,6 +280,7 @@ void recover(int flag) {
                 break; // Insufficient memory to proceed
             }
             block_read(fs_device, i, buffer);
+            remove_nulls(buffer, &block_sector_size);
             char filename[32];
             printf("is bad command here else if 1?\n");
             sprintf(filename, "recovered1-%d.txt", (int)i);
