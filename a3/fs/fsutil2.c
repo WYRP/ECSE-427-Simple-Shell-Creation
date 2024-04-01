@@ -220,7 +220,7 @@ void recover(int flag) {
     block_sector_t i = bitmap_scan(free_map, start, bitmap_size(free_map), 0);
     while(i != BITMAP_ERROR && start < bitmap_size(free_map)){
         //check if BLOCK_SECTOR_SIZEcontains inode that was deleted
-        printf("trying to find where the file read error is coming from");
+        printf("trying to find where the file read error is coming from 0");
         struct inode *inode = inode_open(i);
 
         if (inode != NULL && inode_is_removed(inode)){
@@ -241,6 +241,7 @@ void recover(int flag) {
     }
   } else if (flag == 1) { // recover all non-empty sectors
     size_t start = 4; // Begin at sector 4, skipping reserved sectors
+    printf("trying to find where the file read error is coming from 1");
     for (size_t i = start; i < bitmap_size(free_map); i++) {
       //bitmap_test usage question
         if (bitmap_test(free_map, i)) { // Sector is free, potential data remnants
@@ -259,6 +260,7 @@ void recover(int flag) {
         }
     }
   } else if (flag == 2) { // data past end of file.
+    printf("trying to find where the file read error is coming from 2");
     struct inode *inode;
     
     struct dir *dir;
