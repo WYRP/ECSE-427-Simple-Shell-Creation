@@ -217,7 +217,9 @@ void recover(int flag) {
     // TODO
     //scan all empty sectors
     size_t start = 0;
+    printf("beginning of recover\n")
     block_sector_t i = bitmap_scan(free_map, start, bitmap_size(free_map), 0);
+    printf("beginning of recover, before while loop\n")
     while(i != BITMAP_ERROR && start < bitmap_size(free_map)){
         //check if BLOCK_SECTOR_SIZEcontains inode that was deleted
         printf("trying to find where the file read error is coming from 0");
