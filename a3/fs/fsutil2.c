@@ -228,67 +228,47 @@ void remove_nulls(char *buf, size_t *len) {
 
 void recover(int flag) {
   size_t block_sector_size = 512;
+
   if (flag == 0) { // recover deleted inodes
-  struct dir *dir;
-  int *tmp_str_sectors = malloc(sizeof(int) * 128);
-  char name[NAME_MAX + 1];
-  int counter = 0;
-  dir = dir_open_root();
-  if (dir == NULL){
-    printf("Directory not found\n");
-    return;
-  }
+    //search for all empty sectors
+    for (size_t i = 0; i < bitmap_size(free_map); i++) {
+      //sector i is free - potential removed inode
+      if (!bitmap_test(free_map, i)) {
+        //check if BLOCK_SECTOR_SIZE contains inode that was deleted
+        struct inode *inode = inode_open(i);
 
-  while (dir_readdir(dir, name)){
-    block_sector_t mySectors = dir_readdir_inode(dir, name);
-    tmp_str_sectors [counter] = mySectors;
-    counter += 1;
-  }   
-
-  int list_of_sectors[counter];
-  for (int i = 0; i < counter; i++){
-    list_of_sectors[i] = tmp_str_sectors[i];
-  }
-  free(tmp_str_sectors);
-  for (int i = 0; i < sizeof(list_of_sectors); i++) {
-    struct inode *myInode;
-    myInode = inode_open(list_of_sectors[i]);
-    if (myInode->removed == true) {
-      myInode->removed = false;
-      struct file *file = file_open(myInode);
-      char *buffer = malloc(BLOCK_SECTOR_SIZE);
-      if (buffer == NULL) {
-        break; // Insufficient memory to proceed
+        if (inode != NULL && inode_is_removed(inode)){
+          //recover
+          inode->removed = false;
+          offset_t size = inode_length(inode);
+          char *buffer = malloc(size);
+          char fname[100];
+          sprintf(fname, "recovered0-%d", i);
+          inode_read_at(inode, buffer, size, 0);
+          fsutil_create(fname, size);
+          fsutil_write(fname, buffer, size);
+          free(buffer);
+        }
       }
-      file_read_at(file, buffer, BLOCK_SECTOR_SIZE, 0);
-      sprintf(name, "recovered-%d.txt", list_of_sectors[i]);
-      if (dir_add(dir, name, list_of_sectors[i], false)) {
-        inode_write_at(myInode, buffer, BLOCK_SECTOR_SIZE, 0);
-      }
-      free(buffer);
-      file_close(file);}
-    inode_close(myInode);}
-  dir_close(dir);
-
+    }
   } else if (flag == 1) { // recover all non-empty sectors
     size_t start = 4; // Begin at sector 4, skipping reserved sectors
     for (size_t i = start; i < bitmap_size(free_map); i++) {
-      //bitmap_test usage question
-        if (bitmap_test(free_map, i)) { // Sector is free, potential data remnants
-            char *buffer = malloc(BLOCK_SECTOR_SIZE);
-            if (buffer == NULL) {
-                break; // Insufficient memory to proceed
-            }
-            block_read(fs_device, i, buffer);
-            remove_nulls(buffer, &block_sector_size);
-            size_t actual_length = strlen(buffer);
-            char filename[32];
-            sprintf(filename, "recovered1-%d.txt", (int)i);
-            FILE *file = fopen(filename, "w");
-            fwrite(buffer, actual_length, 1, file);
-            fclose(file);
-            free(buffer);
+      if (bitmap_test(free_map, i)) { // Sector is not free, potential data remnants
+        char *buffer = malloc(BLOCK_SECTOR_SIZE);
+        if (buffer == NULL) {
+            break; // Insufficient memory to proceed
         }
+        block_read(fs_device, i, buffer);
+        remove_nulls(buffer, &block_sector_size);
+        size_t actual_length = strlen(buffer);
+        char filename[32];
+        sprintf(filename, "recovered1-%d.txt", (int)i);
+        FILE *file = fopen(filename, "w");
+        fwrite(buffer, actual_length, 1, file);
+        fclose(file);
+        free(buffer);
+      }
     }
   } else if (flag == 2) { // data past end of file.
     printf("trying to find where the file read error is coming from 2");
