@@ -175,30 +175,31 @@ int defragment() {
     return FILE_DOES_NOT_EXIST;
   }
   while (dir_readdir(dir, name)){
-    block_sector_t inode_sector = sector_offset;
+   
     struct file *f = get_file_by_fname(name);
     struct inode *fileNode = file_get_inode(f); 
     block_sector_t* mySectors = get_inode_data_sectors(fileNode); 
     offset_t fileSize = fileNode->data.length;
-    struct inode_disk *disk_inode = &fileNode->data;
-
-    //release enough sector for inode + data
-    free_map_release(inode_sector, bytes_to_sectors(fileSize) + 1);
-    //allocate file inode
-    free_map_allocate(1, &inode_sector);
-    //write the inode into inode_sector
-    buffer_cache_write(inode_sector, disk_inode);
-    fileNode->sector = inode_sector;
-
-
-    //update inode_sector
-    sector_offset++;
+    // struct inode_disk *disk_inode = &fileNode->data;
     block_sector_t data_sector = sector_offset;
+    //release enough sector for inode + data
+    free_map_release(data_sector, bytes_to_sectors(fileSize) + 1);
+    
     //allocate file data
     free_map_allocate(bytes_to_sectors(fileSize), &data_sector);
     inode_write_at(fileNode, buffer, fileSize, offset);
     offset += fileSize;
     sector_offset += bytes_to_sectors(fileSize);
+
+    block_sector_t inode_sector = sector_offset;
+    //allocate file inode
+    if(free_map_allocate(1, &inode_sector)){
+      //write the inode into inode_sector
+      buffer_cache_write(inode_sector, fileNode);
+      fileNode->sector = inode_sector;
+    }
+    //update inode_sector
+    sector_offset++;
   }
   free_map_release(sector_offset, bitmap_size(free_map) - size_of_all_files);
   dir_close(dir);
