@@ -128,7 +128,7 @@ void fragmentation_degree() {
       struct file *f = get_file_by_fname(name);
       struct inode *fileNode = file_get_inode(f); //fileNode contains the inode of the file f
       block_sector_t* mySectors = get_inode_data_sectors(fileNode); //sector indecies of the file f
-      offset_t fileSize = fileNode->data.length;
+      offset_t fileSize = inode_length(fileNode);
       if (is_file_fragmented(mySectors, bytes_to_sectors(fileSize))){
         fragmented_counter++;
       }
@@ -237,7 +237,7 @@ void recover(int flag) {
         //check if BLOCK_SECTOR_SIZE contains inode that was deleted
         struct inode *inode = inode_open(i);
 
-        if (inode != NULL && inode_is_removed(inode)){
+        if (inode != NULL && !inode_is_directory(inode)){
           //recover
           offset_t size = inode_length(inode);
           char *buffer = malloc(size);
