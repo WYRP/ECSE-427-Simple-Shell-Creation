@@ -269,8 +269,8 @@ void recover(int flag) {
         // Read the data from the inode
         inode_read_at(inode, buffer, size, 0);
         // Write the data to the recovered file
-        filesys_create(fname, size);
-        int fd = filesys_open(fname);
+        fsutil_create(fname, size);
+        struct file *fd = filesys_open(fname);
         file_write_at(fd, buffer, size, 0);
         file_close(fd);
         // Free the buffer
