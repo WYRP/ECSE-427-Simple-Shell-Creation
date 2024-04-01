@@ -239,6 +239,7 @@ void recover(int flag) {
           free(buffer);
         }
         start++;
+        printf("is bad command here if statement, or outside of the if statement?\n");
         i = bitmap_scan(free_map, start, bitmap_size(free_map), 0);
     }
   } else if (flag == 1) { // recover all non-empty sectors
