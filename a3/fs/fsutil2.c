@@ -281,11 +281,11 @@ void recover(int flag) {
             }
             block_read(fs_device, i, buffer);
             remove_nulls(buffer, &block_sector_size);
-            printf("Size of dynamic_buffer: %zu bytes\n", sizeof(buffer));
+            size_t actual_length = strlen(buffer);
             char filename[32];
             sprintf(filename, "recovered1-%d.txt", (int)i);
             FILE *file = fopen(filename, "w");
-            fwrite(buffer, BLOCK_SECTOR_SIZE, 1, file);
+            fwrite(buffer, actual_length, 1, file);
             fclose(file);
             free(buffer);
         }
