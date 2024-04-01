@@ -165,14 +165,12 @@ int defragment() {
     strcat(buffer, temp_buffer);
     free(temp_buffer);
   }
-  printf("%d\n", fileNumber);
   dir_close(dir);
 
   int file_sizes[fileNumber];
   char file_names[fileNumber][NAME_MAX + 1];
   int file_idx = 0;
 
-  //remove all files
   //record each file's size into file_sizes
   //record each file's name into file_names
   dir = dir_open_root();
@@ -184,16 +182,21 @@ int defragment() {
     strcpy(file_names[file_idx], name);
     printf("file name: %s\n", file_names[file_idx]);
     file_idx++;
-    fsutil_rm(name);
   }
   dir_close(dir);
 
-  //recreate all the files
-  int offset = 0;
   dir = dir_open_root();
   if (dir == NULL){
     return FILE_DOES_NOT_EXIST;
   }
+
+  //remove all files
+  for (int i = 0; i < fileNumber; i++){
+    fsutil_rm(file_names[i]);
+  }
+
+  //recreate all the files
+  int offset = 0;
   for (int i = 0; i < fileNumber; i++){
     char *tmp = malloc(file_sizes[i]);
     strncpy(tmp, buffer + offset, file_sizes[i]);
