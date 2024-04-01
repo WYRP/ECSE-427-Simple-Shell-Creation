@@ -151,7 +151,7 @@ int defragment() {
   size_t size_of_all_files = bitmap_size(free_map) - num_free_sectors();
   char *buffer = malloc(size_of_all_files * 512);
 
-  //read all files into a buffer
+  //read all file content into a buffer
   dir = dir_open_root();
   if (dir == NULL){
     return FILE_DOES_NOT_EXIST;
@@ -163,6 +163,8 @@ int defragment() {
     free(temp_buffer);
   }
   dir_close(dir);
+
+  //move all directory inode to the beginning of free map
 
   //offset into buffer
   offset_t offset = 0;
@@ -180,11 +182,20 @@ int defragment() {
     offset_t fileSize = fileNode->data.length;
     struct inode_disk *disk_inode = &fileNode->data;
 
+    //release enough sector for inode + data
     free_map_release(inode_sector, bytes_to_sectors(fileSize) + 1);
-    if(free_map_allocate(bytes_to_sectors(fileSize), &inode_sector)){
-      buffer_cache_write(inode_sector, disk_inode);
-      fileNode->sector = inode_sector;
-    }
+    //allocate file inode
+    free_map_allocate(1, &inode_sector);
+    //write the inode into inode_sector
+    buffer_cache_write(inode_sector, disk_inode);
+    fileNode->sector = inode_sector;
+
+
+    //update inode_sector
+    sector_offset++;
+    block_sector_t data_sector = sector_offset;
+    //allocate file data
+    free_map_allocate(bytes_to_sectors(fileSize), &data_sector);
     inode_write_at(fileNode, buffer, fileSize, offset);
     offset += fileSize;
     sector_offset += bytes_to_sectors(fileSize);
