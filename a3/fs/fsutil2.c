@@ -312,10 +312,9 @@ void recover(int flag) {
         if (buffer[i] == '\0'){
           continue;
         }
-        result_buffer[i - num_overflow_chars - 1] = buffer[i];
+        strcat(result_buffer, buffer[i]);
       }
 
-      printf("result_buffer content: %s\n", result_buffer);
 
       char fname[100];
       sprintf(fname, "recovered2-%s.txt", name);
