@@ -312,10 +312,7 @@ void recover(int flag) {
         if (buffer[i] == '\0'){
           continue;
         }
-        printf("%d\n", i - num_overflow_chars);
-        printf("%c\n", buffer[i]);
-        result_buffer[i - num_overflow_chars] = buffer[i];
-        printf("%c\n", result_buffer[i - num_overflow_chars]);
+        result_buffer[i - num_overflow_chars - 1] = buffer[i];
       }
 
       printf("result_buffer content: %s\n", result_buffer);
