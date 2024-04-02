@@ -297,7 +297,7 @@ void recover(int flag) {
 
       char fname[100];
       sprintf(fname, "recovered2-%s.txt", name);
-      FILE *f = fopen(fname, "w");
+      FILE *f = fopen(fname, "wb");
       if (f == NULL){
         return;
       }
