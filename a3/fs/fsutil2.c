@@ -288,8 +288,7 @@ void recover(int flag) {
         continue; //not possible for this file to have hidden data
       }
       struct inode *inode = file_get_inode(file);
-      offset_t fileSize = inode_length(inode);
-      size_t numBlocks = bytes_to_sectors(fileSize);
+      size_t numBlocks = bytes_to_sectors(inode_length(inode));
 
       // find the data in its last block sector
       block_sector_t* sectors = get_inode_data_sectors(inode);
