@@ -284,7 +284,9 @@ void recover(int flag) {
     while (dir_readdir(dir, name)){
       struct file *f = get_file_by_fname(name);
       if(f == NULL){
-        printf("file is null");
+        printf("file is null\n");
+        printf("%s\n", name);
+        printf("%c\n", name[2]);
       }
       int fileSize = fsutil_size(name);
       if(fileSize <= 0 || fileSize % 512 == 0){
