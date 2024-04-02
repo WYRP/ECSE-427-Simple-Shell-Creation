@@ -274,40 +274,41 @@ void recover(int flag) {
     }
   } else if (flag == 2) { // data past end of file.
     //find data pass the end of the file then save it to recovered2-%s.txt
-    struct dir *dir;
-    char name[NAME_MAX + 1];
-    dir = dir_open_root();
-    if (dir == NULL){
-      printf("Directory not found\n");
-      return;
-    }
-    while (dir_readdir(dir, name)){
-      struct file *file = get_file_by_fname(name);
-      struct inode *inode = file_get_inode(file);
-      offset_t fileSize = inode_length(inode);
-      size_t numBlocks = bytes_to_sectors(fileSize);
-      if(fileSize <= 0 || fileSize % 512 == 0){
-        continue; //not possible for this file to have hidden data
-      }
-      //find the data in its last block sector
-      block_sector_t* sectors = get_inode_data_sectors(inode);
-      block_sector_t last_block = sectors[numBlocks - 1];
-      char *buffer = malloc(BLOCK_SECTOR_SIZE);
-      buffer_cache_read(last_block, buffer); //read sector data into buffer
+    // struct dir *dir;
+    // char name[NAME_MAX + 1];
+    // dir = dir_open_root();
+    // if (dir == NULL){
+    //   printf("Directory not found\n");
+    //   return;
+    // }
+    // while (dir_readdir(dir, name)){
+    //   struct file *file = get_file_by_fname(name);
+    //   struct inode *inode = file_get_inode(file);
+    //   offset_t fileSize = inode_length(inode);
+    //   size_t numBlocks = bytes_to_sectors(fileSize);
+    //   if(fileSize <= 0 || fileSize % 512 == 0){
+    //     continue; //not possible for this file to have hidden data
+    //   }
+    //   //find the data in its last block sector
+    //   block_sector_t* sectors = get_inode_data_sectors(inode);
+    //   block_sector_t last_block = sectors[numBlocks - 1];
+    //   char *buffer = malloc(BLOCK_SECTOR_SIZE);
+    //   buffer_cache_read(last_block, buffer); //read sector data into buffer
 
-      char fname[100];
-      sprintf(fname, "recovered2-%s.txt", name);
-      FILE *f = fopen(fname, "wb");
-      if (f == NULL){
-        return;
-      }
-      for(int i = 0; i < BLOCK_SECTOR_SIZE; i++){
-        fputc(buffer[i], f);
-      }
-      fclose(f);
-      free(buffer);
-    }
-    dir_close(dir);
+    //   char fname[100];
+    //   sprintf(fname, "recovered2-%s.txt", name);
+    //   FILE *f = fopen(fname, "wb");
+    //   if (f == NULL){
+    //     return;
+    //   }
+    //   for(int i = 0; i < BLOCK_SECTOR_SIZE; i++){
+    //     fputc(buffer[i], f);
+    //   }
+    //   fclose(f);
+    //   free(buffer);
+    // }
+    // dir_close(dir);
+    printf("enters recover 2");
   }
 }
 
