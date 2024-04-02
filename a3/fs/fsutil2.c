@@ -312,14 +312,10 @@ void recover(int flag) {
         if (buffer[i] == '\0'){
           continue;
         }
-        result_buffer[i-num_overflow_chars] = buffer[i];
+        result_buffer[i - num_overflow_chars] = buffer[i];
       }
 
       printf("result_buffer content: %s\n", result_buffer);
-      //remove the last part of the file
-      // remove_first_n_chars(buffer, num_overflow_chars);
-      //remove null bytes
-      // remove_nulls(buffer, &block_sector_size);
 
       char fname[100];
       sprintf(fname, "recovered2-%s.txt", name);
@@ -330,6 +326,7 @@ void recover(int flag) {
       fputs(result_buffer, f);
       fclose(f);
       free(buffer);
+      free(result_buffer);
     }
     dir_close(dir);
   }
