@@ -307,7 +307,7 @@ void recover(int flag) {
       char *buffer = malloc(BLOCK_SECTOR_SIZE);
       buffer_cache_read(last_block, buffer); //read sector data into buffer
 
-      char *result_buffer = malloc(BLOCK_SECTOR_SIZE);
+      char result_buffer[BLOCK_SECTOR_SIZE];
       for(int i = num_overflow_chars; i < BLOCK_SECTOR_SIZE; i++){
         if (buffer[i] == '\0'){
           continue;
@@ -326,7 +326,6 @@ void recover(int flag) {
       fputs(result_buffer, f);
       fclose(f);
       free(buffer);
-      free(result_buffer);
     }
     dir_close(dir);
   }
