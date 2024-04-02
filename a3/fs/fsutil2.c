@@ -290,8 +290,8 @@ void recover(int flag) {
         continue; //not possible for this file to have hidden data
       }
       //find the data in its last block sector
-      block_sector_t* sectors = get_inode_data_sectors(inode);
-      block_sector_t last_block = sectors[numBlocks - 1];
+      // block_sector_t* sectors = get_inode_data_sectors(inode);
+      // block_sector_t last_block = sectors[numBlocks - 1];
     //   char *buffer = malloc(BLOCK_SECTOR_SIZE);
     //   buffer_cache_read(last_block, buffer); //read sector data into buffer
 
