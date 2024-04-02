@@ -284,7 +284,7 @@ void recover(int flag) {
     while (dir_readdir(dir, name)){
       printf("%s\n", name);
       struct file *file = get_file_by_fname(name);
-      // struct inode *inode = file_get_inode(file);
+      struct inode *inode = file_get_inode(file);
     //   offset_t fileSize = inode_length(inode);
     //   size_t numBlocks = bytes_to_sectors(fileSize);
       // if(fileSize <= 0 || fileSize % 512 == 0){
