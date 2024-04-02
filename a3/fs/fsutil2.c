@@ -307,7 +307,7 @@ void recover(int flag) {
       buffer_cache_read(last_block, buffer); //read sector data into buffer
 
       //remove the last part of the file
-      remove_first_n_chars(buffer, num_overflow_chars);
+      // remove_first_n_chars(buffer, num_overflow_chars);
       //remove null bytes
       remove_nulls(buffer, strlen(buffer));
 
