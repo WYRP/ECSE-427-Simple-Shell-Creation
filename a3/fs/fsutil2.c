@@ -281,7 +281,7 @@ void recover(int flag) {
       printf("Directory not found\n");
       return;
     }
-    // while (dir_readdir(dir, name)){
+    while (dir_readdir(dir, name)){
     //   struct file *file = get_file_by_fname(name);
     //   struct inode *inode = file_get_inode(file);
     //   offset_t fileSize = inode_length(inode);
@@ -306,7 +306,7 @@ void recover(int flag) {
     //   }
     //   fclose(f);
     //   free(buffer);
-    // }
+    }
     dir_close(dir);
   }
 }
