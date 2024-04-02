@@ -313,7 +313,7 @@ void recover(int flag) {
         if (buffer[i] == '\0'){
           continue;
         }
-        result_buffer[i-num_free_sectors] = buffer[i];
+        result_buffer[i-num_overflow_chars] = buffer[i];
       }
 
       printf("result_buffer content: %s\n", result_buffer);
