@@ -246,8 +246,9 @@ void recover(int flag) {
           char fname[100];
           sprintf(fname, "recovered0-%d", i);
           inode_read_at(inode, buffer, size, 0);
-          fsutil_create(fname, size);
-          fsutil_write(fname, buffer, size);
+          struct dir* dir = dir_open_root();
+          dir_add(dir, fname, i, false);
+          dir_close(dir);
           free(buffer);
         }
       }
