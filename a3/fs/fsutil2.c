@@ -309,7 +309,7 @@ void recover(int flag) {
 
       char *result_buffer = malloc(BLOCK_SECTOR_SIZE);
       for(int i = num_overflow_chars; i < BLOCK_SECTOR_SIZE; i++){
-        printf("%s\n",buffer[i]);
+        printf("the current char is: %c\n", buffer[i]);
         if (buffer[i] == '\0'){
           continue;
         }
