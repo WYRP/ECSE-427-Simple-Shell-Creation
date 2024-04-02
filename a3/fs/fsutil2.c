@@ -226,6 +226,15 @@ void remove_nulls(char *buf, size_t *len) {
     }
 }
 
+void remove_first_n_chars(char *str, int n) {
+    int len = strlen(str);
+    if (n > len) n = len; 
+
+    for (int i = 0; i <= len - n; i++) {
+        str[i] = str[i + n];
+    }
+}
+
 void recover(int flag) {
   size_t block_sector_size = 512;
 
@@ -287,6 +296,7 @@ void recover(int flag) {
       if(fileSize <= 0 || fileSize % 512 == 0){
         continue; //not possible for this file to have hidden data
       }
+      int num_overflow_chars = fileSize % 512;
       struct inode *inode = file_get_inode(file);
       size_t numBlocks = bytes_to_sectors(inode_length(inode));
 
@@ -295,6 +305,11 @@ void recover(int flag) {
       block_sector_t last_block = sectors[numBlocks - 1];
       char *buffer = malloc(BLOCK_SECTOR_SIZE);
       buffer_cache_read(last_block, buffer); //read sector data into buffer
+
+      //remove the last part of the file
+      remove_first_n_chars(buffer, num_overflow_chars);
+      //remove null bytes
+      remove_nulls(buffer, strlen(buffer));
 
       char fname[100];
       sprintf(fname, "recovered2-%s.txt", name);
