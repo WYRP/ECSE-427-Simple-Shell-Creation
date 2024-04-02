@@ -282,12 +282,12 @@ void recover(int flag) {
       return;
     }
     while (dir_readdir(dir, name)){
-      struct file *f = filesys_open(name);
+      struct file *file = filesys_open(name);
       int fileSize = fsutil_size(name);
       if(fileSize <= 0 || fileSize % 512 == 0){
         continue; //not possible for this file to have hidden data
       }
-      struct inode *inode = file_get_inode(f);
+      struct inode *inode = file_get_inode(file);
       offset_t fileSize = inode_length(inode);
       size_t numBlocks = bytes_to_sectors(fileSize);
 
