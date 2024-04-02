@@ -297,6 +297,7 @@ void recover(int flag) {
         continue; //not possible for this file to have hidden data
       }
       int num_overflow_chars = fileSize % 512;
+      printf("num_overflow_chars: %d\n", num_overflow_chars);
       struct inode *inode = file_get_inode(file);
       size_t numBlocks = bytes_to_sectors(inode_length(inode));
 
