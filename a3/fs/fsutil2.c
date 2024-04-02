@@ -306,10 +306,17 @@ void recover(int flag) {
       char *buffer = malloc(BLOCK_SECTOR_SIZE);
       buffer_cache_read(last_block, buffer); //read sector data into buffer
 
+      char result_buffer[BLOCK_SECTOR_SIZE];
+      for(int i = num_overflow_chars; i < BLOCK_SECTOR_SIZE; i++){
+        if (buffer[i] == '\0'){
+          continue;
+        }
+        strcat(result_buffer, &buffer[i]);
+      }
       //remove the last part of the file
       // remove_first_n_chars(buffer, num_overflow_chars);
       //remove null bytes
-      remove_nulls(buffer, &block_sector_size);
+      // remove_nulls(buffer, &block_sector_size);
 
       char fname[100];
       sprintf(fname, "recovered2-%s.txt", name);
@@ -317,8 +324,8 @@ void recover(int flag) {
       if (f == NULL){
         return;
       }
-      for(int i = 0; i < BLOCK_SECTOR_SIZE; i++){
-        fputc(buffer[i], f);
+      for(int i = 0; i < strlen(result_buffer); i++){
+        fputc(result_buffer[i], f);
       }
       fclose(f);
       free(buffer);
