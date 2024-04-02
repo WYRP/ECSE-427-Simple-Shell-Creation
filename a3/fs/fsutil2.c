@@ -274,6 +274,7 @@ void recover(int flag) {
     }
   } else if (flag == 2) { // data past end of file.
     //find data pass the end of the file then save it to recovered2-%s.txt
+    printf("enter recover 2");
     struct dir *dir;
     char name[NAME_MAX + 1];
     dir = dir_open_root();
