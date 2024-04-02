@@ -273,9 +273,7 @@ void recover(int flag) {
       }
     }
   } else if (flag == 2) { // data past end of file.
-    printf("trying to find where the file read error is coming from 2");
-    struct inode *inode;
-    
+    //find data pass the end of the file then save it to recovered2-%s.txt
     struct dir *dir;
     char name[NAME_MAX + 1];
     dir = dir_open_root();
@@ -285,27 +283,29 @@ void recover(int flag) {
     }
     while (dir_readdir(dir, name)){
       struct file *file = get_file_by_fname(name);
-      inode = file_get_inode(file);
-      if (inode != NULL && !inode_is_removed(inode)) {
-        int length = inode_length(inode);
-        int blocks = bytes_to_sectors(length);
-        int overflow = length % BLOCK_SECTOR_SIZE;
-        char *buffer = malloc(BLOCK_SECTOR_SIZE);
-        if (overflow > 0 && blocks > 0) { // There is potential hidden data
-          if (buffer == NULL) {
-              inode_close(inode);
-              break; // Insufficient memory
-          }
-          inode_read_at(inode, buffer, BLOCK_SECTOR_SIZE, blocks * BLOCK_SECTOR_SIZE - overflow);
-          char filename[100];
-          printf("is bad command here else if 2?\n");
-          sprintf(filename, "recovered2-%s.txt", name); // Assume inode_name() gets the name
-          FILE *file = fopen(filename, "w");
-          fwrite(buffer + overflow, BLOCK_SECTOR_SIZE - overflow, 1, file);
-          fclose(file);
-        }
-        free(buffer);
+      struct inode *inode = file_get_inode(file);
+      offset_t fileSize = inode_length(inode);
+      size_t numBlocks = bytes_to_sectors(fileSize);
+      if(fileSize % 512 == 0){
+        continue; //not possible for this file to have hidden data
       }
+      //find the data in its last block sector
+      block_sector_t* sectors = malloc(sizeof(block_sector_t*) * numBlocks);
+      sectors = get_inode_data_sectors(inode);
+      block_sector_t last_block = sectors[numBlocks - 1];
+      char *buffer = malloc(BLOCK_SECTOR_SIZE);
+      buffer_cache_read(last_block, buffer); //read sector data into buffer
+
+      char fname[100];
+      sprintf(fname, "recovered2-%s.txt", name); // Assume inode_name() gets the name
+      FILE *f = fopen(fname, "w");
+      if (f == NULL){
+        return FILE_DOES_NOT_EXIST;
+      }
+      fputs(buffer, f);
+      fclose(f);
+      free(buffer);
+      free(sectors);
     }
     dir_close(dir);
   }
