@@ -286,24 +286,18 @@ void recover(int flag) {
       struct inode *inode = file_get_inode(file);
       offset_t fileSize = inode_length(inode);
       size_t numBlocks = bytes_to_sectors(fileSize);
-      if(fileSize % 512 == 0 || numBlocks <= 0){
+      if(fileSize <= 0 || fileSize % 512 == 0){
         continue; //not possible for this file to have hidden data
       }
       //find the data in its last block sector
       block_sector_t* sectors = get_inode_data_sectors(inode);
-      printf("got sectors");
       block_sector_t last_block = sectors[numBlocks - 1];
-      printf("got last sector");
       char *buffer = malloc(BLOCK_SECTOR_SIZE);
       buffer_cache_read(last_block, buffer); //read sector data into buffer
-      printf("read file into buffer");
 
       char fname[100];
       sprintf(fname, "recovered2-%s.txt", name);
       FILE *f = fopen(fname, "w");
-      if (f == NULL){
-        return FILE_DOES_NOT_EXIST;
-      }
       fputs(buffer, f);
       fclose(f);
       free(buffer);
