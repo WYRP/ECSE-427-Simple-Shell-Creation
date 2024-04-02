@@ -297,7 +297,7 @@ void recover(int flag) {
         continue; //not possible for this file to have hidden data
       }
       int num_overflow_chars = fileSize % 512;
-      printf("num_overflow_chars: %d\n", num_overflow_chars);
+      //num_overflow_chars = 56
       struct inode *inode = file_get_inode(file);
       size_t numBlocks = bytes_to_sectors(inode_length(inode));
 
@@ -307,13 +307,13 @@ void recover(int flag) {
       char *buffer = malloc(BLOCK_SECTOR_SIZE);
       buffer_cache_read(last_block, buffer); //read sector data into buffer
 
-      char result_buffer[BLOCK_SECTOR_SIZE];
+      char *result_buffer = malloc(BLOCK_SECTOR_SIZE);
       for(int i = num_overflow_chars; i < BLOCK_SECTOR_SIZE; i++){
         printf("%s\n",buffer[i]);
         if (buffer[i] == '\0'){
           continue;
         }
-        result_buffer[i - num_overflow_chars] = buffer[i];
+        result_buffer[i-num_free_sectors] = buffer[i];
       }
 
       printf("result_buffer content: %s\n", result_buffer);
