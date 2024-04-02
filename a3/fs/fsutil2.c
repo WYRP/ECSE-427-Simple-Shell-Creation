@@ -244,7 +244,7 @@ void recover(int flag) {
           offset_t size = inode_length(inode);
           char *buffer = malloc(size);
           char fname[100];
-          sprintf(fname, "recovered0-%d", i);
+          sprintf(fname, "recovered0-%d", (int) i);
           inode_read_at(inode, buffer, size, 0);
           struct dir* dir = dir_open_root();
           dir_add(dir, fname, i, false);
@@ -265,7 +265,7 @@ void recover(int flag) {
         remove_nulls(buffer, &block_sector_size);
         size_t actual_length = strlen(buffer);
         char filename[32];
-        sprintf(filename, "recovered1-%d.txt", (int)i);
+        sprintf(filename, "recovered1-%d.txt", (int) i);
         FILE *file = fopen(filename, "w");
         fwrite(buffer, actual_length, 1, file);
         fclose(file);
@@ -298,7 +298,12 @@ void recover(int flag) {
       char fname[100];
       sprintf(fname, "recovered2-%s.txt", name);
       FILE *f = fopen(fname, "w");
-      fputs(buffer, f);
+      if (f == NULL){
+        return;
+      }
+      for(int i = 0; i < BLOCK_SECTOR_SIZE; i++){
+        fputc(buffer[i], f);
+      }
       fclose(f);
       free(buffer);
     }
