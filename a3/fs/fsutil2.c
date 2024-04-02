@@ -274,7 +274,6 @@ void recover(int flag) {
     }
   } else if (flag == 2) { // data past end of file.
     //find data pass the end of the file then save it to recovered2-%s.txt
-    printf("enter recover 2");
     struct dir *dir;
     char name[NAME_MAX + 1];
     dir = dir_open_root();
@@ -287,7 +286,7 @@ void recover(int flag) {
       struct inode *inode = file_get_inode(file);
       offset_t fileSize = inode_length(inode);
       size_t numBlocks = bytes_to_sectors(fileSize);
-      if(fileSize % 512 == 0){
+      if(fileSize % 512 == 0 || numBlocks <= 0){
         continue; //not possible for this file to have hidden data
       }
       //find the data in its last block sector
