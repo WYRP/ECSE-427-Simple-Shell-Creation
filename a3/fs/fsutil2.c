@@ -180,7 +180,7 @@ int defragment() {
   while (dir_readdir(dir, name)){
     file_sizes[file_idx] = fsutil_size(name);
     strcpy(file_names[file_idx], name);
-    printf("file name: %s\n", file_names[file_idx]);
+    // printf("file name: %s\n", file_names[file_idx]);
     file_idx++;
   }
   dir_close(dir);
@@ -283,13 +283,16 @@ void recover(int flag) {
     }
     while (dir_readdir(dir, name)){
       printf("%s\n", name);
-      struct file *file = get_file_by_fname(name);
-      struct inode *inode = file_get_inode(file);
+      struct file *f = get_file_by_fname(name);
+      int fileSize = fsutil_size(name);
+      //struct inode* fileInode = f->inode;
+      if(fileSize <= 0 || fileSize % 512 == 0){
+        continue; //not possible for this file to have hidden data
+      }
+      //struct inode *inode = file_get_inode(f);
     //   offset_t fileSize = inode_length(inode);
     //   size_t numBlocks = bytes_to_sectors(fileSize);
-      // if(fileSize <= 0 || fileSize % 512 == 0){
-      //   continue; //not possible for this file to have hidden data
-      // }
+
       //find the data in its last block sector
       // block_sector_t* sectors = get_inode_data_sectors(inode);
       // block_sector_t last_block = sectors[numBlocks - 1];
