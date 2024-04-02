@@ -290,14 +290,16 @@ void recover(int flag) {
         continue; //not possible for this file to have hidden data
       }
       //find the data in its last block sector
-      block_sector_t* sectors = malloc(sizeof(block_sector_t*) * numBlocks);
-      sectors = get_inode_data_sectors(inode);
+      block_sector_t* sectors = get_inode_data_sectors(inode);
+      printf("got sectors");
       block_sector_t last_block = sectors[numBlocks - 1];
+      printf("got last sector");
       char *buffer = malloc(BLOCK_SECTOR_SIZE);
       buffer_cache_read(last_block, buffer); //read sector data into buffer
+      printf("read file into buffer");
 
       char fname[100];
-      sprintf(fname, "recovered2-%s.txt", name); // Assume inode_name() gets the name
+      sprintf(fname, "recovered2-%s.txt", name);
       FILE *f = fopen(fname, "w");
       if (f == NULL){
         return FILE_DOES_NOT_EXIST;
@@ -305,7 +307,6 @@ void recover(int flag) {
       fputs(buffer, f);
       fclose(f);
       free(buffer);
-      free(sectors);
     }
     dir_close(dir);
   }
