@@ -313,6 +313,8 @@ void recover(int flag) {
         }
         strcat(result_buffer, &buffer[i]);
       }
+
+      printf("result_buffer content: %s\n", result_buffer);
       //remove the last part of the file
       // remove_first_n_chars(buffer, num_overflow_chars);
       //remove null bytes
@@ -324,9 +326,7 @@ void recover(int flag) {
       if (f == NULL){
         return;
       }
-      for(int i = 0; i < strlen(result_buffer); i++){
-        fputc(result_buffer[i], f);
-      }
+      fputs(result_buffer, f);
       fclose(f);
       free(buffer);
     }
