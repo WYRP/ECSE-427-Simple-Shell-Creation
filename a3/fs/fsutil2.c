@@ -312,10 +312,9 @@ void recover(int flag) {
         if (buffer[i] == '\0'){
           continue;
         }
-        strcat(result_buffer, buffer[i]);
+        result_buffer[strlen(result_buffer)] = buffer[i];
       }
-
-
+      result_buffer[strlen(result_buffer)] = '\0';
       char fname[100];
       sprintf(fname, "recovered2-%s.txt", name);
       FILE *f = fopen(fname, "wb");
