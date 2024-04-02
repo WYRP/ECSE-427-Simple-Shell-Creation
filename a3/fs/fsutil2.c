@@ -88,7 +88,7 @@ void find_file(char *pattern) {
     return;
   }
   while (dir_readdir(dir, name)){
-    char *buffer = malloc((fsutil_size(name) + 1) * sizeof(char));
+    char *buffer = malloc((fsutil_size(name)) * sizeof(char));
     fsutil_read(name, buffer, fsutil_size(name));
     if (strstr(buffer, pattern) != NULL) {
       printf("%s\n", name);
@@ -281,11 +281,11 @@ void recover(int flag) {
       printf("Directory not found\n");
       return;
     }
-    while (dir_readdir(dir, name)){
-      struct file *file = get_file_by_fname(name);
-      struct inode *inode = file_get_inode(file);
-      offset_t fileSize = inode_length(inode);
-      size_t numBlocks = bytes_to_sectors(fileSize);
+    // while (dir_readdir(dir, name)){
+    //   struct file *file = get_file_by_fname(name);
+    //   struct inode *inode = file_get_inode(file);
+    //   offset_t fileSize = inode_length(inode);
+    //   size_t numBlocks = bytes_to_sectors(fileSize);
       // if(fileSize <= 0 || fileSize % 512 == 0){
       //   continue; //not possible for this file to have hidden data
       // }
@@ -306,7 +306,7 @@ void recover(int flag) {
     //   }
     //   fclose(f);
     //   free(buffer);
-    }
+    // }
     dir_close(dir);
   }
 }
