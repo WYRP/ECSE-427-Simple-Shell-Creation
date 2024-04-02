@@ -309,7 +309,7 @@ void recover(int flag) {
       //remove the last part of the file
       // remove_first_n_chars(buffer, num_overflow_chars);
       //remove null bytes
-      remove_nulls(buffer, BLOCK_SECTOR_SIZE);
+      remove_nulls(buffer, &block_sector_size);
 
       char fname[100];
       sprintf(fname, "recovered2-%s.txt", name);
