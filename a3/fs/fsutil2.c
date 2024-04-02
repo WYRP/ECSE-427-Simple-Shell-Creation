@@ -307,11 +307,11 @@ void recover(int flag) {
       buffer_cache_read(last_block, buffer); //read sector data into buffer
 
       char result_buffer[BLOCK_SECTOR_SIZE];
-      for(int i = num_overflow_chars; i < BLOCK_SECTOR_SIZE; i++){
-        if (buffer[i] == '\0'){
+      for(int i = 0; i < BLOCK_SECTOR_SIZE - num_overflow_chars; i++){
+        if (buffer[i + num_overflow_chars] == '\0'){
           continue;
         }
-        strcat(result_buffer, &buffer[i]);
+        result_buffer[i] = buffer[i + num_overflow_chars];
       }
 
       printf("result_buffer content: %s\n", result_buffer);
