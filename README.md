@@ -7,8 +7,7 @@ Yixuan Qin, 261010963
 [A2 README](https://github.com/WYRP/ECSE-427-Assignments/blob/main/a2/A2_README.md) <br>
 [A3 README](https://github.com/WYRP/ECSE-427-Assignments/blob/main/a3/A3_README.md) <br>
 
-```markdown
-# ECSE 427 Assignments
+
 
 This repository contains assignments completed for the ECSE 427: Operating Systems course at McGill University. Each assignment focuses on different aspects of operating systems, providing practical experience in system-level programming.
 
@@ -116,4 +115,3 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 - Open-source community for tools and resources
 
 For any questions or further information, please contact the repository owner or refer to the course materials provided by McGill University.
-``` 
